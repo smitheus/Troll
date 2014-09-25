@@ -1,0 +1,119 @@
+# 2014-09-11 18:55:03,134 INFO  - [Logging]  TROLL, stuff, more stuff,
+
+# NBOL originates the request
+
+NBOL, log4J_timestamp_method_name_etc, TROLL, INTER, nInter01, 1, KE
+CALL InterchangeInsert ('NBOL', 'nInter01', 1, 'KE', 'otherJmsProps') ;
+
+NBOL, log4J_timestamp_method_name_etc, TROLL, INSTR, nInter01, nInstr01, 2
+CALL InstructionInsert ('nInter01', 'nInstr01', '', '2014-01-01 00:00:24', 'NBOL', 'CREATE', 2) ;
+
+NBOL, log4J_timestamp_method_name_etc, TROLL, TRANS, nInter01, nTrans01
+CALL TransactionUpSert ('nInstr01', 'nTrans01', '', '', '2014-01-01 00:00:24', 'NBOL', 'CREATE', '', '') ;
+
+NBOL, log4J_timestamp_method_name_etc, TROLL, TRANS, nInter01, nTrans02
+CALL TransactionUpSert ('nInstr01', 'nTrans02', '', '', '2014-01-01 00:00:24', 'NBOL', 'CREATE', '', '') ;
+
+NBOL, log4J_timestamp_method_name_etc, TROLL, SENT, nInter01
+Call InterchangeUpdate ('nInter01', '2014-01-01 00:00:24', 'NBOL', 'SENT', '', '') ;
+
+
+
+
+
+
+
+   
+# PAYEX receives and acknowledges it
+
+PAYEX, log4J_timestamp_method_name_etc, TROLL, RECD, nInter01
+Call InterchangeUpdate ('nInter01', '2014-01-01 00:00:24', 'PAYEX', 'RECD', '', '') ;
+
+PAYEX, log4J_timestamp_method_name_etc, TROLL, INTERIM, nInter01, ACK,
+Call InterchangeUpdate ('nInter01', '2014-01-01 00:00:24', 'PAYEX', 'INTERIM', '', '') ;
+
+
+
+
+
+
+
+
+
+
+# NBOL process the interim response (asynchronously)
+
+NBOL, log4J_timestamp_method_name_etc, TROLL, INTERIM, nInter01
+Call InterchangeUpdate ('nInter01', '2014-01-01 00:00:24', 'NBOL', 'INTERIM', '', '') ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# PAYEX forwards the instruction as two separate operations
+
+PAYEX, log4J_timestamp_method_name_etc, TROLL, INTER, pInter01, 1, 1, 1, KE
+CALL InterchangeInsert ('PAYEX', 'pInter01', 1, '??', 'otherJmsProps') ;
+
+PAYEX, log4J_timestamp_method_name_etc, TROLL, INSTR, pInter01, pInstr01, 1, nInstr01
+CALL InstructionInsert ('pInter01', 'pInstr01', 'nInstr01', '2014-01-01 00:00:24', 'PAYEX', 'CREATE', 1) ;
+
+PAYEX, log4J_timestamp_method_name_etc, TROLL, TRANS, pInstr01, pTrans01, nInstr01, nTrans01, Section A
+CALL TransactionUpSert ('nInstr01', 'nTrans01', 'pInstr01', 'pTrans01', '2014-01-01 00:00:24', 'PAYEX', 'CREATE', '', 'Section A') ;
+
+PAYEX, log4J_timestamp_method_name_etc, TROLL, SENT, pInter01
+Call InterchangeUpdate ('pInter01', '2014-01-01 00:00:24', 'PAYEX', 'SENT', '', '') ;
+
+
+PAYEX, log4J_timestamp_method_name_etc, TROLL, INTER, pInter02, 1, 1, 1, KE
+PAYEX, log4J_timestamp_method_name_etc, TROLL, INSTR, pInter02, pInstr02, 1, nInstr01
+PAYEX, log4J_timestamp_method_name_etc, TROLL, TRANS, pInstr02, pTrans02, nTrans02, Section A
+PAYEX, log4J_timestamp_method_name_etc, TROLL, SENT, pInter02
+
+CALL InterchangeInsert ('PAYEX', 'pInter02', 1, '??', 'otherJmsProps') ;
+CALL InstructionInsert ('pInter02', 'pInstr02', 'nInstr01', '2014-01-01 00:00:24', 'PAYEX', 'CREATE', 1) ;
+CALL TransactionUpSert ('nInstr01', 'nTrans02', 'pInstr02', 'pTrans02', '2014-01-01 00:00:24', 'PAYEX', 'CREATE', '', 'Section A') ;
+Call InterchangeUpdate ('pInter02', '2014-01-01 00:00:24', 'PAYEX', 'SENT', '', '') ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# MAX acks/naks the two interchanges
+
+Call InterchangeUpdate ('pInter01', '2014-01-01 00:00:24', 'PAYEX', 'MAX', 'ACK', '') ;
+Call InterchangeUpdate ('pInter02', '2014-01-01 00:00:24', 'PAYEX', 'MAX', 'NAK', 'Error in something') ;
+
+# core banking responds
+
+CALL TransactionUpSert ('', '',  'pInstr01', 'pTrans01', '2014-01-01 00:00:24', 'PAYEX', 'CORE', 'ACK', 'CoreBanking_reference') ;
+
+# PAYEX issues final status
+
+Call InterchangeUpdate ('nInter01', '2014-01-01 00:00:24', 'PAYEX', 'FINAL', '', '') ;
+
+# NBOL processes the final response
+Call InterchangeUpdate ('nInter01', '2014-01-01 00:00:24', 'NBOL', 'FINAL', '', '') ;
