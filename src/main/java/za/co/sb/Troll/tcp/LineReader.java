@@ -1,4 +1,4 @@
-package tcp;
+package za.co.sb.Troll.tcp;
 
 import java.io.BufferedReader;
 import java.io.File;
