@@ -4,28 +4,20 @@ import com.google.common.base.Enums;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
-public enum EventEnum 
+public enum AckNakEnum 
 {
-	INTER,
-	INSTR,
-	TRANS,
-	CORE,
-	SENT,
-	RECD,
-	INTERIM,
-	MAX,
-	FINAL,
-	CREATE,
+	ACK,
+	NAK,
 	UNKNOWN;
 	
-	public static EventEnum getEvent(String value) 
+	public static AckNakEnum getAckNak(String value) 
 	{
 		if (Strings.isNullOrEmpty(value))
 		{
 			return UNKNOWN;
 		}
 		
-		Optional<EventEnum> possible = Enums.getIfPresent(EventEnum.class, value);
+		Optional<AckNakEnum> possible = Enums.getIfPresent(AckNakEnum.class, value);
 		
 		if (!possible.isPresent()) 
 		{

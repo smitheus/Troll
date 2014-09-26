@@ -2,6 +2,9 @@ package za.co.sb.Troll.dto.event;
 
 import java.util.Date;
 
+import za.co.sb.Troll.enums.AckNakEnum;
+import za.co.sb.Troll.enums.EventEnum;
+
 public class InterchangeEventDto 
 {
 	private String sourceSystem;
@@ -9,7 +12,9 @@ public class InterchangeEventDto
 	private int numInstructions;
 	private String country;
 	private Date sourceTimeStamp;
-	private String jmsProperties;
+	private EventEnum event;
+	private AckNakEnum ackNak;
+	private String text;
 	
 	public InterchangeEventDto()
 	{
@@ -20,10 +25,10 @@ public class InterchangeEventDto
 		return "InterchangeEventDto [sourceSystem=" + sourceSystem
 				+ ", interchangeId=" + interchangeId + ", numInstructions="
 				+ numInstructions + ", country=" + country
-				+ ", sourceTimeStamp=" + sourceTimeStamp + ", jmsProperties="
-				+ jmsProperties + "]";
+				+ ", sourceTimeStamp=" + sourceTimeStamp + ", event=" + event
+				+ ", ackNak=" + ackNak + ", text=" + text + "]";
 	}
-	
+
 	public String getSourceSystem() 
 	{
 		return sourceSystem;
@@ -64,16 +69,6 @@ public class InterchangeEventDto
 		this.country = country;
 	}
 
-	public String getJmsProperties() 
-	{
-		return jmsProperties;
-	}
-
-	public void setJmsProperties(String jmsProperties) 
-	{
-		this.jmsProperties = jmsProperties;
-	}
-
 	public Date getSourceTimeStamp() 
 	{
 		return sourceTimeStamp;
@@ -82,5 +77,35 @@ public class InterchangeEventDto
 	public void setSourceTimeStamp(Date sourceTimeStamp) 
 	{
 		this.sourceTimeStamp = sourceTimeStamp;
+	}
+
+	public EventEnum getEvent() 
+	{
+		return event;
+	}
+
+	public void setEvent(EventEnum event) 
+	{
+		this.event = event;
+	}
+
+	public AckNakEnum getAckNak() 
+	{
+		return ackNak;
+	}
+
+	public void setAckNak(AckNakEnum ackNak) 
+	{
+		this.ackNak = ackNak;
+	}
+
+	public String getText() 
+	{
+		return text;
+	}
+
+	public void setText(String text) 
+	{
+		this.text = text;
 	}
 }

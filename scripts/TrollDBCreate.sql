@@ -1,9 +1,6 @@
 use troll ;
 
 drop table coreBankingSystems ;
-use troll ;
-
-drop table coreBankingSystems ;
 create table coreBankingSystems (
 	systemCode varchar(10),
 	systemType varchar(40),
@@ -26,7 +23,6 @@ create table channelInterchange (
 	sourceSystem varchar(40),
 	numInstructions int, 
 	country varchar(10),
-	tempJmsHeaders varchar(80),
 	PRIMARY KEY (id) ) ;
 
 drop table channelInterchangeHistory ;
@@ -113,16 +109,3 @@ create table pesTransIDmap (
 	cTransactionID varchar(40),
 	pInstructionID  varchar(40),
 	pTransactionId varchar(40) ) ;
-	
-drop procedure InterchangeInsert ;
-# add row to hist for CREATE, add update
-create procedure InterchangeInsert (pSourceSystem varchar(10), pInterchangeID varchar(40), pNumInstructions int, pCountry varchar(10), pJmsProperties varchar(80))
-begin
-                declare insertTimeStamp timestamp ;
-                declare totalCount int ;
-                
-                select count(*) from channelInterchange where interchangeID = pInterchangeID into totalCount ;
-                if (totalCount = 0) then
-                                insert into channelInterchange (sourceSystem, interchangeID, insertTimeStamp, numInstructions, country, tempJmsHeaders) values (pSourceSystem, pInterchangeID, insertTimeStamp, pNumInstructions, pCountry, pJmsProperties) ;
-                end if ;
-end ;
