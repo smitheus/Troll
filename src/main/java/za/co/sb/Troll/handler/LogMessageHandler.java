@@ -23,6 +23,7 @@ import za.co.sb.Troll.enums.EventEnum;
 import za.co.sb.Troll.exception.HandleEventException;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 public class LogMessageHandler 
 {
@@ -30,6 +31,7 @@ public class LogMessageHandler
 	
 	public static final DateFormat NBOL_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 	public static final DateFormat PAYEX_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+	public static final DateFormat DEFAULT_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 	
 	private TrollerLogMessageDao trollerLogMessageDao = new TrollerLogMessageDao();
 	private ProblemRecordDao problemRecordDao = new ProblemRecordDao();
@@ -59,21 +61,21 @@ public class LogMessageHandler
 			switch (eventType) 
 			{
 	            case INTER :
-	            	handleInterchangeEvent(sourceSystem, sourceTimestamp, logMessagePropList);
+	            	trollerLogMessageDao.insertInterchangeEvent(handleInterchangeEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
 	            case INSTR :
-	            	handleInstructionEvent(sourceSystem, sourceTimestamp, logMessagePropList);
+	            	trollerLogMessageDao.insertInstructionEvent(handleInstructionEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
 	            case TRANS :
 	            case CORE :
-	            	handleTransactionEvent(sourceSystem, sourceTimestamp, logMessagePropList);
+	            	trollerLogMessageDao.upsertTransactionEvent(handleTransactionEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
 	            case SENT :
 	            case RECD :
 	            case INTERIM :	
 	            case MAX :	
 	            case FINAL :
-	            	handleInterchangeUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList);
+	            	trollerLogMessageDao.updateInterchangeEvent(handleInterchangeUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
 	            default : 
 	            	String errorMessage = "Unknown <EVENT>";
@@ -100,7 +102,7 @@ public class LogMessageHandler
 	 * @return the SOURCE SYSTEM
 	 * @throws HandleEventException
 	 */
-	private String extractSourceSytem(String eventLogMessage) throws HandleEventException
+	public String extractSourceSytem(String eventLogMessage) throws HandleEventException
 	{
 		try
 		{
@@ -123,11 +125,11 @@ public class LogMessageHandler
 	 * @return the LOG MESSAGE
 	 * @throws HandleEventException
 	 */
-	private String extractLogMessage(String eventLogMessage, String sourceSystem) throws HandleEventException
+	public String extractLogMessage(String eventLogMessage, String sourceSystem) throws HandleEventException
 	{
 		try
 		{
-			return eventLogMessage.substring(eventLogMessage.indexOf(',') + 1);
+			return eventLogMessage.substring(eventLogMessage.indexOf(',') + 1).trim();
 		}
 		catch (Exception ex)
 		{
@@ -146,7 +148,7 @@ public class LogMessageHandler
 	 * @return the SOURCE SYSTEM TIMESTAMP
 	 * @throws HandleEventException
 	 */
-	private Date extractSourceTimestamp(String logMessage, String sourceSystem) throws HandleEventException
+	public Date extractSourceTimestamp(String logMessage, String sourceSystem) throws HandleEventException
 	{
 		try
 		{
@@ -156,9 +158,13 @@ public class LogMessageHandler
 			{
 				return NBOL_LOG_DATE_FORMAT.parse(sourceTimestamp);
 			}
-			else
+			else if ("PAYEX".equals(sourceSystem))
 			{
 				return PAYEX_LOG_DATE_FORMAT.parse(sourceTimestamp);
+			}
+			else
+			{
+				return DEFAULT_LOG_DATE_FORMAT.parse(sourceTimestamp);
 			}
 		}
 		catch (Exception ex)
@@ -178,11 +184,16 @@ public class LogMessageHandler
 	 * @return List<String> of EVENT properties
 	 * @throws HandleEventException
 	 */
-	private List<String> extractLogMessagePropList(String logMessage, String sourceSystem) throws HandleEventException
+	public List<String> extractLogMessagePropList(String logMessage, String sourceSystem) throws HandleEventException
 	{
+		ArrayList<String> propList = new ArrayList<String>();
+		
 		try
 		{
-			return Splitter.on(",").trimResults().splitToList(logMessage.substring(logMessage.indexOf("TROLL") + "TROLL,".length()));
+			propList = Lists.newArrayList(Splitter.on(",").trimResults().splitToList(logMessage.substring(logMessage.indexOf("TROLL"))));
+			propList.remove(0);
+			
+			return propList;
 		}
 		catch (Exception ex)
 		{
@@ -209,12 +220,18 @@ public class LogMessageHandler
 	 * @throws HandleEventException
 	 * @throws SQLException
 	 */
-	private void handleInterchangeEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException, SQLException 
+	public InterchangeEventDto handleInterchangeEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException 
 	{
 		InterchangeEventDto interchangeEventDto = new InterchangeEventDto();
 		
 		try 
 		{
+			EventEnum event = EventEnum.getEvent(logMessagePropList.get(0));
+			if (event != EventEnum.INTER) 
+			{
+				throw new Exception("Invalid transaction <EVENT>");
+			}
+			
 			interchangeEventDto.setSourceSystem(sourceSystem);
 			interchangeEventDto.setSourceTimeStamp(sourceTimestamp);
 			
@@ -231,8 +248,8 @@ public class LogMessageHandler
 			
 			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}
-			
-		trollerLogMessageDao.insertInterchangeEvent(interchangeEventDto);
+		
+		return interchangeEventDto;
 	}
 	
 	/**
@@ -255,19 +272,27 @@ public class LogMessageHandler
 	 * @throws HandleEventException
 	 * @throws SQLException
 	 */
-	private void handleInterchangeUpdateEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException, SQLException 
+	public InterchangeEventDto handleInterchangeUpdateEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException 
 	{
 		InterchangeEventDto interchangeEventDto = new InterchangeEventDto();
 		
 		try 
 		{
+			EventEnum event = EventEnum.getEvent(logMessagePropList.get(0));
+			if (event != EventEnum.SENT && event != EventEnum.RECD
+					&& event != EventEnum.INTERIM && event != EventEnum.MAX
+					&& event != EventEnum.FINAL) 
+			{
+				throw new Exception("Invalid transaction <EVENT>");
+			}
+			
 			interchangeEventDto.setSourceSystem(sourceSystem);
 			interchangeEventDto.setSourceTimeStamp(sourceTimestamp);
 			
 			interchangeEventDto.setEvent(EventEnum.getEvent(logMessagePropList.get(0)));
 			interchangeEventDto.setInterchangeId(logMessagePropList.get(1));
 			interchangeEventDto.setAckNak(logMessagePropList.size() > 2 ? AckNakEnum.getAckNak(logMessagePropList.get(2)) : AckNakEnum.UNKNOWN);
-			interchangeEventDto.setText(interchangeEventDto.getAckNak() == AckNakEnum.NAK ? logMessagePropList.get(3) : "");
+			interchangeEventDto.setText(interchangeEventDto.getAckNak() == AckNakEnum.NAK ? logMessagePropList.get(3) : null);
 		}
 		catch (Exception ex)
 		{
@@ -277,7 +302,7 @@ public class LogMessageHandler
 			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}			
 			
-		trollerLogMessageDao.updateInterchangeEvent(interchangeEventDto);
+		return interchangeEventDto;
 	}
 	
 	/**
@@ -296,12 +321,18 @@ public class LogMessageHandler
 	 * @throws HandleEventException
 	 * @throws SQLException
 	 */
-	private void handleInstructionEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException, SQLException 
+	public InstructionEventDto handleInstructionEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException 
 	{
 		InstructionEventDto instructionEventDto = new InstructionEventDto();
 		
 		try
 		{
+			EventEnum event = EventEnum.getEvent(logMessagePropList.get(0));
+			if (event != EventEnum.INSTR)
+			{
+				throw new Exception("Invalid transaction <EVENT>");
+			}
+			
 			instructionEventDto.setSourceSystem(sourceSystem);
 			instructionEventDto.setEvent(EventEnum.CREATE);
 			instructionEventDto.setSourceTimeStamp(sourceTimestamp);
@@ -309,7 +340,11 @@ public class LogMessageHandler
 			instructionEventDto.setInterchangeId(logMessagePropList.get(1));
 			instructionEventDto.setInstructionId(logMessagePropList.get(2));
 			instructionEventDto.setNumInstructions(Integer.parseInt(logMessagePropList.get(3)));
-			instructionEventDto.setRecInstructionId(logMessagePropList.get(4));
+			
+			if (logMessagePropList.size() > 4) 
+			{
+				instructionEventDto.setRecInstructionId(logMessagePropList.get(4));
+			}
 		}
 		catch (Exception ex)
 		{
@@ -319,7 +354,7 @@ public class LogMessageHandler
 			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}
 			
-		trollerLogMessageDao.insertInstructionEvent(instructionEventDto);
+		return instructionEventDto;
 	}
 	
 	/**
@@ -339,12 +374,18 @@ public class LogMessageHandler
 	 * @throws HandleEventException
 	 * @throws SQLException
 	 */
-	private void handleTransactionEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException, SQLException 
+	public TransactionEventDto handleTransactionEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException 
 	{
 		TransactionEventDto transactionEventDto = new TransactionEventDto();
 		
 		try
 		{
+			EventEnum event = EventEnum.getEvent(logMessagePropList.get(0));
+			if (event != EventEnum.CORE && event != EventEnum.TRANS)
+			{
+				throw new Exception("Invalid transaction <EVENT>");
+			}
+			
 			transactionEventDto.setSourceSystem(sourceSystem);
 			transactionEventDto.setSourceTimeStamp(sourceTimestamp);
 					
@@ -352,8 +393,8 @@ public class LogMessageHandler
 			if (eventType == EventEnum.CORE)
 			{
 				transactionEventDto.setEvent(eventType);
-				transactionEventDto.setInstructionId("");
-				transactionEventDto.setTransactionId("");
+				transactionEventDto.setInstructionId(null);
+				transactionEventDto.setTransactionId(null);
 				transactionEventDto.setRecInstructionId(logMessagePropList.get(1));
 				transactionEventDto.setRecTransactionId(logMessagePropList.get(2));
 				transactionEventDto.setAckNak(AckNakEnum.getAckNak(logMessagePropList.get(3)));
@@ -368,9 +409,9 @@ public class LogMessageHandler
 				{
 					transactionEventDto.setInstructionId(logMessagePropList.get(1));
 					transactionEventDto.setTransactionId(logMessagePropList.get(2));
-					transactionEventDto.setRecInstructionId("");
-					transactionEventDto.setRecTransactionId("");
-					transactionEventDto.setText("");
+					transactionEventDto.setRecInstructionId(null);
+					transactionEventDto.setRecTransactionId(null);
+					transactionEventDto.setText(null);
 				}
 				else if ("PAYEX".equalsIgnoreCase(sourceSystem))
 				{
@@ -390,7 +431,7 @@ public class LogMessageHandler
 			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}
 		
-		trollerLogMessageDao.upsertTransactionEvent(transactionEventDto);
+		return transactionEventDto;
 	}
 	
 	/**

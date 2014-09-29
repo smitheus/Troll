@@ -86,7 +86,7 @@ BEGIN
 	select count(*) from channelInstruction ci where ci.InterchangeID = pInterID and ci.InstructionID = pInstrID into totalCount ;
 	if (totalCount = 0) then
 		# persist the instruction
-		insert into channelInstruction (sourceSystem, interchangeID, instructionID, insertTimeStamp, numTransactions) values (pSourceSystem, pInterID, pInstrID, insertTimeStamp, numTransactions) ;
+		insert into channelInstruction (sourceSystem, interchangeID, instructionID, sourceTimestamp, insertTimeStamp, numTransactions) values (pSourceSystem, pInterID, pInstrID, pSourceTimestamp, insertTimeStamp, numTransactions) ;
 	end if ;
 	
 	# add a row to the history table

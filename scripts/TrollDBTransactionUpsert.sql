@@ -44,7 +44,7 @@ CREATE PROCEDURE TransactionUpSert(chanInstrID varchar(40), chanTransID varchar(
 		
 		IF (totalCount = 0) THEN
 			# persist the transaction			
-			insert channelTransaction (instructionID, transactionID, insertTimestamp) values (nInstructionID, nTransactionID, insertTimeStamp) ;
+			insert channelTransaction (instructionID, transactionID, sourceTimestamp, insertTimestamp) values (nInstructionID, nTransactionID, pSourceTimestamp, insertTimeStamp) ;
 		END IF ;
 		
 		# insert a row in the history for this transaction
