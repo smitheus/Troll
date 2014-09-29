@@ -6,15 +6,16 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-//import org.apache.log4j.LogManager;
-//import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import za.co.sb.Troll.dao.ChannelTransactionDao;
 import za.co.sb.Troll.dto.ChannelTransactionDto;
 
 public class Troll 
 {
-	//private static final Logger LOG = LogManager.getLogger(Troll.class .getName());
+	
+	private static final Logger LOG = LogManager.getLogger(Troll.class .getName());
 	
 	
 	public static final String DB_PROPERTIES_FILENAME = "db.properties";
@@ -23,6 +24,12 @@ public class Troll
 	
     public static void main(String[] args)
     {
+    	LOG.error("WHY IS LOG4J not WORKING?");
+    	LOG.warn("WHY IS LOG4J not WORKING?");
+    	LOG.debug("WHY IS LOG4J not WORKING?");
+    	LOG.info("WHY IS LOG4J not WORKING?");
+    	LOG.trace("WHY IS LOG4J not WORKING?");
+    	
     	try
     	{
     		
