@@ -15,7 +15,7 @@ import za.co.sb.Troll.enums.EventEnum;
 
 public class TrollerLogMessageDao 
 {
-	static final String SP_INTERCHANGE_INSERT = "{CALL InterchangeInsert (?, ?, ?, ?, ?)}";
+	static final String SP_INTERCHANGE_INSERT = "{CALL InterchangeInsert (?, ?, ?, ?, ?, ?, ?)}";
 	static final String SP_INTERCHANGE_UPDATE = "{CALL InterchangeUpdate (?, ?, ?, ?, ?, ?)}";
 	static final String SP_INSTRUCTION_INSERT = "{CALL InstructionInsert (?, ?, ?, ?, ?, ?, ?)}";
 	static final String SP_TRANSACTION_UPSERT = "{CALL TransactionUpSert (?, ?, ?, ?, ?, ?, ?, ?, ?)}";
@@ -29,10 +29,12 @@ public class TrollerLogMessageDao
 	 * Stored Procedure Parameter List
 	 * <ol>
 	 * <li>VARCHAR pSourceSystem</li>
+	 * <li>TIMESTAMP pSourceTimestamp</li>
 	 * <li>VARCHAR pInterchangeID</li>
 	 * <li>INT pNumInstructions</li>
 	 * <li>VARCHAR pCountry</li>
-	 * <li>TIMESTAMP pSourceTimestamp</li>
+	 * <li>VARCHAR pMessageType</li>
+	 * <li>VARCHAR pInstrumentGroup</li>
 	 * </ol>
 	 * 
 	 * @throws SQLException
@@ -49,6 +51,8 @@ public class TrollerLogMessageDao
             callableStatement.setString(3, interchangeEventDto.getInterchangeId());
             callableStatement.setInt(4, interchangeEventDto.getNumInstructions());
             callableStatement.setString(5, interchangeEventDto.getCountry());
+            callableStatement.setString(6, interchangeEventDto.getMessageType());
+            callableStatement.setString(7, interchangeEventDto.getInstrumentGroup());
             
             callableStatement.execute();
         } 

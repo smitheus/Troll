@@ -15,6 +15,8 @@ public class InterchangeEventDto
 	private EventEnum event;
 	private AckNakEnum ackNak;
 	private String text;
+	private String messageType;
+	private String instrumentGroup;
 	
 	public InterchangeEventDto()
 	{
@@ -26,7 +28,8 @@ public class InterchangeEventDto
 				+ ", interchangeId=" + interchangeId + ", numInstructions="
 				+ numInstructions + ", country=" + country
 				+ ", sourceTimeStamp=" + sourceTimeStamp + ", event=" + event
-				+ ", ackNak=" + ackNak + ", text=" + text + "]";
+				+ ", ackNak=" + ackNak + ", text=" + text + ", messageType="
+				+ messageType + ", instrumentGroup=" + instrumentGroup + "]";
 	}
 
 	public String getSourceSystem() 
@@ -107,5 +110,25 @@ public class InterchangeEventDto
 	public void setText(String text) 
 	{
 		this.text = text;
+	}
+
+	public String getMessageType() 
+	{
+		return messageType;
+	}
+
+	public void setMessageType(String messageType) 
+	{
+		this.messageType = messageType;
+	}
+
+	public String getInstrumentGroup() 
+	{
+		return instrumentGroup;
+	}
+
+	public void setInstrumentGroup(String instrumentGroup) 
+	{
+		this.instrumentGroup = instrumentGroup;
 	}
 }

@@ -1,14 +1,14 @@
 use troll;
 
 drop procedure InterchangeInsert ;
-create procedure InterchangeInsert (pSourceSystem varchar(10), pSourceTimestamp timestamp, pInterId varchar(40), pNumInstructions int, pCountry varchar(10))
+create procedure InterchangeInsert (pSourceSystem varchar(10), pSourceTimestamp timestamp, pInterId varchar(40), pNumInstructions int, pCountry varchar(10), pMessageType varchar(20), pInstrumentGroup varchar(20))
 begin
 	declare insertTimeStamp timestamp ;
 	declare totalCount int ;
 	
 	select count(*) from channelInterchange where interchangeID = pInterId into totalCount ;
 	if (totalCount = 0) then
-		insert into channelInterchange (sourceSystem, interchangeID, insertTimeStamp, sourceTimestamp, numInstructions, country) values (pSourceSystem, pInterId, insertTimeStamp, pSourceTimestamp, pNumInstructions, pCountry) ;
+		insert into channelInterchange (sourceSystem, interchangeID, insertTimeStamp, sourceTimestamp, numInstructions, country, messageType, instrumentGroup) values (pSourceSystem, pInterId, insertTimeStamp, pSourceTimestamp, pNumInstructions, pCountry, pMessageType, pInstrumentGroup) ;
 	end if ;
 
 		# add a row to the history

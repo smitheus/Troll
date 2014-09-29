@@ -221,6 +221,8 @@ public class LogMessageHandler
 			interchangeEventDto.setInterchangeId(logMessagePropList.get(1));
 			interchangeEventDto.setNumInstructions(Integer.parseInt(logMessagePropList.get(2)));
 			interchangeEventDto.setCountry(logMessagePropList.get(3));
+			interchangeEventDto.setMessageType(logMessagePropList.get(4));
+			interchangeEventDto.setInstrumentGroup(logMessagePropList.get(5));
 		}
 		catch (Exception ex)
 		{
@@ -403,7 +405,7 @@ public class LogMessageHandler
 		
 		List<String> testCaseTrollerLogMessageList = new ArrayList<String>();
 		
-		testCaseTrollerLogMessageList.add("NBOL, 2014-09-11 12:23:41.201 [main] INFO - TROLL, INTER, nInter01, 1, KE");
+		testCaseTrollerLogMessageList.add("NBOL, 2014-09-11 12:23:41.201 [main] INFO - TROLL, INTER, nInter01, 1, KE, PAYMENT, LOWCARE");
 		testCaseTrollerLogMessageList.add("NBOL, 2014-09-11 12:23:42.201 [main] INFO - TROLL, INSTR, nInter01, nInstr01, 2,");
 		testCaseTrollerLogMessageList.add("NBOL, 2014-09-11 12:23:43.201 [main] INFO - TROLL, TRANS, nInstr01, nTrans01");
 		testCaseTrollerLogMessageList.add("NBOL, 2014-09-11 12:23:44.201 [main] INFO - TROLL, TRANS, nInstr01, nTrans02");
@@ -411,11 +413,11 @@ public class LogMessageHandler
 		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:46.201 [main] INFO - TROLL, RECD, nInter01");
 		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:47.201 [main] INFO - TROLL, INTERIM, nInter01, ACK,");
 		testCaseTrollerLogMessageList.add("NBOL, 2014-09-11 12:23:48.201 [main] INFO - TROLL, INTERIM, nInter01");
-		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:49.201 [main] INFO - TROLL, INTER, pInter01, 1,");
+		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:49.201 [main] INFO - TROLL, INTER, pInter01, 1,,PAYMENT, LOWCARE");
 		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:50.201 [main] INFO - TROLL, INSTR, pInter01, pInstr01, 1, nInstr01");
 		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:51.201 [main] INFO - TROLL, TRANS, pInstr01, pTrans01, nInstr01, nTrans01, Section A");
 		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:52.201 [main] INFO - TROLL, SENT, pInter01");
-		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:53.201 [main] INFO - TROLL, INTER, pInter02, 1,"); 
+		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:53.201 [main] INFO - TROLL, INTER, pInter02, 1,,PAYMENT, LOWCARE"); 
 		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:54.201 [main] INFO - TROLL, INSTR, pInter02, pInstr02, 1, nInstr01");
 		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:55.201 [main] INFO - TROLL, TRANS, pInstr02, pTrans02, nInstr01, nTrans02, Section A");
 		testCaseTrollerLogMessageList.add("PAYEX, 2014-09-11 12:23:56.201 [main] INFO - TROLL, SENT, pInter02");

@@ -23,6 +23,8 @@ create table channelInterchange (
 	sourceSystem varchar(40),
 	numInstructions int, 
 	country varchar(10),
+	messageType varchar(20),
+	instrumentGroup varchar(20),
 	PRIMARY KEY (id) ) ;
 
 drop table channelInterchangeHistory ;
