@@ -4,11 +4,17 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import za.co.sb.Troll.Troll;
+import za.co.sb.Troll.dao.ProblemRecordDao;
 import za.co.sb.Troll.dao.TrollerLogMessageDao;
+import za.co.sb.Troll.dto.ProblemRecordDto;
 import za.co.sb.Troll.dto.event.InstructionEventDto;
 import za.co.sb.Troll.dto.event.InterchangeEventDto;
 import za.co.sb.Troll.dto.event.TransactionEventDto;
@@ -18,22 +24,36 @@ import za.co.sb.Troll.exception.HandleEventException;
 
 import com.google.common.base.Splitter;
 
-public class LogMessageHander 
+public class LogMessageHandler 
 {
+	private static final Logger LOG = LogManager.getLogger(LogMessageHandler.class);
+	
 	public static final DateFormat NBOL_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 	public static final DateFormat PAYEX_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 	
 	private TrollerLogMessageDao trollerLogMessageDao = new TrollerLogMessageDao();
+	private ProblemRecordDao problemRecordDao = new ProblemRecordDao();
 	
-	public void handleLogMessage(String eventLogMessage)
+	/**
+	 * Attempts to parse the Event Log Message and up the DB based on the EVENT
+	 * TYPE extracted.
+	 * 
+	 * @param eventLogMessage
+	 * @throws SQLException
+	 */
+	public void handleLogMessage(String eventLogMessage) throws SQLException
 	{
+		String sourceSystem = "";
+		String logMessage = "";
+		Date sourceTimestamp = null;
+		List<String> logMessagePropList = new ArrayList<String>();
+		
 		try 
 		{
-			String sourceSystem = extractSourceSytem(eventLogMessage);
-			String logMessage = extractLogMessage(eventLogMessage);
-			
-			Date sourceTimestamp =  extractSourceTimestamp(logMessage, sourceSystem);
-			List<String> logMessagePropList = extractLogMessagePropList(logMessage);
+			sourceSystem = extractSourceSytem(eventLogMessage);
+			logMessage = extractLogMessage(eventLogMessage, sourceSystem);
+			sourceTimestamp =  extractSourceTimestamp(logMessage, sourceSystem);
+			logMessagePropList = extractLogMessagePropList(logMessage, sourceSystem);
 			
 			EventEnum eventType = EventEnum.getEvent(logMessagePropList.size() > 0 ? logMessagePropList.get(0) : "");
 			switch (eventType) 
@@ -56,21 +76,30 @@ public class LogMessageHander
 	            	handleInterchangeUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList);
 	            	break;
 	            default : 
-	            	throw new HandleEventException("Invalid EVENT");
+	            	String errorMessage = "Unknown <EVENT>";
+	    			ProblemRecordDto problemRecordDto = new ProblemRecordDto(null, null, null, sourceTimestamp, sourceSystem, errorMessage);
+	    			
+	    			throw new HandleEventException(errorMessage, problemRecordDto);
 	        }
 		}
 		catch (HandleEventException heex) 
 		{
-			// TODO Use the problem record DTO created by the method throwing this exception to insert a problem record into the DB
+			LOG.error("Exception handling event.", heex);
 			
-		}
-		catch (SQLException heex) 
-		{
-			// TODO How do we handle SQL Exceptions?
+			heex.getProblemRecordDto().setInsertTimestamp(Calendar.getInstance().getTime());
+			heex.getProblemRecordDto().setRecord(eventLogMessage);
 			
+			problemRecordDao.insertProblemRecords(heex.getProblemRecordDto());
 		}
 	}
 	
+	/**
+	 * Extracts the SOURCE SYSTEM from the message.
+	 * 
+	 * @param eventLogMessage
+	 * @return the SOURCE SYSTEM
+	 * @throws HandleEventException
+	 */
 	private String extractSourceSytem(String eventLogMessage) throws HandleEventException
 	{
 		try
@@ -79,12 +108,22 @@ public class LogMessageHander
 		}
 		catch (Exception ex)
 		{
-			//insertProblemRecord();
-			throw new HandleEventException("Unable to extract <SOURCE SYSTEM> from event log message <" + eventLogMessage + ">", ex);
+			String errorMessage = "Unable to extract <SOURCE SYSTEM> from event log message";
+			ProblemRecordDto problemRecordDto = new ProblemRecordDto(null, null, null, null, null, errorMessage);
+			
+			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}
 	}
 	
-	private String extractLogMessage(String eventLogMessage) throws HandleEventException
+	/**
+	 * Extracts the actual LOG MESSAGE written by the SOURCE SYSTEM.
+	 * 
+	 * @param eventLogMessage
+	 * @param sourceSystem
+	 * @return the LOG MESSAGE
+	 * @throws HandleEventException
+	 */
+	private String extractLogMessage(String eventLogMessage, String sourceSystem) throws HandleEventException
 	{
 		try
 		{
@@ -92,11 +131,21 @@ public class LogMessageHander
 		}
 		catch (Exception ex)
 		{
-			//insertProblemRecord();
-			throw new HandleEventException("Unable to extract <LOG MESSAGE> from event log message <" + eventLogMessage + ">", ex);
+			String errorMessage = "Unable to extract <LOG MESSAGE> from event log message";
+			ProblemRecordDto problemRecordDto = new ProblemRecordDto(null, null, null, null, sourceSystem, errorMessage);
+			
+			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}
 	}
 	
+	/**
+	 * Extracts the SOURCE SYSTEM TIMESTAMP from the LOG MESSAGE.
+	 * 
+	 * @param eventLogMessage
+	 * @param sourceSystem
+	 * @return the SOURCE SYSTEM TIMESTAMP
+	 * @throws HandleEventException
+	 */
 	private Date extractSourceTimestamp(String logMessage, String sourceSystem) throws HandleEventException
 	{
 		try
@@ -114,12 +163,22 @@ public class LogMessageHander
 		}
 		catch (Exception ex)
 		{
-			//insertProblemRecord();
-			throw new HandleEventException("Unable to extract <SOURCE TIMESTAMP> from event log message <" + logMessage + ">", ex);
+			String errorMessage = "Unable to extract <SOURCE TIMESTAMP> from event log message";
+			ProblemRecordDto problemRecordDto = new ProblemRecordDto(null, null, null, null, sourceSystem, errorMessage);
+			
+			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}
 	}
 	
-	private List<String> extractLogMessagePropList(String logMessage) throws HandleEventException
+	/**
+	 * Extracts the list of EVENT properties from the LOG MESSAGE. 
+	 * 
+	 * @param logMessage
+	 * @param sourceSystem
+	 * @return List<String> of EVENT properties
+	 * @throws HandleEventException
+	 */
+	private List<String> extractLogMessagePropList(String logMessage, String sourceSystem) throws HandleEventException
 	{
 		try
 		{
@@ -127,11 +186,29 @@ public class LogMessageHander
 		}
 		catch (Exception ex)
 		{
-			//insertProblemRecord();
-			throw new HandleEventException("Unable to extract <LOG MESSAGE PROPERTIES> from event log message <" + logMessage + ">", ex);
+			String errorMessage = "Unable to extract <LOG MESSAGE PROPERTIES> from event log message";
+			ProblemRecordDto problemRecordDto = new ProblemRecordDto(null, null, null, null, sourceSystem, errorMessage);
+			
+			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}
 	}
 	
+	/**
+	 * Handles LOG MESSAGE events of types
+	 * <ul>
+	 * <li>EventEnum.INTER</li>
+	 * </ul>
+	 * 
+	 * Builds a DTO of parameters using properties extracted from the LOG
+	 * MESSAGE that will be passed to the relevant stored procedure for the type
+	 * of event
+	 * 
+	 * @param sourceSystem
+	 * @param sourceTimestamp
+	 * @param logMessagePropList
+	 * @throws HandleEventException
+	 * @throws SQLException
+	 */
 	private void handleInterchangeEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException, SQLException 
 	{
 		InterchangeEventDto interchangeEventDto = new InterchangeEventDto();
@@ -147,12 +224,35 @@ public class LogMessageHander
 		}
 		catch (Exception ex)
 		{
-			throw new HandleEventException("Unable to process Interchange Event <" +  EventEnum.getEvent(logMessagePropList.get(0)) + ">", ex);
+			String errorMessage = "Unable to process Interchange Event <" +  EventEnum.getEvent(logMessagePropList.get(0)) + ">";
+			ProblemRecordDto problemRecordDto = new ProblemRecordDto(interchangeEventDto.getInterchangeId(), null, null, sourceTimestamp, sourceSystem, errorMessage);
+			
+			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}
 			
 		trollerLogMessageDao.insertInterchangeEvent(interchangeEventDto);
 	}
 	
+	/**
+	 * Handles LOG MESSAGE events of types
+	 * <ul>
+	 * <li>EventEnum.SENT</li>
+	 * <li>EventEnum.RECD</li>
+	 * <li>EventEnum.INTERIM</li>
+	 * <li>EventEnum.MAX</li>
+	 * <li>EventEnum.FINAL</li>
+	 * </ul>
+	 * 
+	 * Builds a DTO of parameters using properties extracted from the LOG
+	 * MESSAGE that will be passed to the relevant stored procedure for the type
+	 * of event
+	 * 
+	 * @param sourceSystem
+	 * @param sourceTimestamp
+	 * @param logMessagePropList
+	 * @throws HandleEventException
+	 * @throws SQLException
+	 */
 	private void handleInterchangeUpdateEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException, SQLException 
 	{
 		InterchangeEventDto interchangeEventDto = new InterchangeEventDto();
@@ -169,13 +269,31 @@ public class LogMessageHander
 		}
 		catch (Exception ex)
 		{
-			throw new HandleEventException("Unable to process Interchange Update Event <" +  EventEnum.getEvent(logMessagePropList.get(0)) + ">", ex);
+			String errorMessage = "Unable to process Interchange Update Event <" +  EventEnum.getEvent(logMessagePropList.get(0)) + ">";
+			ProblemRecordDto problemRecordDto = new ProblemRecordDto(interchangeEventDto.getInterchangeId(), null, null, sourceTimestamp, sourceSystem, errorMessage);
+			
+			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}			
 			
 		trollerLogMessageDao.updateInterchangeEvent(interchangeEventDto);
-		
 	}
 	
+	/**
+	 * Handles LOG MESSAGE events of types
+	 * <ul>
+	 * <li>EventEnum.INSTR</li>
+	 * </ul>
+	 * 
+	 * Builds a DTO of parameters using properties extracted from the LOG
+	 * MESSAGE that will be passed to the relevant stored procedure for the type
+	 * of event
+	 * 
+	 * @param sourceSystem
+	 * @param sourceTimestamp
+	 * @param logMessagePropList
+	 * @throws HandleEventException
+	 * @throws SQLException
+	 */
 	private void handleInstructionEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException, SQLException 
 	{
 		InstructionEventDto instructionEventDto = new InstructionEventDto();
@@ -193,12 +311,32 @@ public class LogMessageHander
 		}
 		catch (Exception ex)
 		{
-			throw new HandleEventException("Unable to process Instruction Event <" +  EventEnum.getEvent(logMessagePropList.get(0)) + ">", ex);
+			String errorMessage = "Unable to process Instruction Event <" +  EventEnum.getEvent(logMessagePropList.get(0)) + ">";
+			ProblemRecordDto problemRecordDto = new ProblemRecordDto(instructionEventDto.getInterchangeId(), instructionEventDto.getInstructionId(), null, sourceTimestamp, sourceSystem, errorMessage);
+			
+			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}
 			
 		trollerLogMessageDao.insertInstructionEvent(instructionEventDto);
 	}
 	
+	/**
+	 * Handles LOG MESSAGE events of types
+	 * <ul>
+	 * <li>EventEnum.TRANS</li>
+	   <li>EventEnum.CORE</li>
+	 * </ul>
+	 * 
+	 * Builds a DTO of parameters using properties extracted from the LOG
+	 * MESSAGE that will be passed to the relevant stored procedure for the type
+	 * of event
+	 * 
+	 * @param sourceSystem
+	 * @param sourceTimestamp
+	 * @param logMessagePropList
+	 * @throws HandleEventException
+	 * @throws SQLException
+	 */
 	private void handleTransactionEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException, SQLException 
 	{
 		TransactionEventDto transactionEventDto = new TransactionEventDto();
@@ -244,65 +382,26 @@ public class LogMessageHander
 		}
 		catch (Exception ex)
 		{
-			throw new HandleEventException("Unable to process Transaction Event <" +  EventEnum.getEvent(logMessagePropList.get(0)) + ">", ex);
+			String errorMessage = "Unable to process Transaction Event <" +  EventEnum.getEvent(logMessagePropList.get(0)) + ">";
+			ProblemRecordDto problemRecordDto = new ProblemRecordDto(null, transactionEventDto.getInstructionId(), transactionEventDto.getTransactionId(), sourceTimestamp, sourceSystem, errorMessage);
+			
+			throw new HandleEventException(errorMessage, problemRecordDto, ex);
 		}
 		
 		trollerLogMessageDao.upsertTransactionEvent(transactionEventDto);
 	}
 	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/**
+	 * Test case
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String args[]) throws Exception
 	{
 		Troll.loadProperties();
 		
 		List<String> testCaseTrollerLogMessageList = new ArrayList<String>();
-		
 		
 		testCaseTrollerLogMessageList.add("NBOL, 2014-09-11 12:23:41.201 [main] INFO - TROLL, INTER, nInter01, 1, KE");
 		testCaseTrollerLogMessageList.add("NBOL, 2014-09-11 12:23:42.201 [main] INFO - TROLL, INSTR, nInter01, nInstr01, 2,");
@@ -328,7 +427,7 @@ public class LogMessageHander
 		
 		for (String testCaseTrollerLogMessage : testCaseTrollerLogMessageList)
 		{
-			new LogMessageHander().handleLogMessage(testCaseTrollerLogMessage);
+			new LogMessageHandler().handleLogMessage(testCaseTrollerLogMessage);
 		}
 	}
 }

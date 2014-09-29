@@ -86,8 +86,8 @@ create table channelTransactionHistory (
 	responseRequired varchar (1),
 	PRIMARY KEY (id) ) ;
 
-drop table problemRecords ;
-create table problemRecords (
+drop table problemRecord ;
+create table problemRecord (
 	id MEDIUMINT NOT NULL AUTO_INCREMENT,
 	interchangeID  varchar(40),
 	instructionID  varchar(40),
@@ -96,6 +96,7 @@ create table problemRecords (
 	sourceTimestamp timestamp,
 	sourceSystem varchar(40),
 	record varchar (160),
+	errorMessage varchar(160),
 	PRIMARY KEY (id) ) ;
 
 drop table pesInstrIDmap ;

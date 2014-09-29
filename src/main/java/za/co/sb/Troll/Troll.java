@@ -6,15 +6,15 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.LogManager;
+//import org.apache.log4j.Logger;
 
 import za.co.sb.Troll.dao.ChannelTransactionDao;
 import za.co.sb.Troll.dto.ChannelTransactionDto;
 
 public class Troll 
 {
-	private static final Logger LOG = LogManager.getLogger(Troll.class .getName());
+	//private static final Logger LOG = LogManager.getLogger(Troll.class .getName());
 	
 	
 	public static final String DB_PROPERTIES_FILENAME = "db.properties";
@@ -67,6 +67,7 @@ public class Troll
     	
 		try 
 		{
+			
 			input = Troll.class.getClassLoader().getResourceAsStream(DB_PROPERTIES_FILENAME);
 			DB_PROPERTIES.load(input);
 		} 
