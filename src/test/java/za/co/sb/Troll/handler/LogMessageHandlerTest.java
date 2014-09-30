@@ -386,7 +386,7 @@ public class LogMessageHandlerTest
 			assertEquals(EventEnum.CREATE, instructionEventDto.getEvent());
 			assertEquals("nInter01", instructionEventDto.getInterchangeId());
 			assertEquals("nInstr01", instructionEventDto.getInstructionId());
-			assertEquals(null, instructionEventDto.getRecInstructionId());
+			assertEquals("", instructionEventDto.getRecInstructionId());
 			assertEquals("SOURCESYSTEM", instructionEventDto.getSourceSystem());
 			assertEquals(sourceTimestamp, instructionEventDto.getSourceTimeStamp());
 			assertEquals(1, instructionEventDto.getNumInstructions());
@@ -438,8 +438,8 @@ public class LogMessageHandlerTest
 			TransactionEventDto transactionEventDto = logMessageHandler.handleTransactionEvent(sourceSystem, sourceTimestamp, logMessagePropList);
 			
 			assertEquals(EventEnum.CORE, transactionEventDto.getEvent());
-			assertEquals(null, transactionEventDto.getInstructionId());
-			assertEquals(null, transactionEventDto.getTransactionId());
+			assertEquals("", transactionEventDto.getInstructionId());
+			assertEquals("", transactionEventDto.getTransactionId());
 			assertEquals("pInstr01", transactionEventDto.getRecInstructionId());
 			assertEquals("pTrans01", transactionEventDto.getRecTransactionId());
 			assertEquals("SOURCESYSTEM", transactionEventDto.getSourceSystem());
@@ -468,8 +468,8 @@ public class LogMessageHandlerTest
 			assertEquals(EventEnum.CREATE, transactionEventDto.getEvent());
 			assertEquals("nInstr01", transactionEventDto.getInstructionId());
 			assertEquals("nTrans02", transactionEventDto.getTransactionId());
-			assertEquals(null, transactionEventDto.getRecInstructionId());
-			assertEquals(null, transactionEventDto.getRecTransactionId());
+			assertEquals("", transactionEventDto.getRecInstructionId());
+			assertEquals("", transactionEventDto.getRecTransactionId());
 			assertEquals("NBOL", transactionEventDto.getSourceSystem());
 			assertEquals(sourceTimestamp, transactionEventDto.getSourceTimeStamp());
 			assertEquals(AckNakEnum.UNKNOWN, transactionEventDto.getAckNak());

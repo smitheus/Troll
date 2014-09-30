@@ -340,11 +340,7 @@ public class LogMessageHandler
 			instructionEventDto.setInterchangeId(logMessagePropList.get(1));
 			instructionEventDto.setInstructionId(logMessagePropList.get(2));
 			instructionEventDto.setNumInstructions(Integer.parseInt(logMessagePropList.get(3)));
-			
-			if (logMessagePropList.size() > 4) 
-			{
-				instructionEventDto.setRecInstructionId(logMessagePropList.get(4));
-			}
+			instructionEventDto.setRecInstructionId(logMessagePropList.size() > 4 ? logMessagePropList.get(4) : "");
 		}
 		catch (Exception ex)
 		{
@@ -393,8 +389,8 @@ public class LogMessageHandler
 			if (eventType == EventEnum.CORE)
 			{
 				transactionEventDto.setEvent(eventType);
-				transactionEventDto.setInstructionId(null);
-				transactionEventDto.setTransactionId(null);
+				transactionEventDto.setInstructionId("");
+				transactionEventDto.setTransactionId("");
 				transactionEventDto.setRecInstructionId(logMessagePropList.get(1));
 				transactionEventDto.setRecTransactionId(logMessagePropList.get(2));
 				transactionEventDto.setAckNak(AckNakEnum.getAckNak(logMessagePropList.get(3)));
@@ -409,8 +405,8 @@ public class LogMessageHandler
 				{
 					transactionEventDto.setInstructionId(logMessagePropList.get(1));
 					transactionEventDto.setTransactionId(logMessagePropList.get(2));
-					transactionEventDto.setRecInstructionId(null);
-					transactionEventDto.setRecTransactionId(null);
+					transactionEventDto.setRecInstructionId("");
+					transactionEventDto.setRecTransactionId("");
 					transactionEventDto.setText(null);
 				}
 				else if ("PAYEX".equalsIgnoreCase(sourceSystem))
