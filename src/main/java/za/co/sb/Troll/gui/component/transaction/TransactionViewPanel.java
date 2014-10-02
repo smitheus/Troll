@@ -1,5 +1,6 @@
-package za.co.sb.Troll.gui.component;
+package za.co.sb.Troll.gui.component.transaction;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -7,35 +8,24 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-
-
-
-
-
-
-
-
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import za.co.sb.Troll.dao.ChannelTransactionDao;
-import za.co.sb.Troll.dto.ChannelTransactionDto;
+import za.co.sb.Troll.dao.TransactionViewDao;
 import za.co.sb.Troll.dto.ChannelTransactionHistoryDto;
-import za.co.sb.Troll.dto.ProblemRecordDto;
-import za.co.sb.Troll.exception.HandleEventException;
-
-import java.awt.BorderLayout;
+import za.co.sb.Troll.dto.TransactionViewItemDto;
 
 
-public class TransactionView extends JPanel 
+public class TransactionViewPanel extends JPanel 
 {
 	private JTable table1;
 	private TableModel tableModel;
@@ -49,9 +39,11 @@ public class TransactionView extends JPanel
 	/**
 	 * Create the panel.
 	 */
-	public TransactionView() 
+	public TransactionViewPanel() 
 	{
 		setLayout(new BorderLayout(0, 0));
+		
+		setBorder(new MatteBorder(3, 0, 0, 0, (Color) new Color(0, 0, 0)));
 		
 		
 		
@@ -68,6 +60,16 @@ public class TransactionView extends JPanel
 		
 		
 
+	}
+	
+	public void reload()
+	{
+		try {
+			tableModel.setupTableData(false);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
@@ -116,8 +118,8 @@ class TransactionTable extends JTable
 		}
 		else
 		{
-			setRowHeight(row, 25);
-			jc.setBorder(BorderFactory.createMatteBorder(5, 0, 0, 0, Color.BLACK)); 
+			setRowHeight(row, 22);
+			jc.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, Color.BLACK)); 
 		}
 		
 		
@@ -184,34 +186,36 @@ class TableModel extends DefaultTableModel
 		Object[][] data;
 		
 		
-		ChannelTransactionDao channelTransactionDao = new ChannelTransactionDao();
+		TransactionViewDao transactionViewDao = new TransactionViewDao();
 		
 		
-		List<ChannelTransactionDto> list = channelTransactionDao.selectAllTransactions();
+		List<TransactionViewItemDto> list = transactionViewDao.selectTransactionViewItemDtos();
 		
-		for (ChannelTransactionDto channelTransactionDto : list) 
+		for (TransactionViewItemDto transactionViewItemDto : list) 
 		{
 			
-			data = new Object[3][TransactionView.mainColumNames.length];
+			data = new Object[3][TransactionViewPanel.mainColumNames.length];
 			
 			// Add TRANSACTION data to table
 			// Row 1
 			data[0][0] = "";
-			data[0][1] = channelTransactionDto.getTransactionId();
-			data[0][2] = channelTransactionDto.getInstructionId();
+			data[0][1] = transactionViewItemDto.getTransactionId();
+			data[0][2] = transactionViewItemDto.getInstructionId();
 			data[0][3] = "<html><i>Timestamp:</i><html>";
 			
 			//Row 2
-			data[1][1] = "Country: TODO";
+			data[1][0] = "";
+			data[1][1] = "Country: " + transactionViewItemDto.getCountry();
 			data[1][2] = "Of InterCh:";
 			data[1][3] = "<html><i>Feedback/ACK:</i><html>";
 			
 			//Row 3
+			data[2][0] = "";
 			data[2][1] = "";
-			data[2][2] = "TODO";
+			data[2][2] = transactionViewItemDto.getInterchangeId();
 			data[2][3] = "<html><i>Elapsed Time:</i><html>";
 			
-			for (ChannelTransactionHistoryDto channelTransactionHistoryDto : channelTransactionDto.getChannelTransactionHistoryDtoList())
+			/*for (ChannelTransactionHistoryDto channelTransactionHistoryDto : channelTransactionDto.getChannelTransactionHistoryDtoList())
 			{
 				switch (channelTransactionHistoryDto.getEvent()) 
 				{
@@ -291,7 +295,7 @@ class TableModel extends DefaultTableModel
 				
 				
 				
-			}
+			}*/
 			
 			addRow(data[0]);
 			addRow(data[1]);

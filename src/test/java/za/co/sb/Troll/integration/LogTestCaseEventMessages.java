@@ -104,7 +104,7 @@ public class LogTestCaseEventMessages
 	public static void logTestCase4Messages()
 	{
 		// NBOL originates the request
-		NBOL_LOG.info("TROLL, INTER, nInter15, 1, KE, PAYMENT, LOWCARE");
+		NBOL_LOG.info("TROLL, INTER, nInter15, 1, GH, PAYMENT, LOWCARE");
 		NBOL_LOG.info("TROLL, INSTR, nInter15, nInstr15, 2");
 		NBOL_LOG.info("TROLL, TRANS, nInstr15, nTrans15");
 		NBOL_LOG.info("TROLL, TRANS, nInstr15, nTrans16");

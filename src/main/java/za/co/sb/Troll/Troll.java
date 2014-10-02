@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import za.co.sb.Troll.gui.component.TrollConsole;
+import za.co.sb.Troll.gui.component.TrollConsoleFrame;
 
 public class Troll 
 {
@@ -16,7 +16,7 @@ public class Troll
 	private static final String DB_PROPERTIES_FILENAME = "db.properties";
 	private static final String CONSOLE_COMMAND = "Console";
 
-	private static Properties DB_PROPERTIES = null;
+	private static Properties DB_PROPERTIES = new Properties();
 	
     public static void main(String[] args)
     {
@@ -64,7 +64,7 @@ public class Troll
 	   		{
 	   			try 
 	   			{
-	   				TrollConsole frame = new TrollConsole();
+	   				TrollConsoleFrame frame = new TrollConsoleFrame();
 	   				frame.setVisible(true);
 	   			} 
 	   			catch (Exception e) 
