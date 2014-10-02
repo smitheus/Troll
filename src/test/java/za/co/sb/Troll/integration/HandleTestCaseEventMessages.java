@@ -25,8 +25,8 @@ public class HandleTestCaseEventMessages
 	{
 		try
 		{
-			// Load properties
-			Troll.loadProperties();
+			// Load DB properties
+			Troll.loadDbProperties();
 			LogTestCaseEventMessages.logAllTestCaseMessages();
 
 			// Build list of test case messages

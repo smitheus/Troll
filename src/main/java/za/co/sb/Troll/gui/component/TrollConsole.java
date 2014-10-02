@@ -17,7 +17,7 @@ public class TrollConsole extends JFrame
 
 	public static void main(String[] args) throws Exception 
 	{
-		Troll.loadProperties();
+		Troll.loadDbProperties();
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
