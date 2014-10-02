@@ -27,9 +27,6 @@ public class LogMessageHandlerTest
 {
 	LogMessageHandler logMessageHandler = new LogMessageHandler();
 	
-	//@Rule
-	//public ExpectedException exception = ExpectedException.none();
-	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception 
 	{
@@ -509,3 +506,4 @@ public class LogMessageHandlerTest
 		}
 	}
 }
+

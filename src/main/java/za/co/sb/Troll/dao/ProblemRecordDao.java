@@ -64,8 +64,7 @@ public class ProblemRecordDao
 	
 	public void insertProblemRecords(ProblemRecordDto problemRecordDto) throws SQLException
     {
-		try 
-		{
+		try {
             connection = ConnectionFactory.getConnection();
             
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_PROBLEM_RECORDS_STATEMENT, Statement.RETURN_GENERATED_KEYS);
@@ -73,7 +72,7 @@ public class ProblemRecordDao
             preparedStatement.setString(2, problemRecordDto.getInstructionId());
             preparedStatement.setString(3, problemRecordDto.getTransactionId());
             preparedStatement.setTimestamp(4, new Timestamp(problemRecordDto.getInsertTimestamp().getTime()));
-            preparedStatement.setTimestamp(5, problemRecordDto.getSourceTimestamp() == null ? null : new Timestamp(problemRecordDto.getSourceTimestamp().getTime()));
+            preparedStatement.setTimestamp(5, new Timestamp(problemRecordDto.getSourceTimestamp().getTime()));
             preparedStatement.setString(6, problemRecordDto.getSourceSystem());
             preparedStatement.setString(7, problemRecordDto.getRecord());
             preparedStatement.setString(8, problemRecordDto.getErrorMessage());

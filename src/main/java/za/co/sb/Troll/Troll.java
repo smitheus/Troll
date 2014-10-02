@@ -24,6 +24,12 @@ public class Troll
 	
     public static void main(String[] args)
     {
+    	LOG.error("WHY IS LOG4J not WORKING?");
+    	LOG.warn("WHY IS LOG4J not WORKING?");
+    	LOG.debug("WHY IS LOG4J not WORKING?");
+    	LOG.info("WHY IS LOG4J not WORKING?");
+    	LOG.trace("WHY IS LOG4J not WORKING?");
+    	
     	try
     	{
     		

@@ -142,9 +142,5 @@ public class ChannelTransactionHistoryDto extends Dto
 	public void setResponseRequired(boolean responseRequired) 
 	{
 		this.responseRequired = responseRequired;
-	}
-	
-	
-	
-	
+	}	
 }
