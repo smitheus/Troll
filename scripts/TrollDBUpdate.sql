@@ -24,7 +24,7 @@ begin
 	
 	select count(*) from channelInterchange where interchangeID = pInterId into totalCount ;
 	if (totalCount = 0) then
-		insert into channelInterchange (interchangeID, insertTimeStamp, numInstructions, country, tempJmsHeaders) values (pInterId, insertTimeStamp, -1, '', '') ;
+		insert into channelInterchange (interchangeID, insertTimeStamp, numInstructions, country, messageType, instrumentGroup) values (pInterId, insertTimeStamp, -1, '', '', '') ;
 	end if ;
 	
 	insert into channelInterchangeHistory (interchangeID, insertTimeStamp, sourceTimeStamp, sourceSystem, event, ackNak, text) values (pInterId, insertTimeStamp, pSourceTimestamp, pSourceSystem, pEvent, pAckNak, pText) ;

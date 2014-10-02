@@ -12,8 +12,7 @@ public class ConnectionFactory
       
     private ConnectionFactory() 
     {
-        
-    	try 
+        try 
         {
             Class.forName(Troll.DB_PROPERTIES.getProperty("MYSQL_DB_DRIVER_CLASS"));
         } 

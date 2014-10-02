@@ -11,7 +11,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import za.co.sb.Troll.Troll;
 import za.co.sb.Troll.dao.ProblemRecordDao;
 import za.co.sb.Troll.dao.TrollerLogMessageDao;
 import za.co.sb.Troll.dto.ProblemRecordDto;
@@ -29,8 +28,8 @@ public class LogMessageHandler
 {
 	private static final Logger LOG = LogManager.getLogger(LogMessageHandler.class);
 	
-	public static final DateFormat NBOL_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-	public static final DateFormat PAYEX_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+	public static final DateFormat NBOL_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");                                                                          
+	public static final DateFormat PAYEX_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");
 	public static final DateFormat DEFAULT_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 	
 	private TrollerLogMessageDao trollerLogMessageDao = new TrollerLogMessageDao();
@@ -436,7 +435,7 @@ public class LogMessageHandler
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(String args[]) throws Exception
+	/*public static void main(String args[]) throws Exception
 	{
 		Troll.loadProperties();
 		
@@ -468,5 +467,5 @@ public class LogMessageHandler
 		{
 			new LogMessageHandler().handleLogMessage(testCaseTrollerLogMessage);
 		}
-	}
+	}*/
 }

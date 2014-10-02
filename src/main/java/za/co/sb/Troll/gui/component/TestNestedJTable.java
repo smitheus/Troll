@@ -60,7 +60,7 @@ public class TestNestedJTable extends JFrame
     		"Dragon", new Integer(1980)},
     };
     
-    private String[] names = {"sdf", "sdf", "dfs"};
+    private String[] names = {"Table A", "Table B", "Table C"};
 	
     public TestNestedJTable(){
     	container = this.getContentPane();
