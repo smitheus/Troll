@@ -29,11 +29,20 @@ public class TransactionViewDao
 															"LEFT JOIN pesTransIDmap pesid ON ctran.instructionId = pesid.cInstructionID AND ctran.transactionId = pesid.cTransactionID " +
 															"LEFT JOIN channelInstruction cintr ON ctran.instructionId = cintr.instructionId " +
 															"LEFT JOIN channelInterchange cinte ON cintr.interchangeId = cinte.interchangeId " +
-															"LEFT JOIN coreBankingSystems cbs ON cinte.country = cbs.country ";
+															"LEFT JOIN coreBankingSystems cbs ON cinte.country = cbs.country %s";
+	
+	public static String SYSTEM_TYPE_FILTER =  "cbs.systemType = '%s' ";
+	public static String COUNTRY_FILTER =  "cbs.country = '%s' ";
+	
+	public static String NBOL_TRANSACTION_ID_FILTER =  "ctran.transactionId = '%s' ";
+	public static String NBOL_INSTRUCTION_ID_FILTER =  "cintr.instructionId = '%s' ";
+	public static String NBOL_INTERCHANGE_ID_FILTER =  "cinte.interchangeId = '%s' ";
+	public static String PAYEX_TRANSACTION_ID_FILTER =  "pesid.pTransactionId = '%s' ";
+	public static String PAYEX_INSTRUCTION_ID_FILTER =  "pesid.pInstructionId = '%s' ";
 	
 	private Connection connection;
 			
-	public List<TransactionViewItemDto> selectTransactionViewItemDtos() throws SQLException
+	public List<TransactionViewItemDto> selectTransactionViewItemDtos(List<String> filterCriteriaList) throws SQLException
     {
 		List<TransactionViewItemDto> transactionViewItemDtoList = new ArrayList<TransactionViewItemDto>();
 		Calendar calendar = Calendar.getInstance();
@@ -42,7 +51,22 @@ public class TransactionViewDao
     	{
             connection = ConnectionFactory.getConnection();
             
-            PreparedStatement preparedStatement = connection.prepareStatement(SELECT_TRANSACTIONS_STATEMENT);
+            String filterCriteriaString = "";
+            for (int index = 0; index < filterCriteriaList.size(); index ++)
+            {
+            	if (index == 0) 
+            	{
+            		filterCriteriaString += "WHERE ";
+            	}
+            	else 
+            	{
+            		filterCriteriaString += "AND ";
+            	}
+            	
+            	filterCriteriaString += filterCriteriaList.get(index);
+            }
+            
+            PreparedStatement preparedStatement = connection.prepareStatement(String.format(SELECT_TRANSACTIONS_STATEMENT, filterCriteriaString));
             ResultSet resultSet = preparedStatement.executeQuery();
             
             while (resultSet.next())

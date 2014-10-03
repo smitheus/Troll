@@ -1,19 +1,18 @@
 package za.co.sb.Troll.gui.component;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.FlowLayout;
-import java.awt.BorderLayout;
-import java.awt.Font;
 
 @SuppressWarnings("serial")
-public class ConsoleHeaderPanel extends JPanel {
+public class ConsoleHeaderPanel extends JPanel 
+{
+	private JLabel titleLabel;
 
 	public ConsoleHeaderPanel() 
 	{
@@ -24,19 +23,26 @@ public class ConsoleHeaderPanel extends JPanel {
 		add(panel, BorderLayout.WEST);
 		
 		JButton btnExport = new JButton("Export");
+		btnExport.setEnabled(false);
 		panel.add(btnExport);
 		
 		JButton btnPerformance = new JButton("Performance");
+		btnPerformance.setEnabled(false);
 		panel.add(btnPerformance);
 		
-		JPanel panel_1 = new JPanel();
-		add(panel_1, BorderLayout.CENTER);
+		JPanel titlePanel = new JPanel();
+		add(titlePanel, BorderLayout.CENTER);
 		
-		JLabel lbLabel = new JLabel("Country");
-		lbLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
-		panel_1.add(lbLabel);
+		titleLabel = new JLabel("All Flows");
+		titleLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
+		titlePanel.add(titleLabel);
 		
 		JPanel panel_2 = new JPanel();
 		add(panel_2, BorderLayout.EAST);
+	}
+	
+	public void setTitleLabelText(String title)
+	{
+		titleLabel.setText(title);
 	}
 }

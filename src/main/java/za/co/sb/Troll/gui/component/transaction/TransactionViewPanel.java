@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -45,9 +46,9 @@ public class TransactionViewPanel extends JPanel
 		
 		setBorder(new MatteBorder(3, 0, 0, 0, (Color) new Color(0, 0, 0)));
 		
+		tableModel = new TableModel();
 		
-		
-		table1 = new TransactionTable();
+		table1 = new TransactionTable(tableModel);
 		
 		
 		
@@ -62,11 +63,13 @@ public class TransactionViewPanel extends JPanel
 
 	}
 	
-	public void reload()
+	public void reload(List<String> filterCriteriaList)
 	{
-		try {
-			tableModel.setupTableData(false);
-		} catch (SQLException e) {
+		try 
+		{
+			tableModel.setupTableData(filterCriteriaList);
+		} 
+		catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -81,9 +84,9 @@ public class TransactionViewPanel extends JPanel
 @SuppressWarnings("serial")
 class TransactionTable extends JTable
 {
-	public TransactionTable()
+	public TransactionTable(TableModel tableModel)
 	{
-		super(new TableModel());
+		super(tableModel);
 		
 		setPreferredScrollableViewportSize(new Dimension(500, 70));
 		setFillsViewportHeight(true);
@@ -171,7 +174,7 @@ class TableModel extends DefaultTableModel
 		
 		
 		try {
-			this.setupTableData(false);
+			this.setupTableData(new ArrayList<String>());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -179,7 +182,7 @@ class TableModel extends DefaultTableModel
 	}
 	
 	
-	public void setupTableData(boolean reconciled) throws SQLException
+	public void setupTableData(List<String> filterCriteriaList) throws SQLException
 	{
 		getDataVector().removeAllElements();
 		
@@ -189,7 +192,7 @@ class TableModel extends DefaultTableModel
 		TransactionViewDao transactionViewDao = new TransactionViewDao();
 		
 		
-		List<TransactionViewItemDto> list = transactionViewDao.selectTransactionViewItemDtos();
+		List<TransactionViewItemDto> list = transactionViewDao.selectTransactionViewItemDtos(filterCriteriaList);
 		
 		for (TransactionViewItemDto transactionViewItemDto : list) 
 		{

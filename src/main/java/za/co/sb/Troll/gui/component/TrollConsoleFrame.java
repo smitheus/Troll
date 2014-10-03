@@ -17,9 +17,9 @@ public class TrollConsoleFrame extends JFrame
 {
 	private JPanel contentPane;
 	
-	private JPanel viewPanel;
-	private JPanel headerPanel;
-	private JPanel footerPanel;
+	private ConsoleViewPanel viewPanel;
+	private ConsoleHeaderPanel headerPanel;
+	private ConsoleFooterPanel footerPanel;
 	
 	private TransactionToolsPanel transactionToolsPanel;
 	private TransactionViewPanel transactionViewPanel;
@@ -47,25 +47,30 @@ public class TrollConsoleFrame extends JFrame
 	public TrollConsoleFrame() throws SQLException 
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(50, 50, 1200, 500);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
+		// Header panel
+		headerPanel = new ConsoleHeaderPanel();
+		contentPane.add(headerPanel, BorderLayout.NORTH);
+		
+		// View panel
 		viewPanel = new ConsoleViewPanel();
 		transactionViewPanel = new TransactionViewPanel();
-		transactionToolsPanel = new TransactionToolsPanel(transactionViewPanel);
+		transactionToolsPanel = new TransactionToolsPanel(transactionViewPanel, headerPanel);
 		
 		viewPanel.add(transactionToolsPanel, BorderLayout.NORTH);
 		viewPanel.add(transactionViewPanel, BorderLayout.CENTER);
 		
 		contentPane.add(viewPanel, BorderLayout.CENTER);
-		
-		headerPanel = new ConsoleHeaderPanel();
-		contentPane.add(headerPanel, BorderLayout.NORTH);
-		
+				
+		// Footer panel
 		footerPanel = new ConsoleFooterPanel();
 		contentPane.add(footerPanel, BorderLayout.SOUTH);
+		
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		setContentPane(contentPane);
 	}

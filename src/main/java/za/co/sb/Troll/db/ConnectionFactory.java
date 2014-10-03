@@ -27,7 +27,7 @@ public class ConnectionFactory
         }
     }
      
-    private Connection createConnection() 
+    private Connection createConnection() throws SQLException
     {
         Connection connection = null;
         
@@ -42,12 +42,13 @@ public class ConnectionFactory
         catch (SQLException sqle) 
         {
         	LOG.error("Exception creating DB connection", sqle);
+        	throw sqle;
         }
         
         return connection;
     }   
      
-    public static Connection getConnection() 
+    public static Connection getConnection() throws SQLException 
     {
         return INSTANCE.createConnection();
     }
