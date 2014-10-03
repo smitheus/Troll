@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,39 +16,61 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import za.co.sb.Troll.dao.ChannelTransactionDao;
 import za.co.sb.Troll.dao.TransactionViewDao;
-import za.co.sb.Troll.dto.ChannelTransactionHistoryDto;
 import za.co.sb.Troll.dto.TransactionViewItemDto;
+import za.co.sb.Troll.gui.component.ConsoleHeaderPanel;
 
 
-public class TransactionViewPanel extends JPanel 
+public class TransactionViewPanel extends JPanel implements TableModelListener
 {
+	private ConsoleHeaderPanel consoleHeaderPanel;
+	
+	
 	private JTable table1;
 	private TableModel tableModel;
 	
-	public static String[] mainColumNames = new String[] {"Action", "Transaction ID", "Of Instr:", " fdvbvsdfsf", "NBOL Sent:", "Into PAYEX:", "Out of PAYEX:", "Integration:", "CB RTN (To PES):", "CB RTN: (To NBOL)", "E2E Timings:" };
 	public static String[] verticleSubColumNames = {"Country:", "Of Instr:" };
 	public static String[] horizontalSubColumNames = {"Timestamp", "Feedback/ACK", "Elapsed time" };
 
 	
 	
+	@Override
+	public void tableChanged(TableModelEvent e) 
+	{
+		 System.out.println("ARSE");
+		
+		boolean ggg = tableModel.getAllColumnData();
+		
+		consoleHeaderPanel.setBtnExportEnabled(ggg);
+	}
+	
+	
 	/**
 	 * Create the panel.
 	 */
-	public TransactionViewPanel() 
+	public TransactionViewPanel(ConsoleHeaderPanel consoleHeaderPanel) 
 	{
+		super();
+		
+		this.consoleHeaderPanel = consoleHeaderPanel;
+		
 		setLayout(new BorderLayout(0, 0));
 		
 		setBorder(new MatteBorder(3, 0, 0, 0, (Color) new Color(0, 0, 0)));
 		
 		tableModel = new TableModel();
+		tableModel.addTableModelListener(this);
 		
 		table1 = new TransactionTable(tableModel);
 		
@@ -92,16 +116,71 @@ class TransactionTable extends JTable
 		setFillsViewportHeight(true);
 		setShowGrid(false);
 		
-		//setGridColor(gridColor);
-		
 		getColumnModel().setColumnMargin(0);
 		setRowMargin(0);
 		
 		JTableHeader header = getTableHeader();
 	    header.setBackground(new Color(153, 153, 153));
 	    header.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(153, 153, 153)));
+	    
+	    getColumnModel().getColumn(0).setMaxWidth(50);
+        //getColumnModel().getColumn(0).setCellRenderer(new ConditionalCheckBoxRenderer());
+        //getColumnModel().getColumn(1).setMaxWidth(100);
+        //getColumnModel().getColumn(2).setMaxWidth(120);
+	    
+	    
 	      
 	}
+	
+	
+	
+	
+	
+	
+	
+	@Override
+    public TableCellRenderer getCellRenderer(int row, int column)
+    {
+		
+         Object ggg = getValueAt(row, column);
+		
+		if (getValueAt(row, column) instanceof Boolean )
+		{
+			return getDefaultRenderer(Boolean.class);	
+		}
+		else
+		{
+			return getDefaultRenderer(String.class);
+		}
+        
+        
+        
+        
+        
+    }
+	
+	@Override
+    public TableCellEditor getCellEditor(int row, int column)
+    {
+		
+         Object ggg = getValueAt(row, column);
+		
+		if (getValueAt(row, column) instanceof Boolean )
+		{
+			return getDefaultEditor(Boolean.class);	
+		}
+		else
+		{
+			return getDefaultEditor(String.class);
+		}
+        
+        
+        
+        
+        
+    }
+	
+	
 	
 	
 
@@ -153,6 +232,19 @@ class TransactionTable extends JTable
 		return c;
 	}
 	
+	//@Override
+	//public void tableChanged(TableModelEvent e) {
+       // int row = e.getFirstRow();
+       // int column = e.getColumn();
+        
+       // System.out.println("WTF");
+        
+        //TableModel model = (TableModel)e.getSource();
+        //String columnName = model.getColumnName(column);
+        //Object data = model.getValueAt(row, column);
+
+        // Do something with the data...
+    //}
 	
 	
 }
@@ -161,16 +253,32 @@ class TransactionTable extends JTable
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 @SuppressWarnings("serial")
-class TableModel extends DefaultTableModel  
+class TableModel extends AbstractTableModel  
 {
+	public static String[] mainColumNames = new String[] {"Action", "Transaction ID", "Of Instr:", " fdvbvsdfsf", "NBOL Sent:", "Into PAYEX:", "Out of PAYEX:", "Integration:", "CB RTN (To PES):", "CB RTN: (To NBOL)", "E2E Timings:" };
 	
+	
+	Object[][] data;
 	
 	public TableModel()
 	{
 		super();
 		
-		this.setColumnIdentifiers(new String[] {"Action", "Transaction ID", "Of Instr:", "", "NBOL Sent:", "Into PAYEX:", "Out of PAYEX:", "Integration:", "CB RTN (To PES):", "CB RTN: (To NBOL)", "E2E Timings:" });
+		
+		
+		//this.setColumnIdentifiers(new String[] {"Action", "Transaction ID", "Of Instr:", "", "NBOL Sent:", "Into PAYEX:", "Out of PAYEX:", "Integration:", "CB RTN (To PES):", "CB RTN: (To NBOL)", "E2E Timings:" });
 		
 		
 		try {
@@ -182,41 +290,65 @@ class TableModel extends DefaultTableModel
 	}
 	
 	
+	public boolean  getAllColumnData()
+	{
+		boolean on = false;
+		
+		for (int index = 0; index < data.length; index ++)
+		{
+			Object b = data[index][0];
+			
+			if (b instanceof Boolean) 
+			{
+				if (((Boolean) b))
+				{
+					return true;
+				}
+				
+			}
+		}
+			
+		return false;
+	
+		
+		
+	}
+	
+	
 	public void setupTableData(List<String> filterCriteriaList) throws SQLException
 	{
-		getDataVector().removeAllElements();
-		
-		Object[][] data;
-		
-		
 		TransactionViewDao transactionViewDao = new TransactionViewDao();
 		
 		
 		List<TransactionViewItemDto> list = transactionViewDao.selectTransactionViewItemDtos(filterCriteriaList);
 		
+		
+		data = new Object[list.size() * 3][mainColumNames.length];
+		
+		int index = 0;
 		for (TransactionViewItemDto transactionViewItemDto : list) 
 		{
 			
-			data = new Object[3][TransactionViewPanel.mainColumNames.length];
+			//data = new Object[3][mainColumNames.length];
 			
 			// Add TRANSACTION data to table
 			// Row 1
-			data[0][0] = "";
-			data[0][1] = transactionViewItemDto.getTransactionId();
-			data[0][2] = transactionViewItemDto.getInstructionId();
-			data[0][3] = "<html><i>Timestamp:</i><html>";
+			data[index][0] = "";
+			data[index][1] = transactionViewItemDto.getTransactionId();
+			data[index][2] = transactionViewItemDto.getInstructionId();
+			data[index][3] = "<html><i>Timestamp:</i><html>";
 			
 			//Row 2
-			data[1][0] = "";
-			data[1][1] = "Country: " + transactionViewItemDto.getCountry();
-			data[1][2] = "Of InterCh:";
-			data[1][3] = "<html><i>Feedback/ACK:</i><html>";
+			data[index + 1][0] = new Boolean(false);
+			data[index + 1][1] = "Country: " + transactionViewItemDto.getCountry();
+			data[index + 1][2] = "Of InterCh:";
+			data[index + 1][3] = "<html><i>Feedback/ACK:</i><html>";
 			
 			//Row 3
-			data[2][0] = "";
-			data[2][1] = "";
-			data[2][2] = transactionViewItemDto.getInterchangeId();
-			data[2][3] = "<html><i>Elapsed Time:</i><html>";
+			data[index + 2][0] = "";
+			data[index + 2][1] = "";
+			data[index + 2][2] = transactionViewItemDto.getInterchangeId();
+			data[index + 2][3] = "<html><i>Elapsed Time:</i><html>";
 			
 			/*for (ChannelTransactionHistoryDto channelTransactionHistoryDto : channelTransactionDto.getChannelTransactionHistoryDtoList())
 			{
@@ -300,20 +432,240 @@ class TableModel extends DefaultTableModel
 				
 			}*/
 			
-			addRow(data[0]);
-			addRow(data[1]);
-			addRow(data[2]);
+			//addRow(data[0]);
+			//addRow(data[1]);
+			//addRow(data[2]);
+			
+			index = index + 3;
 		}
 		
 		
 		
 		fireTableDataChanged();
-	} 
+	}
+
+
+
+	public int getColumnCount() {
+        return mainColumNames.length;
+    }
+
+    public int getRowCount() {
+        return data.length;
+    }
+
+    public String getColumnName(int col) {
+        return mainColumNames[col];
+    }
+
+    public Object getValueAt(int row, int col) {
+        return data[row][col];
+    }
+
+    /*
+     * JTable uses this method to determine the default renderer/
+     * editor for each cell.  If we didn't implement this method,
+     * then the last column would contain text ("true"/"false"),
+     * rather than a check box.
+     */
+    public Class getColumnClass(int c) 
+    {
+    	if (getValueAt(0, c) == null) 
+    	{
+    		return String.class;
+    	}
+    	
+        return getValueAt(0, c).getClass();
+    }
+
+    /*
+     * Don't need to implement this method unless your table's
+     * editable.
+     */
+    public boolean isCellEditable(int row, int col) {
+        //Note that the data/cell address is constant,
+        //no matter where the cell appears onscreen.
+    	
+    	if (col == 0) 
+    	{
+    		return true;
+    	}
+    	else
+    	{
+    		return false;
+    	}
+    	
+    	
+    }
+    
+    
+   /* @Override
+    public boolean isCellEditable(int row, int column) {
+        boolean editable = false;
+        if (column == 0) {
+            Object value = getValueAt(row, column);
+            if (value instanceof Integer) {
+                editable = ((int)value) != 0;
+            }
+        }
+        return editable;
+    }*/
+    
+    
+    
+
+    /*
+     * Don't need to implement this method unless your table's
+     * data can change.
+     */
+    public void setValueAt(Object value, int row, int col) {
+    	
+    	data[row][col] = value;
+        fireTableCellUpdated(row, col);
+    	
+        /*if (DEBUG) {
+            System.out.println("Setting value at " + row + "," + col
+                               + " to " + value
+                               + " (an instance of "
+                               + value.getClass() + ")");
+        }
+
+        data[row][col] = value;
+        fireTableCellUpdated(row, col);
+
+        if (DEBUG) {
+            System.out.println("New value of data:");
+            printDebugData();
+        }*/
+    }
+
+
+
 	
+	
+	
+    
 	
 	
 }
 
+/* class ConditionalCheckBoxRenderer extends JPanel implements TableCellRenderer {
+
+    private static final Border NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
+    private JCheckBox cb;
+
+    public ConditionalCheckBoxRenderer() {
+        setLayout(new GridBagLayout());
+        setOpaque(false);
+        cb = new JCheckBox();
+        cb.setOpaque(false);
+        cb.setContentAreaFilled(false);
+        cb.setMargin(new Insets(0, 0, 0, 0));
+        add(cb);
+    }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        setOpaque(isSelected);
+        if (isSelected) {
+            setForeground(table.getSelectionForeground());
+            setBackground(table.getSelectionBackground());
+        } else {
+            setForeground(table.getForeground());
+        }
+        if (value instanceof Integer) {
+            int state = (int) value;
+            cb.setVisible(state != 0);
+            cb.setSelected(state == 2);
+        }
+        if (hasFocus) {
+            setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
+        } else {
+            setBorder(NO_FOCUS_BORDER);
+        }
+        return this;
+    }
+}
+
+/*
+class TransactionViewDataData {
+	  private Integer a;
+
+	  private String b;
+
+	  private String c;
+
+	  private String d;
+
+	  private String e;
+
+	  public Data() {
+	  }
+
+	  public Data(Integer aa, String bb, String cc, String dd, String ee) {
+	    a = aa;
+	    b = bb;
+	    c = cc;
+	    d = dd;
+	    e = ee;
+	  }
+
+	  public Integer getA() {
+	    return a;
+	  }
+
+	  public String getB() {
+	    return b;
+	  }
+
+	  public String getC() {
+	    return c;
+	  }
+
+	  public String getD() {
+	    return d;
+	  }
+
+	  public String getE() {
+	    return e;
+	  }
+
+	  public void setA(Integer aa) {
+	    a = aa;
+	  }
+
+	  public void setB(String macName) {
+	    b = macName;
+	  }
+
+	  public void setC(String cc) {
+	    c = cc;
+	  }
+
+	  public void setD(String dd) {
+	    d = dd;
+	  }
+
+	  public void setE(String ee) {
+	    e = ee;
+	  }
+	}
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 @SuppressWarnings("serial")
 class CTableCellRenderer extends DefaultTableCellRenderer
 {
@@ -331,7 +683,7 @@ class CTableCellRenderer extends DefaultTableCellRenderer
         
         return this;
     }   
-}
+}*/
 
 
 

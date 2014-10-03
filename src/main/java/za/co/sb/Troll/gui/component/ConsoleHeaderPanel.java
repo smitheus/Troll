@@ -12,6 +12,7 @@ import javax.swing.border.MatteBorder;
 @SuppressWarnings("serial")
 public class ConsoleHeaderPanel extends JPanel 
 {
+	private JButton btnExport; 
 	private JLabel titleLabel;
 
 	public ConsoleHeaderPanel() 
@@ -22,7 +23,7 @@ public class ConsoleHeaderPanel extends JPanel
 		JPanel panel = new JPanel();
 		add(panel, BorderLayout.WEST);
 		
-		JButton btnExport = new JButton("Export");
+		btnExport = new JButton("Export");
 		btnExport.setEnabled(false);
 		panel.add(btnExport);
 		
@@ -44,5 +45,10 @@ public class ConsoleHeaderPanel extends JPanel
 	public void setTitleLabelText(String title)
 	{
 		titleLabel.setText(title);
+	}
+	
+	public void setBtnExportEnabled(boolean enabled)
+	{
+		btnExport.setEnabled(enabled);
 	}
 }

@@ -36,7 +36,8 @@ public class TrollConsoleFrame extends JFrame
 				{
 					TrollConsoleFrame frame = new TrollConsoleFrame();
 					frame.setVisible(true);
-				} catch (Exception e) 
+				} 
+				catch (Exception e) 
 				{
 					e.printStackTrace();
 				}
@@ -58,7 +59,7 @@ public class TrollConsoleFrame extends JFrame
 		
 		// View panel
 		viewPanel = new ConsoleViewPanel();
-		transactionViewPanel = new TransactionViewPanel();
+		transactionViewPanel = new TransactionViewPanel(headerPanel);
 		transactionToolsPanel = new TransactionToolsPanel(transactionViewPanel, headerPanel);
 		
 		viewPanel.add(transactionToolsPanel, BorderLayout.NORTH);

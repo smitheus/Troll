@@ -47,8 +47,10 @@ class DbStatusPanel extends JPanel
 		final JLabel dbStatusLabel = new JLabel(DB_ONLINE_TEXT);
 		final JLabel dbStatusIconLabel = new JLabel("", new ImageIcon(ONLINE_IMAGE), JLabel.RIGHT);
 		
-		this.add(dbStatusLabel);
-		this.add(dbStatusIconLabel);
+		dbStatusLabel.setForeground(new Color(106, 168, 79));
+				
+		add(dbStatusLabel);
+		add(dbStatusIconLabel);
 		
 		SwingWorker<Void, Void> dbStatusWorker = new SwingWorker<Void, Void>() 
 				{
@@ -59,7 +61,7 @@ class DbStatusPanel extends JPanel
 
 						while (true)
 						{
-							Thread.sleep(1000);
+							Thread.sleep(10000);
 							
 							try
 							{

@@ -105,48 +105,34 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
 		String actionCommand = e.getActionCommand();
+		List<String> filerCriteriaList = new ArrayList<String>();
 		
 		if (actionCommand.equals(FILTER_ACTION_COMMAND)) 
 		{
 			ComboBoxItem selectedWhatComboBoxItem = (ComboBoxItem) whatComboBox.getSelectedItem();
 			consoleHeaderPanel.setTitleLabelText(selectedWhatComboBoxItem.getValue());
 			
-			List<String> filerCriteriaList = new ArrayList<String>();
 			if (!Strings.isNullOrEmpty(selectedWhatComboBoxItem.getSqlFilter()))
 			{
 				filerCriteriaList.add(selectedWhatComboBoxItem.getSqlFilter());
-			}
-			
-			try 
-			{
-				transactionViewPanel.reload(filerCriteriaList);
-			}
-			catch (Exception ex) 
-			{
-				ex.printStackTrace();
-				//TODO
-				//JOptionPane.showMessageDialog(this, new ErrorScrollPane(ex), "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		else if (actionCommand.equals(FIND_ACTION_COMMAND))
 		{
 			ComboBoxItem selectedFindOptionComboBoxItem = (ComboBoxItem) findOptionComboBox.getSelectedItem();
+			//consoleHeaderPanel.setTitleLabelText(selectedWhatComboBoxItem.getValue());
 			
-			List<String> filerCriteriaList = new ArrayList<String>();
 			filerCriteriaList.add(String.format(selectedFindOptionComboBoxItem.getSqlFilter(), findTxt.getText()));
-			
-			try 
-			{
-				transactionViewPanel.reload(filerCriteriaList);
-			}
-			catch (Exception ex) 
-			{
-				ex.printStackTrace();
-				//TODO
-				//JOptionPane.showMessageDialog(this, new ErrorScrollPane(ex), "Error", JOptionPane.ERROR_MESSAGE);
-			}
-			
-			
+		}
+		
+		try 
+		{
+			transactionViewPanel.reload(filerCriteriaList);
+		}
+		catch (Exception ex) 
+		{
+			ex.printStackTrace();
+			// TODO JOptionPane.showMessageDialog(this, new ErrorScrollPane(ex), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -249,7 +235,8 @@ class ComboBoxItem
 		return value;
 	}
 
-	public String getValue() {
+	public String getValue() 
+	{
 		return value;
 	}
 
