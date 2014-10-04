@@ -2,68 +2,109 @@ package za.co.sb.Troll.gui.component.export;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 
-public class ExportDialog extends JDialog {
+import za.co.sb.Troll.dao.TransactionViewDao;
+import za.co.sb.Troll.dto.TransactionViewItemDto;
 
+@SuppressWarnings("serial")
+public class ExportDialog extends JDialog implements ActionListener
+{
+	private static final String EXPORT_ACTION_COMMAND = "Export";
+	private static final String CANCEL_ACTION_COMMAND = "Cancel";
+	
 	private final JPanel contentPanel = new JPanel();
+	
+	private ExportTableModel exportTableModel;
+	private ExportTable exportTable;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			ExportDialog dialog = new ExportDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
-	public ExportDialog() 
+	public ExportDialog(Map<Integer, TransactionViewItemDto> exportTransactionViewItemDtoMap) 
 	{
-		setBounds(100, 100, 450, 300);
+		super();
+		
+		setTitle("Export Transactions");
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setModal(true);
+    	setBounds(100, 100, 800, 300);
+    	
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setLayout(new FlowLayout());
+		
+		contentPanel.setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		
+		exportTableModel = new ExportTableModel(exportTransactionViewItemDtoMap);
+		exportTable = new ExportTable(exportTableModel);
+		
+		JScrollPane scrollPane = new JScrollPane(exportTable);
+		contentPanel.add(scrollPane, BorderLayout.CENTER);
+		
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+		
+		// OK button
+		JButton btnExport = new JButton("Export");
+		btnExport.setActionCommand(EXPORT_ACTION_COMMAND);
+		btnExport.addActionListener(this);
+		buttonPane.add(btnExport);
+		getRootPane().setDefaultButton(btnExport);
+		
+		JButton btnCancel = new JButton("Cancel");
+		btnCancel.setActionCommand(CANCEL_ACTION_COMMAND);
+		btnCancel.addActionListener(this);
+		buttonPane.add(btnCancel);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) 
+	{
+		String actionCommand = e.getActionCommand();
+		
+		if (actionCommand.equals(EXPORT_ACTION_COMMAND))
 		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			TransactionViewDao transactionViewDao = new TransactionViewDao();
+			
+			for (TransactionViewItemDto transactionViewItemDto : exportTableModel.getUpdatedTransactionViewItemDtoList())
 			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
+				try 
+				{
+					transactionViewDao.updateTransactionViewItemDto(transactionViewItemDto);
+				} 
+				catch (SQLException sqlex) 
+				{
+					// TODO Auto-generated catch block
+					sqlex.printStackTrace();
+				}
 			}
 		}
+		else if (actionCommand.equals(CANCEL_ACTION_COMMAND))
+		{
+		}
+		
+		dispose();
 	}
-	
-	
-
 }
 
 @SuppressWarnings("serial")
@@ -76,7 +117,6 @@ class ExportTable extends JTable
 		setPreferredScrollableViewportSize(new Dimension(500, 70));
 		setFillsViewportHeight(true);
 		setShowGrid(false);
-		
 		getColumnModel().setColumnMargin(0);
 		setRowMargin(0);
 		
@@ -84,41 +124,76 @@ class ExportTable extends JTable
 	    header.setBackground(new Color(153, 153, 153));
 	    header.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(153, 153, 153)));
 	    
-	    getColumnModel().getColumn(0).setMaxWidth(50);
-        //getColumnModel().getColumn(0).setCellRenderer(new ConditionalCheckBoxRenderer());
-        //getColumnModel().getColumn(1).setMaxWidth(100);
-        //getColumnModel().getColumn(2).setMaxWidth(120);
+	    getColumnModel().getColumn(0).setMinWidth(0);
+	    getColumnModel().getColumn(0).setMaxWidth(0);
+	    
+	    getColumnModel().getColumn(1).setMinWidth(100);
+	    getColumnModel().getColumn(1).setMaxWidth(150);
+	}
+	
+	@Override
+	public Component prepareRenderer(TableCellRenderer renderer, int row, int column) 
+	{
+		Component component = super.prepareRenderer(renderer, row, column);    
+		JComponent jComponent = (JComponent) component;
+	
+		if (row % 2 > 0) 
+		{
+			jComponent.setBackground(new Color(238, 238, 238));
+		}
+		else
+		{
+			jComponent.setBackground(new Color(255, 255, 255));
+		}
+		
+		return component;
 	}
 }
 
 @SuppressWarnings("serial")
 class ExportTableModel extends AbstractTableModel  
 {
-	public static String[] COLUMN_NAMES = new String[] { "Transaction ID", "Feedback" };
+	private static final String[] COLUMN_NAMES = new String[] { "ID", "Transaction ID", "Feedback" };
 	
+	private Map<Integer, TransactionViewItemDto> exportTransactionViewItemDtoMap;
+	private Object[][] data;
 	
-	Object[][] data;
-	
-	public ExportTableModel()
+	public ExportTableModel(Map<Integer, TransactionViewItemDto> exportTransactionViewItemDtoMap)
 	{
 		super();
 		
-		try {
-			this.setupTableData(new ArrayList<String>());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
+		this.exportTransactionViewItemDtoMap = exportTransactionViewItemDtoMap;
+		this.setupTableData();
 	}
 	
-	public void setupTableData(List<String> filterCriteriaList) throws SQLException
+	public void setupTableData()
 	{
+		data = new Object[exportTransactionViewItemDtoMap.size()][COLUMN_NAMES.length];
 		
-		
+		int index = 0;
+		for (TransactionViewItemDto transactionViewItemDto : new ArrayList<TransactionViewItemDto>(exportTransactionViewItemDtoMap.values()))
+		{
+			data[index][0] = transactionViewItemDto.getId();
+			data[index][1] = transactionViewItemDto.getTransactionId();
+			data[index][2] = transactionViewItemDto.getComments() == null ? "" : transactionViewItemDto.getComments();
+			
+			index ++;
+		}
 		
 		fireTableDataChanged();
 	}
-
+	
+	public List<TransactionViewItemDto> getUpdatedTransactionViewItemDtoList()
+	{
+		for (int index = 0; index < data.length; index ++)
+		{
+			exportTransactionViewItemDtoMap.get(data[index][0]).setComments(String.valueOf(data[index][2]));
+			exportTransactionViewItemDtoMap.get(data[index][0]).setUnderInvestigation(true);
+		}
+		
+		return new ArrayList<TransactionViewItemDto>(exportTransactionViewItemDtoMap.values());
+	}
+	
 	@Override
 	public int getColumnCount() 
 	{
@@ -146,18 +221,13 @@ class ExportTableModel extends AbstractTableModel
     @Override
 	public Class<?> getColumnClass(int c) 
     {
-    	if (getValueAt(0, c) == null) 
-    	{
-    		return String.class;
-    	}
-    	
-        return getValueAt(0, c).getClass();
+    	return getValueAt(0, c).getClass();
     }
 
     @Override
     public boolean isCellEditable(int row, int col) 
     {
-    	if (col == 1) 
+    	if (col == 2) 
     	{
     		return true;
     	}
@@ -171,7 +241,6 @@ class ExportTableModel extends AbstractTableModel
     public void setValueAt(Object value, int row, int col) 
     {
     	data[row][col] = value;
-
     	fireTableCellUpdated(row, col);
     }
 }

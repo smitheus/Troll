@@ -24,6 +24,9 @@ public class TransactionViewItemDto extends Dto
 	private Date insertTimestamp;
 	private Date sourceTimestamp;
 	
+	private boolean underInvestigation;
+	private String comments;
+	
 	public TransactionViewItemDto()
 	{
 	}
@@ -31,13 +34,15 @@ public class TransactionViewItemDto extends Dto
 	@Override
 	public String toString() 
 	{
-		return "TransactionViewDto [country=" + country + ", systemType="
+		return "TransactionViewItemDto [country=" + country + ", systemType="
 				+ systemType + ", systemCode=" + systemCode
 				+ ", interchangeId=" + interchangeId + ", instructionId="
 				+ instructionId + ", pesInstructionId=" + pesInstructionId
 				+ ", transactionId=" + transactionId + ", pesTransactionId="
 				+ pesTransactionId + ", insertTimestamp=" + insertTimestamp
-				+ ", sourceTimestamp=" + sourceTimestamp + "]";
+				+ ", sourceTimestamp=" + sourceTimestamp
+				+ ", underInvestigation=" + underInvestigation + ", comments="
+				+ comments + "]";
 	}
 
 	public String getCountry() 
@@ -138,5 +143,25 @@ public class TransactionViewItemDto extends Dto
 	public void setSourceTimestamp(Date sourceTimestamp) 
 	{
 		this.sourceTimestamp = sourceTimestamp;
+	}
+	
+	public boolean isUnderInvestigation() 
+	{
+		return underInvestigation;
+	}
+
+	public void setUnderInvestigation(boolean underInvestigation) 
+	{
+		this.underInvestigation = underInvestigation;
+	}
+
+	public String getComments() 
+	{
+		return comments;
+	}
+
+	public void setComments(String comments) 
+	{
+		this.comments = comments;
 	}
 }

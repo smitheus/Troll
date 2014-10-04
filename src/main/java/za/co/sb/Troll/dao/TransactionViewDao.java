@@ -4,9 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import za.co.sb.Troll.db.ConnectionFactory;
 import za.co.sb.Troll.db.DbUtil;
@@ -24,15 +25,21 @@ public class TransactionViewDao
 															"		ctran.sourceTimestamp, " +
 															"		cbs.country, " +
 															"		cbs.systemType, " +
-															"		cbs.systemCode " +
+															"		cbs.systemCode, " +
+															"		ctran.underInvestigation, " +
+															"		ctran.comments " +
 															"FROM channelTransaction ctran " +
 															"LEFT JOIN pesTransIDmap pesid ON ctran.instructionId = pesid.cInstructionID AND ctran.transactionId = pesid.cTransactionID " +
 															"LEFT JOIN channelInstruction cintr ON ctran.instructionId = cintr.instructionId " +
 															"LEFT JOIN channelInterchange cinte ON cintr.interchangeId = cinte.interchangeId " +
-															"LEFT JOIN coreBankingSystems cbs ON cinte.country = cbs.country %s";
+															"LEFT JOIN coreBankingSystems cbs ON cinte.country = cbs.country %s " +
+															"ORDER BY ctran.id ";
+	
+	private static String UPDATE_TRANSACTION_STATEMENT = "UPDATE channelTransaction SET underInvestigation = ?, comments = ? WHERE id = ?;";
 	
 	public static String SYSTEM_TYPE_FILTER =  "cbs.systemType = '%s' ";
 	public static String COUNTRY_FILTER =  "cbs.country = '%s' ";
+	public static String DATE_FILTER =  "ctran.sourceTimestamp >= DATE_SUB(CURRENT_TIMESTAMP,INTERVAL %s %s)";
 	
 	public static String NBOL_TRANSACTION_ID_FILTER =  "ctran.transactionId = '%s' ";
 	public static String NBOL_INSTRUCTION_ID_FILTER =  "cintr.instructionId = '%s' ";
@@ -42,9 +49,9 @@ public class TransactionViewDao
 	
 	private Connection connection;
 			
-	public List<TransactionViewItemDto> selectTransactionViewItemDtos(List<String> filterCriteriaList) throws SQLException
+	public Map<Integer, TransactionViewItemDto> selectTransactionViewItemDtos(List<String> filterCriteriaList) throws SQLException
     {
-		List<TransactionViewItemDto> transactionViewItemDtoList = new ArrayList<TransactionViewItemDto>();
+		Map<Integer, TransactionViewItemDto> transactionViewItemDtoMap = new LinkedHashMap<Integer, TransactionViewItemDto>();
 		Calendar calendar = Calendar.getInstance();
 		
     	try 
@@ -84,8 +91,10 @@ public class TransactionViewDao
             	transactionViewItemDto.setCountry(resultSet.getString(9));
             	transactionViewItemDto.setSystemType(resultSet.getString(10));
             	transactionViewItemDto.setSystemCode(resultSet.getString(11));
+            	transactionViewItemDto.setUnderInvestigation(resultSet.getBoolean(12));
+            	transactionViewItemDto.setComments(resultSet.getString(13));
             	
-            	transactionViewItemDtoList.add(transactionViewItemDto);
+            	transactionViewItemDtoMap.put(transactionViewItemDto.getId(), transactionViewItemDto);
             }
         } 
     	catch (SQLException sqlex) 
@@ -97,6 +106,30 @@ public class TransactionViewDao
             DbUtil.close(connection);
         }
     	
-    	return transactionViewItemDtoList;
+    	return transactionViewItemDtoMap;
+    }
+	
+	public void updateTransactionViewItemDto(TransactionViewItemDto transactionViewItemDto) throws SQLException
+    {
+    	try 
+    	{
+            connection = ConnectionFactory.getConnection();
+            
+            PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_TRANSACTION_STATEMENT);
+            
+            preparedStatement.setBoolean(1, transactionViewItemDto.isUnderInvestigation());
+            preparedStatement.setString(2, transactionViewItemDto.getComments());
+            preparedStatement.setInt(3, transactionViewItemDto.getId());
+            
+            preparedStatement.execute();
+        } 
+    	catch (SQLException sqlex) 
+        {
+            throw sqlex;
+        }
+        finally 
+        {
+            DbUtil.close(connection);
+        }
     }
 }

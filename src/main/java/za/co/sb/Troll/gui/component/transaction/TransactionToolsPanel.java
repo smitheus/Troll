@@ -13,15 +13,14 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import com.google.common.base.Strings;
+import javax.swing.JTextField;
 
 import za.co.sb.Troll.dao.CoreBankingSystemDao;
 import za.co.sb.Troll.dao.TransactionViewDao;
 import za.co.sb.Troll.dto.CoreBankingSystemDto;
-import za.co.sb.Troll.gui.component.ConsoleHeaderPanel;
+import za.co.sb.Troll.gui.component.TrollConsoleFrame;
 
-import javax.swing.JTextField;
+import com.google.common.base.Strings;
 
 @SuppressWarnings("serial")
 public class TransactionToolsPanel extends JPanel implements ActionListener 
@@ -29,8 +28,7 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 	private static String FILTER_ACTION_COMMAND = "FILTER";
 	private static String FIND_ACTION_COMMAND = "ENTER";
 	
-	private TransactionViewPanel transactionViewPanel;
-	private ConsoleHeaderPanel consoleHeaderPanel;
+	private TrollConsoleFrame trollConsoleFrame;
 	
 	// Filter components
 	private WhatComboBox whatComboBox;
@@ -45,12 +43,11 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 	private JTextField findTxt;
 	private JPanel searchPanel;
 	
-	public TransactionToolsPanel(TransactionViewPanel transactionViewPanel, ConsoleHeaderPanel consoleHeaderPanel) throws SQLException 
+	public TransactionToolsPanel(TrollConsoleFrame trollConsoleFrame) throws SQLException 
 	{
 		super();
 		
-		this.transactionViewPanel = transactionViewPanel;
-		this.consoleHeaderPanel = consoleHeaderPanel;
+		this.trollConsoleFrame = trollConsoleFrame;
 		
 		setLayout(new BorderLayout(0, 0));
 		
@@ -110,11 +107,23 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 		if (actionCommand.equals(FILTER_ACTION_COMMAND)) 
 		{
 			ComboBoxItem selectedWhatComboBoxItem = (ComboBoxItem) whatComboBox.getSelectedItem();
-			consoleHeaderPanel.setTitleLabelText(selectedWhatComboBoxItem.getValue());
+			ComboBoxItem selectedHowComboBoxItem = (ComboBoxItem) howComboBox.getSelectedItem();
+			ComboBoxItem selectedWhenComboBoxItem = (ComboBoxItem) whenComboBox.getSelectedItem();
+			trollConsoleFrame.getHeaderPanel().setTitleLabelText(selectedWhatComboBoxItem.getValue());
 			
 			if (!Strings.isNullOrEmpty(selectedWhatComboBoxItem.getSqlFilter()))
 			{
 				filerCriteriaList.add(selectedWhatComboBoxItem.getSqlFilter());
+			}
+			
+			if (!Strings.isNullOrEmpty(selectedHowComboBoxItem.getSqlFilter()))
+			{
+				filerCriteriaList.add(selectedHowComboBoxItem.getSqlFilter());
+			}
+			
+			if (!Strings.isNullOrEmpty(selectedWhenComboBoxItem.getSqlFilter()))
+			{
+				filerCriteriaList.add(selectedWhenComboBoxItem.getSqlFilter());
 			}
 		}
 		else if (actionCommand.equals(FIND_ACTION_COMMAND))
@@ -127,7 +136,7 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 		
 		try 
 		{
-			transactionViewPanel.reload(filerCriteriaList);
+			trollConsoleFrame.getTransactionViewPanel().reload(filerCriteriaList);
 		}
 		catch (Exception ex) 
 		{
@@ -187,18 +196,17 @@ class WhenComboBox extends JComboBox<ComboBoxItem>
 	{
 		super();
 		
-		addItem(new ComboBoxItem("Last 10 Seconds" , ""));
-		addItem(new ComboBoxItem("Last 15 Seconds" , ""));
-		addItem(new ComboBoxItem("Last 30 Seconds" , ""));
-		addItem(new ComboBoxItem("Last Minute" , ""));
-		addItem(new ComboBoxItem("Last 5 Minutes" , ""));
-		addItem(new ComboBoxItem("Last 5 Minutes" , ""));
-		addItem(new ComboBoxItem("Last 10 Minutes" , ""));
-		addItem(new ComboBoxItem("Last 15 Minutes" , ""));
-		addItem(new ComboBoxItem("Last 30 Minutes" , ""));
-		addItem(new ComboBoxItem("Last Hour" , ""));
-		addItem(new ComboBoxItem("Last 2 Hours" , ""));
-		addItem(new ComboBoxItem("Last 6 Hours" , ""));
+		addItem(new ComboBoxItem("Last 10 Seconds", String.format(TransactionViewDao.DATE_FILTER, "10", "SECOND")));
+		addItem(new ComboBoxItem("Last 15 Seconds", String.format(TransactionViewDao.DATE_FILTER, "15", "SECOND")));
+		addItem(new ComboBoxItem("Last 30 Seconds", String.format(TransactionViewDao.DATE_FILTER, "30", "SECOND")));
+		addItem(new ComboBoxItem("Last Minute", String.format(TransactionViewDao.DATE_FILTER, "1", "MINUTE")));
+		addItem(new ComboBoxItem("Last 5 Minutes", String.format(TransactionViewDao.DATE_FILTER, "5", "MINUTE")));
+		addItem(new ComboBoxItem("Last 10 Minutes", String.format(TransactionViewDao.DATE_FILTER, "10", "MINUTE")));
+		addItem(new ComboBoxItem("Last 15 Minutes", String.format(TransactionViewDao.DATE_FILTER, "15", "MINUTE")));
+		addItem(new ComboBoxItem("Last 30 Minutes",  String.format(TransactionViewDao.DATE_FILTER, "30", "MINUTE")));
+		addItem(new ComboBoxItem("Last Hour", String.format(TransactionViewDao.DATE_FILTER, "1", "HOUR")));
+		addItem(new ComboBoxItem("Last 2 Hours", String.format(TransactionViewDao.DATE_FILTER, "2", "HOUR")));
+		addItem(new ComboBoxItem("Last 6 Hours", String.format(TransactionViewDao.DATE_FILTER, "6", "HOUR")));
 		addItem(new ComboBoxItem("Custom" , ""));
 	}
 }

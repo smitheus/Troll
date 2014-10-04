@@ -70,6 +70,8 @@ create table channelTransaction (
 	transactionId varchar(40),
 	insertTimestamp timestamp,
 	sourceTimestamp timestamp,
+	underInvestigation int,
+	comments varchar(1000),
 	PRIMARY KEY (id) ) ;
 
 drop table channelTransactionHistory ;

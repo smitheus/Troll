@@ -54,13 +54,13 @@ public class TrollConsoleFrame extends JFrame
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
 		// Header panel
-		headerPanel = new ConsoleHeaderPanel();
+		headerPanel = new ConsoleHeaderPanel(this);
 		contentPane.add(headerPanel, BorderLayout.NORTH);
 		
 		// View panel
 		viewPanel = new ConsoleViewPanel();
-		transactionViewPanel = new TransactionViewPanel(headerPanel);
-		transactionToolsPanel = new TransactionToolsPanel(transactionViewPanel, headerPanel);
+		transactionViewPanel = new TransactionViewPanel(this);
+		transactionToolsPanel = new TransactionToolsPanel(this);
 		
 		viewPanel.add(transactionToolsPanel, BorderLayout.NORTH);
 		viewPanel.add(transactionViewPanel, BorderLayout.CENTER);
@@ -74,5 +74,25 @@ public class TrollConsoleFrame extends JFrame
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		setContentPane(contentPane);
+	}
+
+	public ConsoleHeaderPanel getHeaderPanel() 
+	{
+		return headerPanel;
+	}
+
+	public ConsoleFooterPanel getFooterPanel() 
+	{
+		return footerPanel;
+	}
+
+	public TransactionToolsPanel getTransactionToolsPanel() 
+	{
+		return transactionToolsPanel;
+	}
+
+	public TransactionViewPanel getTransactionViewPanel() 
+	{
+		return transactionViewPanel;
 	}
 }

@@ -4,21 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -29,13 +26,12 @@ import javax.swing.table.TableCellRenderer;
 
 import za.co.sb.Troll.dao.TransactionViewDao;
 import za.co.sb.Troll.dto.TransactionViewItemDto;
-import za.co.sb.Troll.gui.component.ConsoleHeaderPanel;
+import za.co.sb.Troll.gui.component.TrollConsoleFrame;
 
 
 public class TransactionViewPanel extends JPanel implements TableModelListener
 {
-	private ConsoleHeaderPanel consoleHeaderPanel;
-	
+	private TrollConsoleFrame trollConsoleFrame;
 	
 	private JTable table1;
 	private TableModel tableModel;
@@ -43,27 +39,33 @@ public class TransactionViewPanel extends JPanel implements TableModelListener
 	public static String[] verticleSubColumNames = {"Country:", "Of Instr:" };
 	public static String[] horizontalSubColumNames = {"Timestamp", "Feedback/ACK", "Elapsed time" };
 
-	
+	public Map<Integer, TransactionViewItemDto> getSelectedTransactionViewItemDto()
+	{
+		return this.tableModel.getSelectedTransactionViewItemDto();
+	}
 	
 	@Override
 	public void tableChanged(TableModelEvent e) 
 	{
-		 System.out.println("ARSE");
-		
 		boolean ggg = tableModel.getAllColumnData();
 		
-		consoleHeaderPanel.setBtnExportEnabled(ggg);
+		trollConsoleFrame.getHeaderPanel().setBtnExportEnabled(ggg);
 	}
+	
+	
+	
+	
+	
 	
 	
 	/**
 	 * Create the panel.
 	 */
-	public TransactionViewPanel(ConsoleHeaderPanel consoleHeaderPanel) 
+	public TransactionViewPanel(TrollConsoleFrame trollConsoleFrame) 
 	{
 		super();
 		
-		this.consoleHeaderPanel = consoleHeaderPanel;
+		this.trollConsoleFrame = trollConsoleFrame;
 		
 		setLayout(new BorderLayout(0, 0));
 		
@@ -123,7 +125,10 @@ class TransactionTable extends JTable
 	    header.setBackground(new Color(153, 153, 153));
 	    header.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(153, 153, 153)));
 	    
-	    getColumnModel().getColumn(0).setMaxWidth(50);
+	    getColumnModel().getColumn(0).setMinWidth(0);
+	    getColumnModel().getColumn(0).setMaxWidth(0);
+	    
+	    getColumnModel().getColumn(1).setMaxWidth(50);
         //getColumnModel().getColumn(0).setCellRenderer(new ConditionalCheckBoxRenderer());
         //getColumnModel().getColumn(1).setMaxWidth(100);
         //getColumnModel().getColumn(2).setMaxWidth(120);
@@ -205,7 +210,6 @@ class TransactionTable extends JTable
 		}
 		
 		
-		
 		if (column == 3)
 		{
 			
@@ -213,7 +217,7 @@ class TransactionTable extends JTable
 		
 		
 		
-		if ((column >= 0 && column <= 3) || column == 10) 
+		if ((column >= 1 && column <= 4) || column == 10) 
 		{
 			jc.setBackground(new Color(238, 238, 238));
 		}
@@ -223,7 +227,7 @@ class TransactionTable extends JTable
 			
 		}
 		
-		if ((column == 1 || column ==2 ) && ((row - 1) % 3 == 0))
+		if ((column == 2 || column ==3 ) && ((row - 1) % 3 == 0))
 		{
 			jc.setBackground(new Color(153, 153, 153));
 			
@@ -267,8 +271,9 @@ class TransactionTable extends JTable
 @SuppressWarnings("serial")
 class TableModel extends AbstractTableModel  
 {
-	public static String[] mainColumNames = new String[] {"Action", "Transaction ID", "Of Instr:", " fdvbvsdfsf", "NBOL Sent:", "Into PAYEX:", "Out of PAYEX:", "Integration:", "CB RTN (To PES):", "CB RTN: (To NBOL)", "E2E Timings:" };
+	public static String[] mainColumNames = new String[] { "ID", "Action", "Transaction ID", "Of Instr:", " fdvbvsdfsf", "NBOL Sent:", "Into PAYEX:", "Out of PAYEX:", "Integration:", "CB RTN (To PES):", "CB RTN: (To NBOL)", "E2E Timings:" };
 	
+	Map<Integer, TransactionViewItemDto> transactionViewItemDtoMap = new HashMap<Integer, TransactionViewItemDto>();
 	
 	Object[][] data;
 	
@@ -296,7 +301,7 @@ class TableModel extends AbstractTableModel
 		
 		for (int index = 0; index < data.length; index ++)
 		{
-			Object b = data[index][0];
+			Object b = data[index][1];
 			
 			if (b instanceof Boolean) 
 			{
@@ -314,13 +319,44 @@ class TableModel extends AbstractTableModel
 		
 	}
 	
+	public Map<Integer, TransactionViewItemDto> getSelectedTransactionViewItemDto() 
+	{
+		//List<TransactionViewItemDto> list = new ArrayList<TransactionViewItemDto>();
+		
+		Map<Integer, TransactionViewItemDto> map = new LinkedHashMap<Integer, TransactionViewItemDto>();
+		
+		
+		for (int index = 0; index < data.length; index ++)
+		{
+			Object b = data[index][1];
+			
+			if (b instanceof Boolean) 
+			{
+				if (((Boolean) b))
+				{
+					Integer bb = (Integer) data[index][0];
+					
+					map.put(bb, transactionViewItemDtoMap.get(bb));
+				}
+				
+			}
+		}
+		
+		return map;
+		
+	}
+	
 	
 	public void setupTableData(List<String> filterCriteriaList) throws SQLException
 	{
 		TransactionViewDao transactionViewDao = new TransactionViewDao();
 		
 		
-		List<TransactionViewItemDto> list = transactionViewDao.selectTransactionViewItemDtos(filterCriteriaList);
+		
+		this.transactionViewItemDtoMap = transactionViewDao.selectTransactionViewItemDtos(filterCriteriaList);
+		
+		
+		List<TransactionViewItemDto> list = new ArrayList<TransactionViewItemDto>(transactionViewItemDtoMap.values());
 		
 		
 		data = new Object[list.size() * 3][mainColumNames.length];
@@ -333,22 +369,25 @@ class TableModel extends AbstractTableModel
 			
 			// Add TRANSACTION data to table
 			// Row 1
-			data[index][0] = "";
-			data[index][1] = transactionViewItemDto.getTransactionId();
-			data[index][2] = transactionViewItemDto.getInstructionId();
-			data[index][3] = "<html><i>Timestamp:</i><html>";
+			data[index][0] = transactionViewItemDto.getId();
+			data[index][1] = transactionViewItemDto.isUnderInvestigation() ? "UNDER" : "";
+			data[index][2] = transactionViewItemDto.getTransactionId();
+			data[index][3] = transactionViewItemDto.getInstructionId();
+			data[index][4] = "<html><i>Timestamp:</i><html>";
 			
 			//Row 2
-			data[index + 1][0] = new Boolean(false);
-			data[index + 1][1] = "Country: " + transactionViewItemDto.getCountry();
-			data[index + 1][2] = "Of InterCh:";
-			data[index + 1][3] = "<html><i>Feedback/ACK:</i><html>";
+			data[index + 1][0] = transactionViewItemDto.getId();
+			data[index + 1][1] = new Boolean(false);
+			data[index + 1][2] = "Country: " + transactionViewItemDto.getCountry();
+			data[index + 1][3] = "Of InterCh:";
+			data[index + 1][4] = "<html><i>Feedback/ACK:</i><html>";
 			
 			//Row 3
-			data[index + 2][0] = "";
-			data[index + 2][1] = "";
-			data[index + 2][2] = transactionViewItemDto.getInterchangeId();
-			data[index + 2][3] = "<html><i>Elapsed Time:</i><html>";
+			data[index + 2][0] = transactionViewItemDto.getId();;
+			data[index + 2][1] = transactionViewItemDto.isUnderInvestigation() ? "INV" : "";
+			data[index + 2][2] = "";
+			data[index + 2][3] = transactionViewItemDto.getInterchangeId();
+			data[index + 2][4] = "<html><i>Elapsed Time:</i><html>";
 			
 			/*for (ChannelTransactionHistoryDto channelTransactionHistoryDto : channelTransactionDto.getChannelTransactionHistoryDtoList())
 			{
@@ -486,7 +525,7 @@ class TableModel extends AbstractTableModel
         //Note that the data/cell address is constant,
         //no matter where the cell appears onscreen.
     	
-    	if (col == 0) 
+    	if (col == 1) 
     	{
     		return true;
     	}
