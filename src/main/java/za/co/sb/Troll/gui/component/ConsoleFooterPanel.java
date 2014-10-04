@@ -61,8 +61,6 @@ class DbStatusPanel extends JPanel
 
 						while (true)
 						{
-							Thread.sleep(100000);
-							
 							try
 							{
 								dbStatusDao.checkDbStatus();
@@ -78,6 +76,8 @@ class DbStatusPanel extends JPanel
 								dbStatusIconLabel.setIcon(new ImageIcon(OFFLINE_IMAGE));
 								dbStatusIconLabel.setToolTipText(sqle.getMessage());
 							}
+							
+							Thread.sleep(100000);
 						}
 					}
 				};
