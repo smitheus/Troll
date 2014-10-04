@@ -7,8 +7,12 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +20,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -24,6 +29,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
+import za.co.sb.Troll.csv.ExportToCsvHandler;
 import za.co.sb.Troll.dao.TransactionViewDao;
 import za.co.sb.Troll.dto.TransactionViewItemDto;
 
@@ -33,10 +39,14 @@ public class ExportDialog extends JDialog implements ActionListener
 	private static final String EXPORT_ACTION_COMMAND = "Export";
 	private static final String CANCEL_ACTION_COMMAND = "Cancel";
 	
+	public static final DateFormat EXPORT_FILE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");             
+	private static final String EXPORT_FILE_NAME = "TROLL_EXPORT_%s.csv";
+	
 	private final JPanel contentPanel = new JPanel();
 	
 	private ExportTableModel exportTableModel;
 	private ExportTable exportTable;
+	private JFileChooser fileChooser;
 
 	public ExportDialog(Map<Integer, TransactionViewItemDto> exportTransactionViewItemDtoMap) 
 	{
@@ -75,6 +85,10 @@ public class ExportDialog extends JDialog implements ActionListener
 		btnCancel.setActionCommand(CANCEL_ACTION_COMMAND);
 		btnCancel.addActionListener(this);
 		buttonPane.add(btnCancel);
+		
+		fileChooser = new JFileChooser("c:/");
+		fileChooser.setDialogTitle("Select Export Directory");
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 	}
 
 	@Override
@@ -84,18 +98,35 @@ public class ExportDialog extends JDialog implements ActionListener
 		
 		if (actionCommand.equals(EXPORT_ACTION_COMMAND))
 		{
-			TransactionViewDao transactionViewDao = new TransactionViewDao();
-			
-			for (TransactionViewItemDto transactionViewItemDto : exportTableModel.getUpdatedTransactionViewItemDtoList())
+			if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) 
 			{
+				TransactionViewDao transactionViewDao = new TransactionViewDao();
+				List<TransactionViewItemDto> transactionViewItemDtoList = exportTableModel.getUpdatedTransactionViewItemDtoList();
+				
+				for (TransactionViewItemDto transactionViewItemDto : transactionViewItemDtoList)
+				{
+					try 
+					{
+						transactionViewDao.updateTransactionViewItemDto(transactionViewItemDto);
+					} 
+					catch (SQLException sqlex) 
+					{
+						// TODO Auto-generated catch block
+						sqlex.printStackTrace();
+					}
+				}
+				
 				try 
 				{
-					transactionViewDao.updateTransactionViewItemDto(transactionViewItemDto);
+					File exportFile = new File(fileChooser.getSelectedFile(), String.format(EXPORT_FILE_NAME, EXPORT_FILE_DATE_FORMAT.format(Calendar.getInstance().getTime())));
+					exportFile.createNewFile();
+					
+					ExportToCsvHandler.writeTransactionViewCsvFile(transactionViewItemDtoList, exportFile);
 				} 
-				catch (SQLException sqlex) 
+				catch (Exception ex) 
 				{
 					// TODO Auto-generated catch block
-					sqlex.printStackTrace();
+					ex.printStackTrace();
 				}
 			}
 		}

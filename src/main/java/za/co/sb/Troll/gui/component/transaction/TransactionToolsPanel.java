@@ -129,7 +129,7 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 		else if (actionCommand.equals(FIND_ACTION_COMMAND))
 		{
 			ComboBoxItem selectedFindOptionComboBoxItem = (ComboBoxItem) findOptionComboBox.getSelectedItem();
-			//consoleHeaderPanel.setTitleLabelText(selectedWhatComboBoxItem.getValue());
+			trollConsoleFrame.getHeaderPanel().setTitleLabelText("Find " + selectedFindOptionComboBoxItem.getValue() + " : " + findTxt.getText());
 			
 			filerCriteriaList.add(String.format(selectedFindOptionComboBoxItem.getSqlFilter(), findTxt.getText()));
 		}

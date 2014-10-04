@@ -1,10 +1,10 @@
 package za.co.sb.Troll.gui.component;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
-
-import java.awt.Color;
-import java.awt.BorderLayout;
 
 @SuppressWarnings("serial")
 public class ConsoleViewPanel extends JPanel 

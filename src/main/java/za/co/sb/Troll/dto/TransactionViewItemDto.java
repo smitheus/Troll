@@ -1,9 +1,15 @@
 package za.co.sb.Troll.dto;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class TransactionViewItemDto extends Dto 
 {
+	public static final DateFormat CSV_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");             
+	
 	// Core Banking System info
 	private String country;
 	private String systemType;
@@ -43,6 +49,46 @@ public class TransactionViewItemDto extends Dto
 				+ ", sourceTimestamp=" + sourceTimestamp
 				+ ", underInvestigation=" + underInvestigation + ", comments="
 				+ comments + "]";
+	}
+	
+	public List<String> getCsvExportValues() 
+	{
+		List<String> csvExprtValueList = new ArrayList<String>();
+		
+		csvExprtValueList.add(transactionId);
+		csvExprtValueList.add(pesTransactionId);
+		csvExprtValueList.add(instructionId);
+		csvExprtValueList.add(pesInstructionId);
+		csvExprtValueList.add(interchangeId);
+		csvExprtValueList.add(CSV_DATE_FORMAT.format(insertTimestamp));
+		csvExprtValueList.add(CSV_DATE_FORMAT.format(sourceTimestamp));
+		csvExprtValueList.add(country);
+		csvExprtValueList.add(systemType);
+		csvExprtValueList.add(systemCode);
+		csvExprtValueList.add(underInvestigation ? "YES" : "NO");
+		csvExprtValueList.add(comments);
+		
+		return csvExprtValueList;
+	}
+	
+	public static List<String> getCsvExportHeaders() 
+	{
+		List<String> csvExprtHeaderList = new ArrayList<String>();
+		
+		csvExprtHeaderList.add("Transaction Id");
+		csvExprtHeaderList.add("PES Transaction Id");
+		csvExprtHeaderList.add("Instruction Id");
+		csvExprtHeaderList.add("PES Instruction Id");
+		csvExprtHeaderList.add("Interchange Id");
+		csvExprtHeaderList.add("Insert Timestamp");
+		csvExprtHeaderList.add("Source Timestamp");
+		csvExprtHeaderList.add("Country");
+		csvExprtHeaderList.add("System Type");
+		csvExprtHeaderList.add("System Code");
+		csvExprtHeaderList.add("Under Investigation");
+		csvExprtHeaderList.add("Comments");
+		
+		return csvExprtHeaderList;
 	}
 
 	public String getCountry() 
