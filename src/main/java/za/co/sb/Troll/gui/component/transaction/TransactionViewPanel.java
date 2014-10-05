@@ -13,13 +13,16 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -110,9 +113,13 @@ public class TransactionViewPanel extends JPanel implements TableModelListener
 @SuppressWarnings("serial")
 class TransactionTable extends JTable
 {
+	private TableModel tableModel;
+	
 	public TransactionTable(TableModel tableModel)
 	{
 		super(tableModel);
+		
+		this.tableModel = tableModel;
 		
 		setPreferredScrollableViewportSize(new Dimension(500, 70));
 		setFillsViewportHeight(true);
@@ -127,41 +134,35 @@ class TransactionTable extends JTable
 	    
 	    getColumnModel().getColumn(0).setMinWidth(0);
 	    getColumnModel().getColumn(0).setMaxWidth(0);
-	    
 	    getColumnModel().getColumn(1).setMaxWidth(50);
-        //getColumnModel().getColumn(0).setCellRenderer(new ConditionalCheckBoxRenderer());
-        //getColumnModel().getColumn(1).setMaxWidth(100);
-        //getColumnModel().getColumn(2).setMaxWidth(120);
-	    
-	    
-	      
+       
 	}
 	
 	
 	
 	
-	
+	//class UnderInvestigation
 	
 	
 	@Override
     public TableCellRenderer getCellRenderer(int row, int column)
     {
-		
-         Object ggg = getValueAt(row, column);
-		
-		if (getValueAt(row, column) instanceof Boolean )
+		if (column == 1)
 		{
-			return getDefaultRenderer(Boolean.class);	
+			if (getValueAt(row, column) instanceof Boolean)
+			{
+				return getDefaultRenderer(Boolean.class);
+			}
+			else
+			{
+				//return new CenterTableCellRenderer();
+				return getDefaultRenderer(String.class);
+			}
 		}
 		else
 		{
 			return getDefaultRenderer(String.class);
 		}
-        
-        
-        
-        
-        
     }
 	
 	@Override
@@ -210,14 +211,11 @@ class TransactionTable extends JTable
 		}
 		
 		
-		if (column == 3)
-		{
-			
-		}
 		
 		
 		
-		if ((column >= 1 && column <= 4) || column == 10) 
+		
+		if ((column >= 1 && column <= 4) || column == 11) 
 		{
 			jc.setBackground(new Color(238, 238, 238));
 		}
@@ -230,6 +228,30 @@ class TransactionTable extends JTable
 		if ((column == 2 || column ==3 ) && ((row - 1) % 3 == 0))
 		{
 			jc.setBackground(new Color(153, 153, 153));
+			
+		}
+		
+		
+		
+		
+		
+		
+		if (column == 1)
+		{
+			TransactionViewItemDto ddd = tableModel.getTransactionViewItemDto(row);
+			
+			if (ddd.isUnderInvestigation()) 
+			{
+				jc.setBackground(Color.PINK);
+				
+			}
+			else
+			{
+				jc.setBackground(new Color(238, 238, 238));
+			}
+			
+			
+			
 			
 		}
 		
@@ -287,7 +309,11 @@ class TableModel extends AbstractTableModel
 		
 		
 		try {
-			this.setupTableData(new ArrayList<String>());
+			List<String> sqlFilterCriteriaList = new ArrayList<String>();;
+			sqlFilterCriteriaList.add(String.format(TransactionViewDao.DATE_FILTER, "10", "SECOND"));
+			
+			
+			this.setupTableData(sqlFilterCriteriaList);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -317,6 +343,11 @@ class TableModel extends AbstractTableModel
 	
 		
 		
+	}
+	
+	public TransactionViewItemDto getTransactionViewItemDto(int row)
+	{
+		return transactionViewItemDtoMap.get(data[row][0]);
 	}
 	
 	public Map<Integer, TransactionViewItemDto> getSelectedTransactionViewItemDto() 
@@ -586,6 +617,20 @@ class TableModel extends AbstractTableModel
     
 	
 	
+}
+
+
+
+// Cell Redenderes
+class CenterTableCellRenderer extends DefaultTableCellRenderer
+{
+	public CenterTableCellRenderer()
+	{
+		super();
+		
+		setHorizontalAlignment( JLabel.CENTER );
+	}
+
 }
 
 /* class ConditionalCheckBoxRenderer extends JPanel implements TableCellRenderer {
