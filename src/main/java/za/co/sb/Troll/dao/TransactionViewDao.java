@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,6 +16,8 @@ import za.co.sb.Troll.dto.TransactionViewItemDto;
 
 public class TransactionViewDao 
 {
+	public static final SimpleDateFormat SQL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	private static String SELECT_TRANSACTIONS_STATEMENT =	"SELECT ctran.id, " +
 															"		cinte.interchangeId, " +
 															"		cintr.instructionId, " +
@@ -40,6 +43,7 @@ public class TransactionViewDao
 	public static String SYSTEM_TYPE_FILTER =  "cbs.systemType = '%s' ";
 	public static String COUNTRY_FILTER =  "cbs.country = '%s' ";
 	public static String DATE_FILTER =  "ctran.sourceTimestamp >= DATE_SUB(CURRENT_TIMESTAMP,INTERVAL %s %s)";
+	public static String CUSTOM_DATE_FILTER =  "ctran.sourceTimestamp BETWEEN '%s' AND '%s' ";
 	
 	public static String NBOL_TRANSACTION_ID_FILTER =  "ctran.transactionId = '%s' ";
 	public static String NBOL_INSTRUCTION_ID_FILTER =  "cintr.instructionId = '%s' ";

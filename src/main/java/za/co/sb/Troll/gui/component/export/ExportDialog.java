@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -60,7 +61,7 @@ public class ExportDialog extends JDialog implements ActionListener
 		getContentPane().setLayout(new BorderLayout());
 		
 		contentPanel.setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPanel.setBorder(new MatteBorder(3, 3, 3, 3, Color.BLACK));
 		
 		exportTableModel = new ExportTableModel(exportTransactionViewItemDtoMap);
 		exportTable = new ExportTable(exportTableModel);
@@ -71,6 +72,7 @@ public class ExportDialog extends JDialog implements ActionListener
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBorder(new MatteBorder(0, 3, 3, 3, Color.BLACK));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		
@@ -81,6 +83,7 @@ public class ExportDialog extends JDialog implements ActionListener
 		buttonPane.add(btnExport);
 		getRootPane().setDefaultButton(btnExport);
 		
+		// Cancel button
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setActionCommand(CANCEL_ACTION_COMMAND);
 		btnCancel.addActionListener(this);

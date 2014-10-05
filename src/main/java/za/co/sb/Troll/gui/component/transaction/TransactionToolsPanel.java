@@ -19,6 +19,7 @@ import za.co.sb.Troll.dao.CoreBankingSystemDao;
 import za.co.sb.Troll.dao.TransactionViewDao;
 import za.co.sb.Troll.dto.CoreBankingSystemDto;
 import za.co.sb.Troll.gui.component.TrollConsoleFrame;
+import za.co.sb.Troll.gui.component.datetime.DateTimePickerDialog;
 
 import com.google.common.base.Strings;
 
@@ -29,6 +30,7 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 	private static String FIND_ACTION_COMMAND = "ENTER";
 	
 	private TrollConsoleFrame trollConsoleFrame;
+	private DateTimePickerDialog timePickerDialog;
 	
 	// Filter components
 	private WhatComboBox whatComboBox;
@@ -48,6 +50,7 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 		super();
 		
 		this.trollConsoleFrame = trollConsoleFrame;
+		this.timePickerDialog = new DateTimePickerDialog();
 		
 		setLayout(new BorderLayout(0, 0));
 		
@@ -93,7 +96,6 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 		findTxt.addActionListener(this);
 		findTxt.setActionCommand(FIND_ACTION_COMMAND);
 		searchPanel.add(findTxt);
-		
 	}
 
 	@Override
@@ -104,11 +106,12 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 		String actionCommand = e.getActionCommand();
 		List<String> filerCriteriaList = new ArrayList<String>();
 		
+		boolean filteringCancelled = false;
+		
 		if (actionCommand.equals(FILTER_ACTION_COMMAND)) 
 		{
 			ComboBoxItem selectedWhatComboBoxItem = (ComboBoxItem) whatComboBox.getSelectedItem();
 			ComboBoxItem selectedHowComboBoxItem = (ComboBoxItem) howComboBox.getSelectedItem();
-			ComboBoxItem selectedWhenComboBoxItem = (ComboBoxItem) whenComboBox.getSelectedItem();
 			trollConsoleFrame.getHeaderPanel().setTitleLabelText(selectedWhatComboBoxItem.getValue());
 			
 			if (!Strings.isNullOrEmpty(selectedWhatComboBoxItem.getSqlFilter()))
@@ -121,9 +124,35 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 				filerCriteriaList.add(selectedHowComboBoxItem.getSqlFilter());
 			}
 			
-			if (!Strings.isNullOrEmpty(selectedWhenComboBoxItem.getSqlFilter()))
+			if (whenComboBox.isCustom()) 
 			{
-				filerCriteriaList.add(selectedWhenComboBoxItem.getSqlFilter());
+				timePickerDialog.setVisible(true);
+				
+				if (timePickerDialog.isCancellAction())
+				{
+					filteringCancelled = true;
+				}
+				else
+				{
+					String sqlCustomDateFilter = String.format(
+							TransactionViewDao.CUSTOM_DATE_FILTER,
+							TransactionViewDao.SQL_DATE_FORMAT.format(timePickerDialog.getSelectedFromDate()),
+							TransactionViewDao.SQL_DATE_FORMAT.format(timePickerDialog.getSelectedToDate()));
+					
+					System.out.println(sqlCustomDateFilter);
+					
+					filerCriteriaList.add(sqlCustomDateFilter);
+				}
+			}
+			else
+			{
+				ComboBoxItem selectedWhenComboBoxItem = (ComboBoxItem) whenComboBox.getSelectedItem();
+				
+				if (!Strings.isNullOrEmpty(selectedWhenComboBoxItem.getSqlFilter()))
+				{
+					filerCriteriaList.add(selectedWhenComboBoxItem.getSqlFilter());
+				}
+				
 			}
 		}
 		else if (actionCommand.equals(FIND_ACTION_COMMAND))
@@ -134,14 +163,17 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 			filerCriteriaList.add(String.format(selectedFindOptionComboBoxItem.getSqlFilter(), findTxt.getText()));
 		}
 		
-		try 
+		if (!filteringCancelled)
 		{
-			trollConsoleFrame.getTransactionViewPanel().reload(filerCriteriaList);
-		}
-		catch (Exception ex) 
-		{
-			ex.printStackTrace();
-			// TODO JOptionPane.showMessageDialog(this, new ErrorScrollPane(ex), "Error", JOptionPane.ERROR_MESSAGE);
+			try 
+			{
+				trollConsoleFrame.getTransactionViewPanel().reload(filerCriteriaList);
+			}
+			catch (Exception ex) 
+			{
+				ex.printStackTrace();
+				// TODO JOptionPane.showMessageDialog(this, new ErrorScrollPane(ex), "Error", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -207,7 +239,19 @@ class WhenComboBox extends JComboBox<ComboBoxItem>
 		addItem(new ComboBoxItem("Last Hour", String.format(TransactionViewDao.DATE_FILTER, "1", "HOUR")));
 		addItem(new ComboBoxItem("Last 2 Hours", String.format(TransactionViewDao.DATE_FILTER, "2", "HOUR")));
 		addItem(new ComboBoxItem("Last 6 Hours", String.format(TransactionViewDao.DATE_FILTER, "6", "HOUR")));
-		addItem(new ComboBoxItem("Custom" , ""));
+		addItem(new ComboBoxItem("Custom..." , ""));
+	}
+	
+	public boolean isCustom()
+	{
+		if (((ComboBoxItem) getSelectedItem()).getValue().equalsIgnoreCase("Custom..."))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
 
