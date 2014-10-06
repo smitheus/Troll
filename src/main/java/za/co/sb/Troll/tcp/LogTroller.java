@@ -7,6 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
 public class LogTroller
 {
 	// TODO need a config file
@@ -159,5 +164,77 @@ public class LogTroller
 		{
 		}
 	}
+	
+	private static boolean readConfig(File configFile)
+	{
+		if ( ! configFile.exists() )
+		{
+			System.out.println("Cannot find config file [" + configFile + "]");
+			return false ;
+		}
+	
+		Element configRoot = null ;
+		
+		try
+		{
+			Document configDoc = new SAXReader().read(configFile);
+			configRoot = configDoc.getRootElement () ;
+		}
+		catch (DocumentException e)
+		{
+			e.printStackTrace();
+			
+			System.out.println("Cannot parse config file as XML");
+			
+			return false ;
+		}
+		
+		// private XmlUtil xmlUtil = new XmlUtil(null, null);
+		
+		return true ;
+	}
 }
+/*static String serverHost ;
+static int serverPort ;
 
+static String source ;
+
+static int heartbeatPeriod = 5 ;
+
+static int lineBatchCount = 4 ;
+
+static LineReader lineReader = null ;
+static String loggerName ;
+
+static String logDirStr ;
+static String logFileStr ;
+
+public static void main(String[] args)
+{
+	if (args.length < 1)
+	{
+		System.out.println("Please specify a configuration file");
+		
+		System.exit(-1) ;
+	}
+	
+	File configFile = new File (args[0]) ;
+	
+	if ( ! readConfig(configFile) )
+	{
+		System.exit(-1) ;
+	}
+	
+	// to be read from server
+	
+	int startAtByte = 0 ;
+	
+	loggerName = source + "_logger" ;
+	
+	String fileName = logDirStr + "/" + logFileStr ;
+	
+	File file = new File (fileName) ;
+	lineReader = new LineReader(file, startAtByte) ;
+	
+	Path filePath = FileSystems.getDefault().getPath(logDirStr, logFileStr);
+*/

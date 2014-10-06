@@ -1,0 +1,9 @@
+<ttt>
+	<source>NBOL</source>
+	<logDir>/home/chris/workspace/LogTroller/data</logDir>
+	<logFile>nbol.log</logFile>
+	<server>
+		<host>localhost</host>
+		<port>6789</port>
+	</server>
+</ttt>
