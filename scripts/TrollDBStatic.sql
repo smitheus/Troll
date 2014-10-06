@@ -17,8 +17,8 @@ insert into coreBankingSystems values ("FIN_UG","FIN","UG") ; # Uganda
 insert into coreBankingSystems values ("MUB_ZW","MUB","ZW") ; # Zimbabwe
 
 truncate table responseProcessing ;
-insert into responseProcessing values ('NBOL', 'SENT', 'Y', '', '') ;
-insert into responseProcessing values ('PAYEX', 'RECD', ' ', 'NBOL', 'SENT') ;
-insert into responseProcessing values ('PAYEX', 'SENT', 'Y', '', '') ;
-insert into responseProcessing values ('PAYEX', 'MAX', 'Y', 'PAYEX', 'SENT') ;
-insert into responseProcessing values ('PAYEX', 'CORE', ' ', 'PAYEX', 'MAX') ;
+insert into responseProcessing values ('NBOL', 'SENT', 'Y', '', '', 100, 1000) ;
+insert into responseProcessing values ('PAYEX', 'RECD', ' ', 'NBOL', 'SENT', 0, 0) ;
+insert into responseProcessing values ('PAYEX', 'SENT', 'Y', '', '', 100, 1000) ;
+insert into responseProcessing values ('PAYEX', 'MAX', 'Y', 'PAYEX', 'SENT', 100, 1000) ;
+insert into responseProcessing values ('PAYEX', 'CORE', ' ', 'PAYEX', 'MAX', 0, 0) ;

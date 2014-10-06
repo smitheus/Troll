@@ -12,7 +12,9 @@ create table responseProcessing (
 	event varchar(10),
 	responseRequired varchar(1),
 	previousSource varchar(40),
-	previousEvent varchar(10) ) ;
+	previousEvent varchar(10),
+	sla1Period int,
+	sla2Period int	) ;
 	
 drop table channelInterchange ;
 create table channelInterchange (
@@ -88,6 +90,8 @@ create table channelTransactionHistory (
 	ackNak varchar(3),
 	text varchar(80),
 	responseRequired varchar (1),
+	sla1Due timestamp ,
+	sla2Due timestamp ,
 	PRIMARY KEY (id) ) ;
 
 drop table problemRecord ;

@@ -21,6 +21,9 @@ begin
 	declare insertTimeStamp timestamp ;
 	declare totalCount int ;
 	declare respReqd varchar(1) ;
+	declare sla1Due timestamp ;
+	declare sla2Due timestamp ;
+	
 	
 	select count(*) from channelInterchange where interchangeID = pInterId into totalCount ;
 	if (totalCount = 0) then
@@ -46,15 +49,21 @@ begin
 	
 		set respReqd = ' ' ; # force a value
 		
+		select sla1Period, sla2Period from responseProcessing rp where rp.SourceSystem = pSourceSystem and rp.event = pEvent ;
+		
 		if (pAckNak != 'NAK') then
-			select responseRequired from ResponseProcessing rp where rp.sourceSystem = pSourceSystem and rp.event = pEvent into respReqd ;
+			select responseRequired, 
+				   DATE_ADD(CURRENT_TIMESTAMP,INTERVAL sla1Period SECOND),
+				   DATE_ADD(CURRENT_TIMESTAMP,INTERVAL sla2Period SECOND) 
+				into respReqd, sla2Due, sla2Due
+				from ResponseProcessing rp where rp.sourceSystem = pSourceSystem and rp.event = pEvent ;
 			if (  (respReqd = null) or (respReqd = '') ) then
 				set respReqd = ' ' ;
 			end if ;
 		end if ;
 		
-		insert into channelTransactionHistory (instructionID, transactionID, insertTimestamp, sourceTimestamp, sourceSystem, event, ackNak, text, responseRequired)
-			select atList.instructionID, atList.transactionID, insertTimestamp, pSourceTimestamp, pSourceSystem, pEvent, pAckNak, pText, respReqd
+		insert into channelTransactionHistory (instructionID, transactionID, insertTimestamp, sourceTimestamp, sourceSystem, event, ackNak, text, responseRequired, sla1Due, sla2Due)
+			select atList.instructionID, atList.transactionID, insertTimestamp, pSourceTimestamp, pSourceSystem, pEvent, pAckNak, pText, respReqd, sla1Due, sla1Due
 			from affectedTransactions atList ;
 			
 		update channelTransactionHistory cth, affectedTransactions atList, responseProcessing rp
