@@ -2,36 +2,32 @@ package za.co.sb.Troll.dto.event;
 
 import java.util.Date;
 
+import za.co.sb.Troll.enums.EventEnum;
+
 public class InstructionEventDto 
 {
-	private String sourceSystem;
 	private String interchangeId;
+	private String instructionId;
+	private String recInstructionId;
+	private Date sourceTimeStamp;
+	private String sourceSystem;
+	private EventEnum event;
 	private int numInstructions;
 	private String country;
-	private Date sourceTimeStamp;
-	private String jmsProperties;
 	
 	public InstructionEventDto()
 	{
 	}
 
 	@Override
-	public String toString() {
-		return "InterchangeEventDto [sourceSystem=" + sourceSystem
-				+ ", interchangeId=" + interchangeId + ", numInstructions="
-				+ numInstructions + ", country=" + country
-				+ ", sourceTimeStamp=" + sourceTimeStamp + ", jmsProperties="
-				+ jmsProperties + "]";
-	}
-	
-	public String getSourceSystem() 
+	public String toString() 
 	{
-		return sourceSystem;
-	}
-
-	public void setSourceSystem(String sourceSystem) 
-	{
-		this.sourceSystem = sourceSystem;
+		return "InstructionEventDto [interchangeId=" + interchangeId
+				+ ", instructionId=" + instructionId + ", recInstructionId="
+				+ recInstructionId + ", sourceTimeStamp=" + sourceTimeStamp
+				+ ", sourceSystem=" + sourceSystem + ", event=" + event
+				+ ", numInstructions=" + numInstructions + ", country="
+				+ country + "]";
 	}
 
 	public String getInterchangeId() 
@@ -42,6 +38,56 @@ public class InstructionEventDto
 	public void setInterchangeId(String interchangeId) 
 	{
 		this.interchangeId = interchangeId;
+	}
+
+	public String getInstructionId() 
+	{
+		return instructionId;
+	}
+
+	public void setInstructionId(String instructionId) 
+	{
+		this.instructionId = instructionId;
+	}
+
+	public String getRecInstructionId() 
+	{
+		return recInstructionId;
+	}
+
+	public void setRecInstructionId(String recInstructionId) 
+	{
+		this.recInstructionId = recInstructionId;
+	}
+
+	public Date getSourceTimeStamp() 
+	{
+		return sourceTimeStamp;
+	}
+
+	public void setSourceTimeStamp(Date sourceTimeStamp) 
+	{
+		this.sourceTimeStamp = sourceTimeStamp;
+	}
+
+	public String getSourceSystem() 
+	{
+		return sourceSystem;
+	}
+
+	public void setSourceSystem(String sourceSystem) 
+	{
+		this.sourceSystem = sourceSystem;
+	}
+
+	public EventEnum getEvent() 
+	{
+		return event;
+	}
+
+	public void setEvent(EventEnum event) 
+	{
+		this.event = event;
 	}
 
 	public int getNumInstructions() 
@@ -62,25 +108,5 @@ public class InstructionEventDto
 	public void setCountry(String country) 
 	{
 		this.country = country;
-	}
-
-	public String getJmsProperties() 
-	{
-		return jmsProperties;
-	}
-
-	public void setJmsProperties(String jmsProperties) 
-	{
-		this.jmsProperties = jmsProperties;
-	}
-
-	public Date getSourceTimeStamp() 
-	{
-		return sourceTimeStamp;
-	}
-
-	public void setSourceTimeStamp(Date sourceTimeStamp) 
-	{
-		this.sourceTimeStamp = sourceTimeStamp;
 	}
 }

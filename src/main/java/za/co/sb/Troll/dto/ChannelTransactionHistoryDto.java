@@ -2,32 +2,41 @@ package za.co.sb.Troll.dto;
 
 import java.util.Date;
 
+import za.co.sb.Troll.enums.AckNakEnum;
+import za.co.sb.Troll.enums.EventEnum;
+
 public class ChannelTransactionHistoryDto extends Dto
 {
 	private String instructionId;
 	private String transactionId;
+	private String pesInstructionId;
+	private String pesTransactionId;
 	private Date insertTimestamp;
 	private Date sourceTimestamp;
 	private String sourceSystem;
-	private String event;
-	private String ackNak;
+	private EventEnum event;
+	private AckNakEnum ackNak;
 	private String text;
+	private boolean responseRequired;
 	
 	public ChannelTransactionHistoryDto()
 	{
 	}
-	
+
 	@Override
 	public String toString() 
 	{
 		return "ChannelTransactionHistoryDto [instructionId=" + instructionId
-				+ ", transactionId=" + transactionId + ", insertTimestamp="
-				+ insertTimestamp + ", sourceTimestamp=" + sourceTimestamp
-				+ ", sourceSystem=" + sourceSystem + ", event=" + event
-				+ ", ackNak=" + ackNak + ", text=" + text + "]";
+				+ ", transactionId=" + transactionId + ", pesInstructionID="
+				+ pesInstructionId + ", pesTransactionID=" + pesTransactionId
+				+ ", insertTimestamp=" + insertTimestamp + ", sourceTimestamp="
+				+ sourceTimestamp + ", sourceSystem=" + sourceSystem
+				+ ", event=" + event + ", ackNak=" + ackNak + ", text=" + text
+				+ ", responseRequired=" + responseRequired + "]";
 	}
 
-	public String getInstructionId() {
+	public String getInstructionId() 
+	{
 		return instructionId;
 	}
 
@@ -44,6 +53,26 @@ public class ChannelTransactionHistoryDto extends Dto
 	public void setTransactionId(String transactionId) 
 	{
 		this.transactionId = transactionId;
+	}
+
+	public String getPesInstructionId() 
+	{
+		return pesInstructionId;
+	}
+
+	public void setPesInstructionId(String pesInstructionId) 
+	{
+		this.pesInstructionId = pesInstructionId;
+	}
+
+	public String getPesTransactionId() 
+	{
+		return pesInstructionId;
+	}
+
+	public void setPesTransactionId(String pesInstructionId) 
+	{
+		this.pesInstructionId = pesInstructionId;
 	}
 
 	public Date getInsertTimestamp() 
@@ -76,28 +105,27 @@ public class ChannelTransactionHistoryDto extends Dto
 		this.sourceSystem = sourceSystem;
 	}
 
-	public String getEvent() 
+	public EventEnum getEvent() 
 	{
 		return event;
 	}
 
-	public void setEvent(String event) 
+	public void setEvent(EventEnum event) 
 	{
 		this.event = event;
 	}
 
-	public String getAckNak() 
+	public AckNakEnum getAckNak() 
 	{
 		return ackNak;
 	}
 
-	public void setAckNak(String ackNak) 
+	public void setAckNak(AckNakEnum ackNak) 
 	{
 		this.ackNak = ackNak;
 	}
 
-	public String getText() 
-	{
+	public String getText() {
 		return text;
 	}
 
@@ -105,4 +133,14 @@ public class ChannelTransactionHistoryDto extends Dto
 	{
 		this.text = text;
 	}
+
+	public boolean isResponseRequired() 
+	{
+		return responseRequired;
+	}
+
+	public void setResponseRequired(boolean responseRequired) 
+	{
+		this.responseRequired = responseRequired;
+	}	
 }

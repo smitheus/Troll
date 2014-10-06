@@ -3,65 +3,85 @@ package za.co.sb.Troll;
 import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import za.co.sb.Troll.dao.ChannelTransactionDao;
-import za.co.sb.Troll.dto.ChannelTransactionDto;
+import za.co.sb.Troll.gui.component.TrollConsoleFrame;
 
 public class Troll 
 {
 	private static final Logger LOG = LogManager.getLogger(Troll.class .getName());
-	
-	
-	public static final String DB_PROPERTIES_FILENAME = "db.properties";
-	
-	public static Properties DB_PROPERTIES = new Properties();
+	private static final String DB_PROPERTIES_FILENAME = "db.properties";
+	private static final String CONSOLE_COMMAND = "Console";
+
+	private static Properties DB_PROPERTIES = new Properties();
 	
     public static void main(String[] args)
     {
+    	String command = "";
+    	
+    	// Validate command line arguments
+    	if (args.length < 1) 
+    	{
+    		LOG.error("No command specified");
+    		throw new IllegalArgumentException("No command specified");
+    	}
+    	else 
+    	{
+    		command = args[0];
+    		
+    		if (!CONSOLE_COMMAND.equalsIgnoreCase(command)) 
+    		{
+    			LOG.error("Invalid command specified <" + command + ">.");
+    			throw new IllegalArgumentException("Invalid command specified <" + command + ">.");
+    		}
+    	}
+    	
+    	// Initialise application and run command
     	try
     	{
+    		loadDbProperties();
     		
-    		loadProperties();
-    		
-    		ChannelTransactionDao channelTransactionDao = new ChannelTransactionDao();
-    		
-    		List<ChannelTransactionDto> list = channelTransactionDao.selectAllTransactions();
-    		
-    		for (ChannelTransactionDto channelTransactionDto : list)
+    		if (CONSOLE_COMMAND.equalsIgnoreCase(command)) 
     		{
-    			System.out.println(channelTransactionDto.toString());
+    			runConsole();
     		}
-    		
-    		
-    		
-	    	EventQueue.invokeLater(new Runnable() 
-			{
-				public void run() 
-				{
-					try 
-					{
-						//ConsoleFrame frame = new ConsoleFrame();
-						//frame.setVisible(true);
-					} 
-					catch (Exception e) 
-					{
-						e.printStackTrace();
-					}
-				}
-			});
     	}
     	catch (Exception ex)
     	{
+    		LOG.error("Application Exception caught", ex);
     		ex.printStackTrace();
     	}
     }
     
-    public static void loadProperties() throws Exception
+    private static void runConsole() throws Exception
+    {
+	    EventQueue.invokeLater(new Runnable() 
+	   	{
+	   		public void run() 
+	   		{
+	   			try 
+	   			{
+	   				TrollConsoleFrame frame = new TrollConsoleFrame();
+	   				frame.setVisible(true);
+	   			} 
+	   			catch (Exception e) 
+	   			{
+	   				e.printStackTrace();
+	   			}
+	   		}
+	   	});
+    }
+    
+    public static Properties getDbProperties()
+    {
+    	return DB_PROPERTIES;
+    }
+    
+    
+    public static void loadDbProperties() throws Exception
     {
     	InputStream input = null;
     	
@@ -72,6 +92,7 @@ public class Troll
 		} 
 		catch (IOException ioex) 
 		{
+			LOG.error("Exception loading properties", ioex);
 			throw new Exception("Exception loading properties", ioex);
 		}
 		finally 

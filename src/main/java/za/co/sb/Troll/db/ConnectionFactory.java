@@ -4,47 +4,52 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import za.co.sb.Troll.Troll;
  
 public class ConnectionFactory 
 {
-	private static ConnectionFactory instance = new ConnectionFactory();
+	private static final Logger LOG = LogManager.getLogger(ConnectionFactory.class.getName());
+	
+	private static ConnectionFactory INSTANCE = new ConnectionFactory();
       
     private ConnectionFactory() 
     {
-        
     	try 
         {
-            Class.forName(Troll.DB_PROPERTIES.getProperty("MYSQL_DB_DRIVER_CLASS"));
+            Class.forName(Troll.getDbProperties().getProperty("MYSQL_DB_DRIVER_CLASS"));
         } 
-    	catch (ClassNotFoundException e) 
+    	catch (ClassNotFoundException cnfe) 
         {
-            e.printStackTrace();
+    		LOG.error("Exception instantiating ConnectingFactory", cnfe);
         }
     }
      
-    private Connection createConnection() 
+    private Connection createConnection() throws SQLException
     {
         Connection connection = null;
         
         try 
         {
-        	String url = Troll.DB_PROPERTIES.getProperty("MYSQL_DB_URL");
-        	String user = Troll.DB_PROPERTIES.getProperty("MYSQL_DB_USERNAME");
-        	String password = Troll.DB_PROPERTIES.getProperty("MYSQL_DB_PASSWORD");
+        	String url = Troll.getDbProperties().getProperty("MYSQL_DB_URL");
+        	String user = Troll.getDbProperties().getProperty("MYSQL_DB_USERNAME");
+        	String password = Troll.getDbProperties().getProperty("MYSQL_DB_PASSWORD");
         	
             connection = DriverManager.getConnection(url, user, password);
         } 
-        catch (SQLException e) 
+        catch (SQLException sqle) 
         {
-        	e.printStackTrace();
+        	LOG.error("Exception creating DB connection", sqle);
+        	throw sqle;
         }
         
         return connection;
     }   
      
-    public static Connection getConnection() 
+    public static Connection getConnection() throws SQLException 
     {
-        return instance.createConnection();
+        return INSTANCE.createConnection();
     }
 }

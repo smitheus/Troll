@@ -12,6 +12,8 @@ import za.co.sb.Troll.db.ConnectionFactory;
 import za.co.sb.Troll.db.DbUtil;
 import za.co.sb.Troll.dto.ChannelTransactionDto;
 import za.co.sb.Troll.dto.ChannelTransactionHistoryDto;
+import za.co.sb.Troll.enums.AckNakEnum;
+import za.co.sb.Troll.enums.EventEnum;
 
 public class ChannelTransactionDao 
 {
@@ -77,19 +79,21 @@ public class ChannelTransactionDao
             
             ResultSet resultSet = preparedStatement.executeQuery();
             
-            if(resultSet.next())
+           while (resultSet.next())
             {
             	ChannelTransactionHistoryDto channelTransactionHistoryDto = new ChannelTransactionHistoryDto();
             	
             	channelTransactionHistoryDto.setId(resultSet.getInt(1));
             	channelTransactionHistoryDto.setInstructionId(resultSet.getString(2));
             	channelTransactionHistoryDto.setTransactionId(resultSet.getString(3));
-            	channelTransactionHistoryDto.setInsertTimestamp(resultSet.getTimestamp(4, calendar));
-            	channelTransactionHistoryDto.setSourceTimestamp(resultSet.getTimestamp(5, calendar));
-            	channelTransactionHistoryDto.setSourceSystem(resultSet.getString(6));
-            	channelTransactionHistoryDto.setEvent(resultSet.getString(7));
-            	channelTransactionHistoryDto.setAckNak(resultSet.getString(8));
-            	channelTransactionHistoryDto.setText(resultSet.getString(9));
+            	channelTransactionHistoryDto.setPesInstructionId(resultSet.getString(4));
+            	channelTransactionHistoryDto.setPesTransactionId(resultSet.getString(5));
+            	channelTransactionHistoryDto.setInsertTimestamp(resultSet.getTimestamp(6, calendar));
+            	channelTransactionHistoryDto.setSourceTimestamp(resultSet.getTimestamp(7, calendar));
+            	channelTransactionHistoryDto.setSourceSystem(resultSet.getString(8));
+            	channelTransactionHistoryDto.setEvent(EventEnum.getEvent(resultSet.getString(9)));
+            	channelTransactionHistoryDto.setAckNak(AckNakEnum.getAckNak(resultSet.getString(10)));
+            	channelTransactionHistoryDto.setText(resultSet.getString(11));
             	
             	channelTransactionHistoryDtoList.add(channelTransactionHistoryDto);
             }
