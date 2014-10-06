@@ -21,8 +21,11 @@ begin
 	declare insertTimeStamp timestamp ;
 	declare totalCount int ;
 	declare respReqd varchar(1) ;
-	declare sla1Due timestamp ;
-	declare sla2Due timestamp ;
+	declare vSla1Due timestamp ;
+	declare vSla2Due timestamp ;
+  declare vElapsedTime int ;
+  declare vSla1End timestamp ;
+  declare vSla2End timestamp ;
 	
 	
 	select count(*) from channelInterchange where interchangeID = pInterId into totalCount ;
@@ -47,27 +50,43 @@ begin
 	if ( (pEvent != 'INTERIM') and (pEvent != 'FINAL') ) then	
 		# do we need a response to this event?
 	
-		set respReqd = ' ' ; # force a value
-		
-		select sla1Period, sla2Period from responseProcessing rp where rp.SourceSystem = pSourceSystem and rp.event = pEvent ;
+		set respReqd = null ; # force a value
 		
 		if (pAckNak != 'NAK') then
 			select responseRequired, 
-				   DATE_ADD(CURRENT_TIMESTAMP,INTERVAL sla1Period SECOND),
-				   DATE_ADD(CURRENT_TIMESTAMP,INTERVAL sla2Period SECOND) 
-				into respReqd, sla2Due, sla2Due
+				   DATE_ADD(pSourceTimestamp,INTERVAL sla1Period SECOND),
+				   DATE_ADD(pSourceTimestamp,INTERVAL sla2Period SECOND) 
+				into respReqd, vSla1Due, vSla2Due
 				from ResponseProcessing rp where rp.sourceSystem = pSourceSystem and rp.event = pEvent ;
-			if (  (respReqd = null) or (respReqd = '') ) then
+    end if ;
+    
+    if (  (respReqd = null) or (respReqd = '') ) then
 				set respReqd = ' ' ;
-			end if ;
+        set vSla1Due = null ;
+        set vSla2Due = null ;
 		end if ;
 		
-		insert into channelTransactionHistory (instructionID, transactionID, insertTimestamp, sourceTimestamp, sourceSystem, event, ackNak, text, responseRequired, sla1Due, sla2Due)
-			select atList.instructionID, atList.transactionID, insertTimestamp, pSourceTimestamp, pSourceSystem, pEvent, pAckNak, pText, respReqd, sla1Due, sla1Due
+    # calculate the elapsed time from any previous event
+    
+    select timestampdiff(SECOND, cth.sourceTimestamp, pSourceTimestamp), cth.sla1Due, cth.sla2Due from channelTransactionHistory cth, affectedTransactions atList, responseProcessing rp
+      where cth.instructionID = atList.instructionID and cth.transactionID = atList.transactionID
+        and cth.sourceSystem = rp.previousSource and cth.event = rp.previousEvent
+        and rp.SourceSystem = pSourceSystem and rp.event = pEvent
+        into vElapsedTime, vSla1End, vSla2End ;
+   
+    select "TIME", vElapsedTime ;
+    
+    # now insert the event in the history
+    
+		insert into channelTransactionHistory (instructionID, transactionID, insertTimestamp, sourceTimestamp, sourceSystem, event, ackNak, text,
+                responseRequired, sla1Due, sla2Due, elapsedTime, sla1End, sla2End)
+			select atList.instructionID, atList.transactionID, insertTimestamp, pSourceTimestamp, pSourceSystem, pEvent, pAckNak, pText,
+                respReqd, vSla1Due, vSla2Due, vElapsedTime, vSla1End, vSla2End
 			from affectedTransactions atList ;
-			
+    
+    # clear down any preceding event
 		update channelTransactionHistory cth, affectedTransactions atList, responseProcessing rp
-			set cth.responseRequired = ' '
+			set cth.responseRequired = ' ', sla1Due = null, sla2Due = null
 			where cth.instructionID = atList.instructionID and cth.transactionID = atList.transactionID
 			and cth.sourceSystem = rp.previousSource and cth.event = rp.previousEvent and rp.SourceSystem = pSourceSystem and rp.event = pEvent ;
 	end if ;

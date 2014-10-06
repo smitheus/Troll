@@ -90,8 +90,12 @@ create table channelTransactionHistory (
 	ackNak varchar(3),
 	text varchar(80),
 	responseRequired varchar (1),
-	sla1Due timestamp ,
-	sla2Due timestamp ,
+	sla1Due timestamp null,
+	sla2Due timestamp null,
+	elapsedTime int,	
+	sla1End timestamp null,
+	sla2End timestamp null,
+	
 	PRIMARY KEY (id) ) ;
 
 drop table problemRecord ;
