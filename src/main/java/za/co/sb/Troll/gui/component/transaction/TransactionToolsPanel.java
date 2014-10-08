@@ -214,10 +214,10 @@ class HowComboBox extends JComboBox<ComboBoxItem>
 		super();
 		
 		addItem(new ComboBoxItem("All" , ""));
-		addItem(new ComboBoxItem("All Successes" , ""));
-		addItem(new ComboBoxItem("All Failures" , ""));
-		addItem(new ComboBoxItem("All System Failures" , ""));
-		addItem(new ComboBoxItem("All Business Failures" , ""));
+		addItem(new ComboBoxItem("All Successes" , TransactionViewDao.ALL_SUCCESS_FILTER));
+		addItem(new ComboBoxItem("All Failures" , TransactionViewDao.ALL_FAILURE_FILTER));
+		addItem(new ComboBoxItem("All System Failures" , TransactionViewDao.SYSTEM_FAILURE_FILTER));
+		addItem(new ComboBoxItem("All Business Failures" , TransactionViewDao.BUSINESS_FAILURE_FILTER));
 	}
 }
 
@@ -265,8 +265,8 @@ class FindComboBox extends JComboBox<ComboBoxItem>
 		addItem(new ComboBoxItem("nBol Transaction Id" , TransactionViewDao.NBOL_TRANSACTION_ID_FILTER));
 		addItem(new ComboBoxItem("nBol Instruction Id" , TransactionViewDao.NBOL_INSTRUCTION_ID_FILTER));
 		addItem(new ComboBoxItem("nBol Interchange Id" , TransactionViewDao.NBOL_INTERCHANGE_ID_FILTER));
-		addItem(new ComboBoxItem("PAYEX Transaction Id" , TransactionViewDao.PAYEX_TRANSACTION_ID_FILTER));
-		addItem(new ComboBoxItem("PAYEX Instruction Id" , TransactionViewDao.PAYEX_INSTRUCTION_ID_FILTER));
+		//addItem(new ComboBoxItem("PAYEX Transaction Id" , TransactionViewDao.PAYEX_TRANSACTION_ID_FILTER));
+		//addItem(new ComboBoxItem("PAYEX Instruction Id" , TransactionViewDao.PAYEX_INSTRUCTION_ID_FILTER));
 	}
 }
 

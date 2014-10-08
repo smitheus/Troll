@@ -10,55 +10,47 @@ public class TransactionViewItemDto extends Dto
 {
 	public static final DateFormat CSV_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");             
 	
-	// Core Banking System info
+	private String interchangeId;
+	private String instructionId;
+	private String transactionId;
+	private Date insertTimestamp;
+	private Date sourceTimestamp;
+	private boolean underInvestigation;
+	private String comments;
 	private String country;
 	private String systemType;
 	private String systemCode;
-	
-	// Interchange Id
-	private String interchangeId;
-	
-	// Instruction Id's
-	private String instructionId;
-	private String pesInstructionId;
-	
-	// Transaction Id's
-	private String transactionId;
-	private String pesTransactionId;
-	
-	// Transaction timestamps
-	private Date insertTimestamp;
-	private Date sourceTimestamp;
-	
-	private boolean underInvestigation;
-	private String comments;
+	private int nakCnt;
+	private int sla1BreachCnt;
+	private int sla2BreachCnt;
 	
 	public TransactionViewItemDto()
 	{
 	}
 	
+	
+	
 	@Override
-	public String toString() 
-	{
-		return "TransactionViewItemDto [country=" + country + ", systemType="
-				+ systemType + ", systemCode=" + systemCode
-				+ ", interchangeId=" + interchangeId + ", instructionId="
-				+ instructionId + ", pesInstructionId=" + pesInstructionId
-				+ ", transactionId=" + transactionId + ", pesTransactionId="
-				+ pesTransactionId + ", insertTimestamp=" + insertTimestamp
+	public String toString() {
+		return "TransactionViewItemDto [interchangeId=" + interchangeId
+				+ ", instructionId=" + instructionId + ", transactionId="
+				+ transactionId + ", insertTimestamp=" + insertTimestamp
 				+ ", sourceTimestamp=" + sourceTimestamp
 				+ ", underInvestigation=" + underInvestigation + ", comments="
-				+ comments + "]";
+				+ comments + ", country=" + country + ", systemType="
+				+ systemType + ", systemCode=" + systemCode + ", nakCnt="
+				+ nakCnt + ", sla1BreachCnt=" + sla1BreachCnt
+				+ ", sla2BreachCnt=" + sla2BreachCnt + "]";
 	}
-	
+
+
+
 	public List<String> getCsvExportValues() 
 	{
 		List<String> csvExprtValueList = new ArrayList<String>();
 		
 		csvExprtValueList.add(transactionId);
-		csvExprtValueList.add(pesTransactionId);
 		csvExprtValueList.add(instructionId);
-		csvExprtValueList.add(pesInstructionId);
 		csvExprtValueList.add(interchangeId);
 		csvExprtValueList.add(CSV_DATE_FORMAT.format(insertTimestamp));
 		csvExprtValueList.add(CSV_DATE_FORMAT.format(sourceTimestamp));
@@ -76,9 +68,7 @@ public class TransactionViewItemDto extends Dto
 		List<String> csvExprtHeaderList = new ArrayList<String>();
 		
 		csvExprtHeaderList.add("Transaction Id");
-		csvExprtHeaderList.add("PES Transaction Id");
 		csvExprtHeaderList.add("Instruction Id");
-		csvExprtHeaderList.add("PES Instruction Id");
 		csvExprtHeaderList.add("Interchange Id");
 		csvExprtHeaderList.add("Insert Timestamp");
 		csvExprtHeaderList.add("Source Timestamp");
@@ -141,17 +131,7 @@ public class TransactionViewItemDto extends Dto
 		this.instructionId = instructionId;
 	}
 
-	public String getPesInstructionId() 
-	{
-		return pesInstructionId;
-	}
-
-	public void setPesInstructionId(String pesInstructionId) 
-	{
-		this.pesInstructionId = pesInstructionId;
-	}
-
-	public String getTransactionId() 
+		public String getTransactionId() 
 	{
 		return transactionId;
 	}
@@ -159,16 +139,6 @@ public class TransactionViewItemDto extends Dto
 	public void setTransactionId(String transactionId) 
 	{
 		this.transactionId = transactionId;
-	}
-
-	public String getPesTransactionId() 
-	{
-		return pesTransactionId;
-	}
-
-	public void setPesTransactionId(String pesTransactionId) 
-	{
-		this.pesTransactionId = pesTransactionId;
 	}
 
 	public Date getInsertTimestamp() 
@@ -209,5 +179,35 @@ public class TransactionViewItemDto extends Dto
 	public void setComments(String comments) 
 	{
 		this.comments = comments;
+	}
+
+	public int getNakCnt() 
+	{
+		return nakCnt;
+	}
+
+	public void setNakCnt(int nakCnt) 
+	{
+		this.nakCnt = nakCnt;
+	}
+
+	public int getSla1BreachCnt() 
+	{
+		return sla1BreachCnt;
+	}
+
+	public void setSla1BreachCnt(int sla1BreachCnt) 
+	{
+		this.sla1BreachCnt = sla1BreachCnt;
+	}
+
+	public int getSla2BreachCnt() 
+	{
+		return sla2BreachCnt;
+	}
+
+	public void setSla2BreachCnt(int sla2BreachCnt) 
+	{
+		this.sla2BreachCnt = sla2BreachCnt;
 	}
 }

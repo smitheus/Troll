@@ -15,7 +15,7 @@ public class LogTestCaseEventMessages
 
 	public static void logAllTestCaseMessages() throws InterruptedException 
 	{
-		logTestCase_AllSuccess();
+		//logTestCase_AllSuccess();
 		/*logTestCase_MaxNakSectionA();
 		logTestCase_MaxNakSectionA();
 		logTestCase_T24RejectsSectionA();
@@ -28,9 +28,26 @@ public class LogTestCaseEventMessages
 		logTestCase_MaxNakSectionB();*/
 		//logTestCase3Messages();
 		//logTestCase4Messages();
+		
+		
+		
+		
+		//logTestCase_AllSuccess_PART1();
+        //logTestCase_AllSuccess_PART2();
+		//logTestCase_AllSuccess_PART3();
+		//logTestCase_AllSuccess_PART4();
+		//logTestCase_AllSuccess_PART5();
+		logTestCase_AllSuccess_PART6();
+		//logTestCase_AllSuccess_PART7();
+		//logTestCase_AllSuccess_PART8();
+		//logTestCase_AllSuccess_PART9();
+		//logTestCase_AllSuccess_PART10();
+		
+		
+		
 	}
 	
-	public static void logTestCase_AllSuccess() 
+	public static void logTestCase_AllSuccess_PART1() 
 	{
 		// NBOL originates the request
 		NBOL_LOG.info("TROLL, INTER, nInter01, 1, KE, PAYMENT, LOWCARE");
@@ -38,14 +55,20 @@ public class LogTestCaseEventMessages
 		NBOL_LOG.info("TROLL, TRANS, nInstr01, nTrans01");
 		NBOL_LOG.info("TROLL, TRANS, nInstr01, nTrans02");
 		NBOL_LOG.info("TROLL, SENT, nInter01");
-
+	}
+	
+	public static void logTestCase_AllSuccess_PART2() 
+	{
 		// PAYEX receives and acknowledges it
 		PAYEX_LOG.info("TROLL, RECD, nInter01");
 		PAYEX_LOG.info("TROLL, INTERIM, nInter01, ACK,");
 
 		// NBOL process the interim response (asynchronously)
 		NBOL_LOG.info("TROLL, INTERIM, nInter01");
-
+	}
+	
+	public static void logTestCase_AllSuccess_PART3() 
+	{
 		// PAYEX forwards the instruction as two separate section A operations
 		PAYEX_LOG.info("TROLL, INTER, pInter01, 1,,,");
 		PAYEX_LOG.info("TROLL, INSTR, pInter01, pInstr01, 1, nInstr01");
@@ -55,38 +78,247 @@ public class LogTestCaseEventMessages
 		PAYEX_LOG.info("TROLL, INSTR, pInter02, pInstr02, 1, nInstr01");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr02, pTrans02, nInstr01, nTrans02, Section A");
 		PAYEX_LOG.info("TROLL, SENT, pInter02");
-
+	}
+	
+	public static void logTestCase_AllSuccess_PART4() 
+	{
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInter01, ACK,");
 		PAYEX_LOG.info("TROLL, MAX, pInter02, ACK,");
-
+	}
+	
+	public static void logTestCase_AllSuccess_PART5() 
+	{		
 		// core banking responds to the section A messages
 		PAYEX_LOG.info("TROLL, CORE, pInstr01, pTrans01, ACK, coreRef01");
-		PAYEX_LOG.info("TROLL, CORE, pInstr01, pTrans02, ACK, coreRef02");
+		PAYEX_LOG.info("TROLL, CORE, pInstr02, pTrans02, ACK, coreRef02");
+	}
+	
+	public static void logTestCase_AllSuccess_PART6() 
+	{		
 		// PAYEX sends the section B interchanges
 		PAYEX_LOG.info("TROLL, INTER, pInter03, 1,,,");
 		PAYEX_LOG.info("TROLL, INSTR, pInter03, pInstr03, 1, nInstr01");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr03, pTrans03, nInstr01, nTrans01, Section B");
 		PAYEX_LOG.info("TROLL, SENT, pInter03");
 		PAYEX_LOG.info("TROLL, INTER, pInter04, 1,,,");
-		PAYEX_LOG.info("TROLL, INSTR, pInter04, pInstr02, 1, nInstr01");
-		PAYEX_LOG.info("TROLL, TRANS, pInstr02, pTrans04, nInstr01, nTrans02, Section B");
+		PAYEX_LOG.info("TROLL, INSTR, pInter04, pInstr04, 1, nInstr01");
+		PAYEX_LOG.info("TROLL, TRANS, pInstr04, pTrans04, nInstr01, nTrans02, Section B");
 		PAYEX_LOG.info("TROLL, SENT, pInter04");
-
+	}
+	
+	public static void logTestCase_AllSuccess_PART7() 
+	{
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInter03, ACK,");
 		PAYEX_LOG.info("TROLL, MAX, pInter04, ACK,");
-
+	}
+	
+	public static void logTestCase_AllSuccess_PART8() 
+	{
 		// core banking responds to the section B messages
 		PAYEX_LOG.info("TROLL, CORE, pInstr03, pTrans03, ACK, coreRef03");
-		PAYEX_LOG.info("TROLL, CORE, pInstr03, pTrans04, ACK, coreRef04");
+		PAYEX_LOG.info("TROLL, CORE, pInstr04, pTrans04, ACK, coreRef04");
+	}
+	
+	public static void logTestCase_AllSuccess_PART9() 
+	{		
 		// PAYEX issues final status
 		PAYEX_LOG.info("TROLL, FINAL, nInter01");
-
+	}
+	
+	public static void logTestCase_AllSuccess_PART10() 
+	{
 		// NBOL processes the final response
 		NBOL_LOG.info("TROLL, FINAL, nInter01");
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static void logTestCase_MaxNakSectionA() 
 	{
 		// NBOL originates the request
