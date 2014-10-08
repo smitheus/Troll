@@ -23,10 +23,6 @@ begin
 	declare respReqd varchar(1) ;
 	declare vSla1Due timestamp ;
 	declare vSla2Due timestamp ;
-  declare vElapsedTime int ;
-  declare vSla1End timestamp ;
-  declare vSla2End timestamp ;
-	
 	
 	select count(*) from channelInterchange where interchangeID = pInterId into totalCount ;
 	if (totalCount = 0) then
@@ -38,16 +34,30 @@ begin
 	# create and populate the temporary table
 	
 	create temporary table affectedTransactions
-		select ct.instructionID, ct.transactionID from channelTransaction ct, channelInstruction ci
-		where ci.interchangeID = pInterId and ci.instructionID = ct.instructionID
+		select ct.instructionID, 
+			   ct.transactionID,
+			   null as pesInstructionID,
+			   null as pesTransactionID
+		from channelTransaction ct, 
+			 channelInstruction ci
+		where ci.interchangeID = pInterId 
+		and ci.instructionID = ct.instructionID
 		union
-		select ct.instructionID, ct.transactionID from channelTransaction ct, channelInstruction ci, pesTransIDmap pim
-		where ci.interchangeID = pInterId and ci.instructionID = pim.pInstructionID
-			and pim.cInstructionID = ct.instructionID and pim.cTransactionID = ct.transactionID ;
+		select ct.instructionID, 
+			   ct.transactionID,
+			   pim.pInstructionID as pesInstructionID,
+			   pim.pTransactionID as pesTransactionID
+		from channelTransaction ct, 
+			 channelInstruction ci, 
+		     pesTransIDmap pim
+		where ci.interchangeID = pInterId 
+		and ci.instructionID = pim.pInstructionID
+		and pim.cInstructionID = ct.instructionID 
+		and	pim.cTransactionID = ct.transactionID ;
 	
 	# ripple the update down to the transactions
 	
-	if ( (pEvent != 'INTERIM') and (pEvent != 'FINAL') ) then	
+	# if ( (pEvent != 'INTERIM') and (pEvent != 'FINAL') ) then	
 		# do we need a response to this event?
 	
 		set respReqd = null ; # force a value
@@ -56,40 +66,49 @@ begin
 			select responseRequired, 
 				   DATE_ADD(pSourceTimestamp,INTERVAL sla1Period SECOND),
 				   DATE_ADD(pSourceTimestamp,INTERVAL sla2Period SECOND) 
-				into respReqd, vSla1Due, vSla2Due
-				from ResponseProcessing rp where rp.sourceSystem = pSourceSystem and rp.event = pEvent ;
-    end if ;
+			into respReqd, vSla1Due, vSla2Due
+			from ResponseProcessing rp 
+			where rp.sourceSystem = pSourceSystem 
+			and rp.event = pEvent ;
+    	end if ;
     
-    if (  (respReqd = null) or (respReqd = '') ) then
-				set respReqd = ' ' ;
-        set vSla1Due = null ;
-        set vSla2Due = null ;
+	    if (  (respReqd = null) or (respReqd = '') ) then
+			set respReqd = ' ' ;
+	        set vSla1Due = null ;
+	        set vSla2Due = null ;
 		end if ;
-		
-    # calculate the elapsed time from any previous event
-    
-    select timestampdiff(SECOND, cth.sourceTimestamp, pSourceTimestamp), cth.sla1Due, cth.sla2Due from channelTransactionHistory cth, affectedTransactions atList, responseProcessing rp
-      where cth.instructionID = atList.instructionID and cth.transactionID = atList.transactionID
-        and cth.sourceSystem = rp.previousSource and cth.event = rp.previousEvent
-        and rp.SourceSystem = pSourceSystem and rp.event = pEvent
-        into vElapsedTime, vSla1End, vSla2End ;
-   
-    select "TIME", vElapsedTime ;
-    
-    # now insert the event in the history
-    
-		insert into channelTransactionHistory (instructionID, transactionID, insertTimestamp, sourceTimestamp, sourceSystem, event, ackNak, text,
-                responseRequired, sla1Due, sla2Due, elapsedTime, sla1End, sla2End)
-			select atList.instructionID, atList.transactionID, insertTimestamp, pSourceTimestamp, pSourceSystem, pEvent, pAckNak, pText,
-                respReqd, vSla1Due, vSla2Due, vElapsedTime, vSla1End, vSla2End
-			from affectedTransactions atList ;
-    
-    # clear down any preceding event
+			
+	    # now insert the event in the history
+		INSERT INTO channelTransactionHistory 
+		(
+		 instructionID, transactionID, pesInstructionID, pesTransactionID, insertTimestamp, sourceTimestamp, sourceSystem, 
+		 event, ackNak, text, responseRequired, sla1Due, sla2Due, elapsedTime, sla1End, sla2End, sla1Breach, sla2Breach
+		)
+		SELECT atList.instructionID, atList.transactionID, atList.pesInstructionID, atList.pesTransactionID, insertTimestamp, pSourceTimestamp, pSourceSystem, 
+			  pEvent, pAckNak, pText, respReqd, vSla1Due, vSla2Due, cthsla.elapsedTime, cthsla.sla1End, cthsla.sla2End, cthsla.sla1Breach, cthsla.sla2Breach	
+		FROM affectedTransactions atList
+		LEFT JOIN (SELECT cth.instructionID, cth.transactionID, cth.pesInstructionID, cth.pesTransactionID,
+							  TIMESTAMPDIFF(SECOND, cth.sourceTimestamp, pSourceTimestamp) AS elapsedTime,
+							  cth.sla1Due AS sla1End, cth.sla2Due AS sla2End, 
+							  CASE WHEN (cth.sla1Due < pSourceTimestamp) THEN 'Y' ELSE 'N' END AS sla1Breach,
+							  CASE WHEN (cth.sla2Due < pSourceTimestamp) THEN 'Y' ELSE 'N' END AS sla2Breach
+					   FROM channelTransactionHistory cth, responseProcessing rp
+					   WHERE cth.sourceSystem = rp.previousSource 
+					   AND cth.event = rp.previousEvent 
+					   AND rp.SourceSystem = pSourceSystem 
+					   AND rp.event = pEvent) AS cthsla ON cthsla.instructionID = atList.instructionID AND cthsla.transactionID = atList.transactionID
+					  									AND cthsla.pesInstructionID <=> atList.pesInstructionID AND cthsla.pesTransactionID <=> atList.pesTransactionID ;
+			
+	    # clear down any preceding event
 		update channelTransactionHistory cth, affectedTransactions atList, responseProcessing rp
-			set cth.responseRequired = ' ', sla1Due = null, sla2Due = null
-			where cth.instructionID = atList.instructionID and cth.transactionID = atList.transactionID
-			and cth.sourceSystem = rp.previousSource and cth.event = rp.previousEvent and rp.SourceSystem = pSourceSystem and rp.event = pEvent ;
-	end if ;
+		set cth.responseRequired = ' ', sla1Due = null, sla2Due = null
+		where cth.instructionID = atList.instructionID 
+		and cth.transactionID = atList.transactionID
+		and cth.sourceSystem = rp.previousSource 
+		and cth.event = rp.previousEvent 
+		and rp.SourceSystem = pSourceSystem 
+		and rp.event = pEvent ;
+	# end if ;
 	
 	drop table affectedTransactions ;
 end ;

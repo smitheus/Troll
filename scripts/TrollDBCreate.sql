@@ -96,7 +96,8 @@ create table channelTransactionHistory (
 	elapsedTime int,	
 	sla1End timestamp null,
 	sla2End timestamp null,
-	
+	sla1Breach varchar (1),
+	sla2Breach varchar (1),
 	PRIMARY KEY (id) ) ;
 
 drop table problemRecord ;
