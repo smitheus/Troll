@@ -8,13 +8,14 @@ create table coreBankingSystems (
 
 drop table responseProcessing ;
 create table responseProcessing (
+	closureName varchar(30),
 	sourceSystem varchar(40),
 	event varchar(10),
-	responseRequired varchar(1),
-	previousSource varchar(40),
-	previousEvent varchar(10),
+	closureRequired varchar(1),
 	sla1Period int,
-	sla2Period int	) ;
+	sla2Period int,
+	previousSource varchar(40),
+	previousEvent varchar(10) ) ;
 	
 drop table channelInterchange ;
 create table channelInterchange (
