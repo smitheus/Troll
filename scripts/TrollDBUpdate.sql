@@ -57,7 +57,7 @@ begin
 	
 	# ripple the update down to the transactions
 	
-	if ( (pEvent != 'INTERIM') and (pEvent != 'FINAL') ) then	
+	# if ( (pEvent != 'INTERIM') and (pEvent != 'FINAL') ) then	
 		# do we need a response to this event?
 	
 		set respReqd = null ; # force a value
@@ -108,7 +108,7 @@ begin
 		and cth.event = rp.previousEvent 
 		and rp.SourceSystem = pSourceSystem 
 		and rp.event = pEvent ;
-	end if ;
+	# end if ;
 	
 	drop table affectedTransactions ;
 end ;

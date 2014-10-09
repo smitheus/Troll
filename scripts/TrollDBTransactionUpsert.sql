@@ -63,7 +63,7 @@ CREATE PROCEDURE TransactionUpSert(chanInstrID varchar(40), chanTransID varchar(
 			insert channelTransaction (instructionID, transactionID, sourceTimestamp, insertTimestamp) values (nInstructionID, nTransactionID, pSourceTimestamp, insertTimeStamp) ;
 		END IF ;
 		
-		select chanInstrID, chanTransID, pesInstrID, pesTransID ;
+		select nInstructionID, nTransactionID, pesInstrID, pesTransID ;
 		
 		# get SLA due dates and breaches
 		SELECT TIMESTAMPDIFF(SECOND, cthsla.sourceTimestamp, pSourceTimestamp),
