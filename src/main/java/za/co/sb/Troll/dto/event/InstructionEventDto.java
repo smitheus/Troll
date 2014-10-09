@@ -2,6 +2,7 @@ package za.co.sb.Troll.dto.event;
 
 import java.util.Date;
 
+import za.co.sb.Troll.enums.AckNakEnum;
 import za.co.sb.Troll.enums.EventEnum;
 
 public class InstructionEventDto 
@@ -12,6 +13,8 @@ public class InstructionEventDto
 	private Date sourceTimeStamp;
 	private String sourceSystem;
 	private EventEnum event;
+	private AckNakEnum ackNak;
+	private String text;
 	private int numInstructions;
 	private String country;
 	
@@ -26,6 +29,7 @@ public class InstructionEventDto
 				+ ", instructionId=" + instructionId + ", recInstructionId="
 				+ recInstructionId + ", sourceTimeStamp=" + sourceTimeStamp
 				+ ", sourceSystem=" + sourceSystem + ", event=" + event
+				+ ", ackNak=" + ackNak + ", text=" + text
 				+ ", numInstructions=" + numInstructions + ", country="
 				+ country + "]";
 	}
@@ -108,5 +112,25 @@ public class InstructionEventDto
 	public void setCountry(String country) 
 	{
 		this.country = country;
+	}
+
+	public AckNakEnum getAckNak() 
+	{
+		return ackNak;
+	}
+
+	public void setAckNak(AckNakEnum ackNak) 
+	{
+		this.ackNak = ackNak;
+	}
+
+	public String getText() 
+	{
+		return text;
+	}
+
+	public void setText(String text) 
+	{
+		this.text = text;
 	}
 }

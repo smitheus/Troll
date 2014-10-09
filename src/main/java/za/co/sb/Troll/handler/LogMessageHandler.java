@@ -70,14 +70,11 @@ public class LogMessageHandler
 	            	trollerLogMessageDao.upsertTransactionEvent(handleTransactionEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
 	            case SENT :
-	            {
-	            	if ("NBOL".equals(sourceSystem))
+	            	if ("PAYEX".equals(sourceSystem))
+	            	{
 	            		trollerLogMessageDao.updateInstructionEvent(handleInstructionUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList));
-	            	else
-	            		trollerLogMessageDao.updateInterchangeEvent(handleInterchangeUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList));
-	            		
-	            	break ;
-	            }
+	            		break;
+	            	}
 	            case RECD :
 	            case INTERIM :	
 	            case MAX :	
@@ -262,7 +259,7 @@ public class LogMessageHandler
 	/**
 	 * Handles LOG MESSAGE events of types
 	 * <ul>
-	 * <li>EventEnum.SENT</li>
+	 * <li>EventEnum.SENT AND SOURCE SYSTEM IS NBOL</li>
 	 * <li>EventEnum.RECD</li>
 	 * <li>EventEnum.INTERIM</li>
 	 * <li>EventEnum.MAX</li>
@@ -348,6 +345,57 @@ public class LogMessageHandler
 			instructionEventDto.setInstructionId(logMessagePropList.get(2));
 			instructionEventDto.setNumInstructions(Integer.parseInt(logMessagePropList.get(3)));
 			instructionEventDto.setRecInstructionId(logMessagePropList.size() > 4 ? logMessagePropList.get(4) : "");
+		}
+		catch (Exception ex)
+		{
+			String errorMessage = "Unable to process Instruction Event <" +  EventEnum.getEvent(logMessagePropList.get(0)) + ">";
+			ProblemRecordDto problemRecordDto = new ProblemRecordDto(instructionEventDto.getInterchangeId(), instructionEventDto.getInstructionId(), null, sourceTimestamp, sourceSystem, errorMessage);
+			
+			throw new HandleEventException(errorMessage, problemRecordDto, ex);
+		}
+			
+		return instructionEventDto;
+	}
+	
+	/**
+	 * Handles LOG MESSAGE events of types
+	 * <ul>
+	 * <li>EventEnum.SENT WHERE SOURCE SYSTEM IS PAYEX</li>
+	 * </ul>
+	 * 
+	 * Builds a DTO of parameters using properties extracted from the LOG
+	 * MESSAGE that will be passed to the relevant stored procedure for the type
+	 * of event
+	 * 
+	 * @param sourceSystem
+	 * @param sourceTimestamp
+	 * @param logMessagePropList
+	 * @throws HandleEventException
+	 * @throws SQLException
+	 */
+	public InstructionEventDto handleInstructionUpdateEvent(String sourceSystem, Date sourceTimestamp, List<String> logMessagePropList) throws HandleEventException 
+	{
+		InstructionEventDto instructionEventDto = new InstructionEventDto();
+		
+		try
+		{
+			EventEnum event = EventEnum.getEvent(logMessagePropList.get(0));
+			if (event != EventEnum.SENT && !"PAYEX".equalsIgnoreCase(sourceSystem))
+			{
+				throw new Exception("Invalid transaction <EVENT>");
+			}
+			
+			//call InstructionUpdate ('', 'pInstr01', '2014-01-01 00:00:24', 'PAYEX', 'SENT', '', '') ;
+			
+			instructionEventDto.setSourceSystem(sourceSystem);
+			instructionEventDto.setEvent(event);
+			instructionEventDto.setSourceTimeStamp(sourceTimestamp);
+			
+			instructionEventDto.setInterchangeId(logMessagePropList.get(1));
+			instructionEventDto.setInstructionId(logMessagePropList.get(2));
+			instructionEventDto.setAckNak(AckNakEnum.getAckNak(logMessagePropList.get(3)));
+			instructionEventDto.setText(logMessagePropList.get(4));
+			
 		}
 		catch (Exception ex)
 		{
