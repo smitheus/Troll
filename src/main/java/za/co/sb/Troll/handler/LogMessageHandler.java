@@ -69,6 +69,8 @@ public class LogMessageHandler
 	            case CORE :
 	            	trollerLogMessageDao.upsertTransactionEvent(handleTransactionEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
+
+	            case MAX :	
 	            case SENT :
 	            	if ("PAYEX".equals(sourceSystem))
 	            	{
@@ -77,7 +79,6 @@ public class LogMessageHandler
 	            	}
 	            case RECD :
 	            case INTERIM :	
-	            case MAX :	
 	            case FINAL :
 	            	trollerLogMessageDao.updateInterchangeEvent(handleInterchangeUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
@@ -380,12 +381,13 @@ public class LogMessageHandler
 		try
 		{
 			EventEnum event = EventEnum.getEvent(logMessagePropList.get(0));
-			if (event != EventEnum.SENT && !"PAYEX".equalsIgnoreCase(sourceSystem))
+/*			if (event != EventEnum.SENT && !"PAYEX".equalsIgnoreCase(sourceSystem))
 			{
 				throw new Exception("Invalid transaction <EVENT>");
-			}
+			}*/
 			
 			//call InstructionUpdate ('', 'pInstr01', '2014-01-01 00:00:24', 'PAYEX', 'SENT', '', '') ;
+			//call InstructionUpdate ('', 'pInstr01', '2014-01-01 00:00:24', 'PAYEX', 'MAX', '', '') ;
 			
 			instructionEventDto.setSourceSystem(sourceSystem);
 			instructionEventDto.setEvent(event);

@@ -18,7 +18,7 @@ public class TrollerLogMessageDao
 	static final String SP_INTERCHANGE_INSERT = "{CALL InterchangeInsert (?, ?, ?, ?, ?, ?, ?)}";
 	static final String SP_INTERCHANGE_UPDATE = "{CALL InterchangeUpdate (?, ?, ?, ?, ?, ?)}";
 	static final String SP_INSTRUCTION_INSERT = "{CALL InstructionInsert (?, ?, ?, ?, ?, ?, ?)}";
-	static final String SP_INSTRUCTION_UPDATE = "{CALL InstructionUpdate (?, ?, ?, ?', ?, ?, ?)}";
+	static final String SP_INSTRUCTION_UPDATE = "{CALL InstructionUpdate (?, ?, ?, ?, ?, ?, ?)}";
 	static final String SP_TRANSACTION_UPSERT = "{CALL TransactionUpSert (?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 	
 	private Connection connection;
