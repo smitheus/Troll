@@ -70,6 +70,14 @@ public class LogMessageHandler
 	            	trollerLogMessageDao.upsertTransactionEvent(handleTransactionEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
 	            case SENT :
+	            {
+	            	if ("NBOL".equals(sourceSystem))
+	            		trollerLogMessageDao.updateInstructionEvent(handleInstructionUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList));
+	            	else
+	            		trollerLogMessageDao.updateInterchangeEvent(handleInterchangeUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList));
+	            		
+	            	break ;
+	            }
 	            case RECD :
 	            case INTERIM :	
 	            case MAX :	
