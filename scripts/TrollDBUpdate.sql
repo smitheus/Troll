@@ -203,4 +203,13 @@ BEGIN
 					  									AND cthsla.pesInstructionID <=> ptm.pInstructionID AND cthsla.pesTransactionID <=> ptm.pTransactionID
 		where ptm.pInstructionID = pInstructionID ;
 
+		update channelTransactionHistory cth, pesTransIDmap ptm, responseProcessing rp
+			set cth.responseRequired = ' ', sla1Due = null, sla2Due = null
+			where cth.instructionID = ptm.cInstructionID 
+			and cth.transactionID = ptm.cTransactionID
+			and cth.sourceSystem = rp.previousSource 
+			and cth.event = rp.previousEvent 
+			and rp.SourceSystem = pSourceSystem 
+			and rp.event = pEvent
+			and ptm.pInstructionID = pInstructionID ;
 END ;
