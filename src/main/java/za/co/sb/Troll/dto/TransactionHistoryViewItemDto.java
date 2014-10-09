@@ -224,4 +224,6 @@ public class TransactionHistoryViewItemDto extends Dto
 	{
 		this.sla2Breach = sla2Breach;
 	}
+	
+	
 }

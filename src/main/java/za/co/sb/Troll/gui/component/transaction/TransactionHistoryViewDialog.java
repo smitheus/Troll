@@ -16,6 +16,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -60,12 +61,39 @@ public class TransactionHistoryViewDialog extends JDialog implements ActionListe
 		
 		JPanel headerPanel = new JPanel();
 		getContentPane().add(headerPanel, BorderLayout.NORTH);
+		headerPanel.setLayout(new BorderLayout(0, 0));
 		
-		JLabel titleLabel = new JLabel();
-		titleLabel = new JLabel("Transaction History for " + transactionViewItemDto.getTransactionId());
+		JPanel titlePanel = new JPanel();
+		headerPanel.add(titlePanel, BorderLayout.NORTH);
+		JLabel titleLabel = new JLabel("Transaction History for " + transactionViewItemDto.getTransactionId());
 		titleLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
+		titlePanel.add(titleLabel);
+				
+		JPanel transactionDetailPanel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) transactionDetailPanel.getLayout();
+		flowLayout.setAlignment(FlowLayout.CENTER);
+		headerPanel.add(transactionDetailPanel);
 		
-		headerPanel.add(titleLabel);
+		JLabel interchangeLabel = new JLabel("nBol Interchange Id :");
+		transactionDetailPanel.add(interchangeLabel);
+		
+		JLabel interchangeValueLabel = new JLabel(transactionViewItemDto.getInterchangeId());
+		interchangeValueLabel.setForeground(Color.BLUE);
+		transactionDetailPanel.add(interchangeValueLabel);
+		
+		JLabel instructionLabel = new JLabel("| nBol Instuction Id :");
+		transactionDetailPanel.add(instructionLabel);
+		
+		JLabel instructionValueLabel = new JLabel(transactionViewItemDto.getInstructionId());
+		instructionValueLabel.setForeground(Color.BLUE);
+		transactionDetailPanel.add(instructionValueLabel);
+		
+		JLabel countryLabel = new JLabel("| Country :");
+		transactionDetailPanel.add(countryLabel);
+		
+		JLabel countryValueLabel = new JLabel(transactionViewItemDto.getCountry());
+		countryValueLabel.setForeground(Color.BLUE);
+		transactionDetailPanel.add(countryValueLabel);
 		
 		transactionHistoryTable = new TransactionHistoryTable(transactionHistoryViewTableModel);
 		
@@ -126,6 +154,11 @@ class TransactionHistoryViewTableModel extends AbstractTableModel
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
+	}
+	
+	public TransactionHistoryViewItemDto getTransactionHistoryViewItemDtoForRow(int row)
+	{
+		return transactionHistoryViewItemDtoList.get(row);
 	}
 	
 	public void setupTableData() throws SQLException
@@ -219,6 +252,11 @@ class TransactionHistoryViewTableModel extends AbstractTableModel
 @SuppressWarnings("serial")
 class TransactionHistoryTable extends JTable
 {
+	private static final Color COLOR_RED = new Color(204, 0, 0);
+	private static final Color COLOR_ORANGE = new Color(255, 153, 0);
+	private static final Color COLOR_GREEN = new Color(106, 168, 79);
+	private static final Color COLOR_LIGHT_GREY = new Color(238, 238, 238);
+	
 	private TransactionHistoryViewTableModel transactionHistoryViewTableModel;
 	
 	public TransactionHistoryTable(TransactionHistoryViewTableModel transactionHistoryViewTableModel)
@@ -275,85 +313,44 @@ class TransactionHistoryTable extends JTable
     }
 	
 	@Override
-	public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+	public Component prepareRenderer(TableCellRenderer renderer, int row, int column) 
+	{
+		TransactionHistoryViewItemDto transactionHistoryViewItemDto = transactionHistoryViewTableModel.getTransactionHistoryViewItemDtoForRow(row);
 
-		Component c = super.prepareRenderer(renderer, row, column);    
-		/*JComponent jc = (JComponent)c;
-	
-		int ggg = getModel().getRowCount();
+		Component component = super.prepareRenderer(renderer, row, column);
+		JComponent jComponent = (JComponent) component;
+
+		jComponent.setForeground(Color.BLACK);
 		
-		
-		
-		if ((row == 0 || row % 3 > 0) && row != ggg)
+		if ((row % 2 > 0)) 
 		{
-			setRowHeight(row, 20);
+			jComponent.setBackground(COLOR_LIGHT_GREY);
+		} 
+		else 
+		{
+			jComponent.setBackground(Color.WHITE);
+		}
+		
+		if (transactionHistoryViewItemDto.getAckNak() == AckNakEnum.NAK) 
+		{
+			jComponent.setBackground(COLOR_RED);
 		}
 		else
 		{
-			setRowHeight(row, 22);
-			jc.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, Color.BLACK)); 
-		}*/
-		
-		
-		
-		
-		
-		
-		/*if ((column >= 1 && column <= 4) || column == 11) 
-		{
-			jc.setBackground(new Color(238, 238, 238));
-		}
-		else
-		{
-			jc.setBackground(new Color(221, 221, 221));
-			
-		}
-		
-		if ((column == 2 || column ==3 ) && ((row - 1) % 3 == 0))
-		{
-			jc.setBackground(new Color(153, 153, 153));
-			
-		}
-		
-		
-		
-		TransactionViewItemDto transactionViewItemDto = tableModel.getTransactionViewItemDto(row);
-		
-		
-		if (column == 1)
-		{
-			if (transactionViewItemDto.isUnderInvestigation()) 
+			if ("Y".equalsIgnoreCase(transactionHistoryViewItemDto.isResponseRequired()))
 			{
-				jc.setBackground(Color.PINK);
+				
+				//transactionHistoryViewItemDto.getSourceTimestamp() > transactionHistoryViewItemDto.get
+				//if () 
+			//	{
+					
+					
+					
+			//	}
 				
 			}
-			else
-			{
-				jc.setBackground(new Color(238, 238, 238));
-			}
 		}
 		
-		
-		// nBol  sent column
-		if (column == 5) 
-		{
-			if (transactionViewItemDto.getNbolSentAckNak() == AckNakEnum.NAK)
-			{
-				jc.setBackground(Color.PINK);
-			}
-			else if (transactionViewItemDto.isNbolSentResponseRequired())
-			{
-				jc.setBackground(Color.RED);
-			}
-			else
-			{
-				jc.setBackground(Color.GREEN);
-				
-			}
-			
-			
-		}*/
-		
-		return c;
+		return component;
 	}
 }

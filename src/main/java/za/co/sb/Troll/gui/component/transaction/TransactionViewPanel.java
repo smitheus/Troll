@@ -265,9 +265,9 @@ class TransactionViewTable extends JTable
 	private static final Color COLOR_RED = new Color(204, 0, 0);
 	private static final Color COLOR_ORANGE = new Color(255, 153, 0);
 	private static final Color COLOR_GREEN = new Color(106, 168, 79);
-	private static final Color COLOR_GREY = new Color(221, 221, 221);
+	//private static final Color COLOR_GREY = new Color(221, 221, 221);
 	private static final Color COLOR_LIGHT_GREY = new Color(238, 238, 238);
-	private static final Color COLOR_DARK_GREY = new Color(153, 153, 153);
+	//private static final Color COLOR_DARK_GREY = new Color(153, 153, 153);
 	
 	
 	private TransactionViewTableModel transactionViewTableModel;
@@ -355,6 +355,8 @@ class TransactionViewTable extends JTable
 		Component component = super.prepareRenderer(renderer, row, column);    
 		JComponent jComponent = (JComponent) component;
 	
+		jComponent.setForeground(Color.BLACK);
+		
 		if ((row % 2 > 0))
 		{
 			jComponent.setBackground(COLOR_LIGHT_GREY);
@@ -378,11 +380,12 @@ class TransactionViewTable extends JTable
 			if (transactionViewItemDto.getNakCnt() > 0)
 			{
 				jComponent.setBackground(COLOR_RED);
+				jComponent.setForeground(Color.WHITE);
 			}
 			else
 			{
 				jComponent.setBackground(COLOR_GREEN);
-				
+				jComponent.setForeground(Color.WHITE);
 			}
 		}
 		
@@ -391,11 +394,12 @@ class TransactionViewTable extends JTable
 			if (transactionViewItemDto.getSla1BreachCnt() > 0)
 			{
 				jComponent.setBackground(COLOR_ORANGE);
+				jComponent.setForeground(Color.WHITE);
 			}
 			else
 			{
 				jComponent.setBackground(COLOR_GREEN);
-				
+				jComponent.setForeground(Color.WHITE);
 			}
 		}
 		
@@ -404,87 +408,17 @@ class TransactionViewTable extends JTable
 			if (transactionViewItemDto.getSla2BreachCnt() > 0)
 			{
 				jComponent.setBackground(COLOR_RED);
+				jComponent.setForeground(Color.WHITE);
 			}
 			else
 			{
 				jComponent.setBackground(COLOR_GREEN);
-				
+				jComponent.setForeground(Color.WHITE);
 			}
 		}
-		
-		
-		
-		
-		
-		
-		/*if ((column >= 1 && column <= 4) || column == 11) 
-		{
-			jc.setBackground(new Color(238, 238, 238));
-		}
-		else
-		{
-			jc.setBackground(new Color(221, 221, 221));
-			
-		}
-		
-		if ((column == 2 || column ==3 ) && ((row - 1) % 3 == 0))
-		{
-			jc.setBackground(new Color(153, 153, 153));
-			
-		}
-		
-		
-		
-		TransactionViewItemDto transactionViewItemDto = tableModel.getTransactionViewItemDto(row);
-		
-		
-		if (column == 1)
-		{
-			if (transactionViewItemDto.isUnderInvestigation()) 
-			{
-				jc.setBackground(Color.PINK);
-				
-			}
-			else
-			{
-				jc.setBackground(new Color(238, 238, 238));
-			}
-		}
-		
-		
-		// nBol  sent column
-		if (column == 5) 
-		{
-			if (transactionViewItemDto.getNbolSentAckNak() == AckNakEnum.NAK)
-			{
-				jc.setBackground(Color.PINK);
-			}
-			else if (transactionViewItemDto.isNbolSentResponseRequired())
-			{
-				jc.setBackground(Color.RED);
-			}
-			else
-			{
-				jc.setBackground(Color.GREEN);
-				
-			}
-			
-			
-		}*/
-		
+
 		return component;
 	}
-}
-// Cell Redenderes
-class CenterTableCellRenderer extends DefaultTableCellRenderer
-{
-	public CenterTableCellRenderer()
-	{
-		super();
-		
-		setHorizontalAlignment( JLabel.CENTER );
-	}
-
 }
 
 
