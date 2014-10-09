@@ -151,7 +151,50 @@ public class TrollerLogMessageDao
             DbUtil.close(connection);
         }
     }
-	
+
+	/**
+	 * Calls Stored Procedure called <b>InstructionInsert</b> which will insert
+	 * an INSTRUCTION event in the database.
+	 * 
+	 * Stored Procedure Parameter List
+	 * <ol>
+	 * <li>VARCHAR pInterID</li>
+	 * <li>VARCHAR pInstrID</li>
+	 * <li>VARCHAR cInstrID</li>
+	 * <li>TIMESTAMP pSourceTimestamp</li>
+	 * <li>VRACHAR pSourceSystem</li>
+	 * <li>VARCHAR pEvent</li>
+	 * <li>INT numTransactions</li>
+	 * </ol>
+	 * 
+	 * @throws SQLException
+	 */
+	public void updateInstructionEvent(InstructionEventDto instructionEventDto) throws SQLException
+    {
+		try 
+    	{
+            connection = ConnectionFactory.getConnection();
+            
+            CallableStatement callableStatement = connection.prepareCall(SP_INSTRUCTION_INSERT);
+            callableStatement.setString(1, instructionEventDto.getInterchangeId());
+            callableStatement.setString(2, instructionEventDto.getInstructionId());
+            callableStatement.setString(3, instructionEventDto.getRecInstructionId());
+            callableStatement.setTimestamp(4, new Timestamp(instructionEventDto.getSourceTimeStamp().getTime()));
+            callableStatement.setString(5, instructionEventDto.getSourceSystem());
+            callableStatement.setString(6, instructionEventDto.getEvent().toString());
+            callableStatement.setInt(7, instructionEventDto.getNumInstructions());
+            
+            callableStatement.execute();
+        } 
+    	catch (SQLException sqlex) 
+        {
+            throw sqlex;
+        }
+        finally 
+        {
+            DbUtil.close(connection);
+        }
+    }
 	/**
 	 * Calls Stored Procedure called <b>TransactionUpSert</b> which will insert 
 	 * or update a TRANSACTION event in the database.
