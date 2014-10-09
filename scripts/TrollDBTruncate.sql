@@ -8,3 +8,4 @@ truncate table channelTransaction ;
 truncate table channelTransactionHistory ;
 truncate table pesInstrIDmap ;
 truncate table pesTransIDmap ;
+truncate table problemRecord ;

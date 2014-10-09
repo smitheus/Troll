@@ -72,12 +72,12 @@ public class LogTestCaseEventMessages
 		PAYEX_LOG.info("TROLL, INSTR,  , pInstr01, 1, nInstr01");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr01, pTrans01, nInstr01, nTrans01, FUNDING");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr01, pTrans01B, nInstr01, nTrans01, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr01");
+		PAYEX_LOG.info("TROLL, SENT, , pInstr01,,");
 
 		PAYEX_LOG.info("TROLL, INSTR, , pInstr02, 1, nInstr01");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr02, pTrans02, nInstr01, nTrans02, FUNDING");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr02, pTrans02B, nInstr01, nTrans02, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr02");
+		PAYEX_LOG.info("TROLL, SENT, , pInstr02,,");
 	}
 	
 	public static void logTestCase_AllSuccess_PART4() 
@@ -100,12 +100,12 @@ public class LogTestCaseEventMessages
 		PAYEX_LOG.info("TROLL, INSTR, , pInstr03, 1, nInstr01");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr03, pTrans03, nInstr01, nTrans01, FUNDED");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr03, pTrans03B, nInstr01, nTrans01, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr03");
+		PAYEX_LOG.info("TROLL, SENT, , pInstr03,,");
 		
 		PAYEX_LOG.info("TROLL, INSTR, , pInstr04, 1, nInstr01");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr04, pTrans04, nInstr01, nTrans02, FUNDED");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr04, pTrans04B, nInstr01, nTrans02, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr04");
+		PAYEX_LOG.info("TROLL, SENT, , pInstr04,,");
 	}
 	
 	public static void logTestCase_AllSuccess_PART7() 

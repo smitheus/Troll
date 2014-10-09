@@ -147,6 +147,10 @@ BEGIN
 	declare totalCount int ;
 	declare nInstructionID varchar(40) ;
 	
+	declare respReqd varchar(1) ;
+	declare vSla1Due timestamp ;
+	declare vSla2Due timestamp ;
+	
 	set nInstructionID = pInstructionID ;
 	
 	select count(*) from channelInstruction where InterchangeID = pInterchangeID and InstructionID = nInstructionID into totalCount ;
@@ -156,4 +160,47 @@ BEGIN
 	end if ;
 	
 	insert into channelInstructionHistory (interchangeID, instructionID, insertTimeStamp, sourceTimestamp, sourceSystem, event, ackNak, text) values(pInterchangeID, nInstructionID, insertTimeStamp, pSourceTimestamp, pSourceSystem, pEvent, pAckNak, pText) ;
+
+			# do we need a response to this event?
+	
+		set respReqd = null ; # force a value
+		
+		if (pAckNak != 'NAK') then
+			select responseRequired, 
+				   DATE_ADD(pSourceTimestamp,INTERVAL sla1Period SECOND),
+				   DATE_ADD(pSourceTimestamp,INTERVAL sla2Period SECOND) 
+			into respReqd, vSla1Due, vSla2Due
+			from ResponseProcessing rp 
+			where rp.sourceSystem = pSourceSystem 
+			and rp.event = pEvent ;
+    	end if ;
+    
+	    if (  (respReqd = null) or (respReqd = '') ) then
+			set respReqd = ' ' ;
+	        set vSla1Due = null ;
+	        set vSla2Due = null ;
+		end if ;
+			
+	    # now insert the event in the history
+		INSERT INTO channelTransactionHistory 
+		(
+		 instructionID, transactionID, pesInstructionID, pesTransactionID, insertTimestamp, sourceTimestamp, sourceSystem, 
+		 event, ackNak, text, responseRequired, sla1Due, sla2Due, elapsedTime, sla1End, sla2End, sla1Breach, sla2Breach
+		)
+		SELECT ptm.cInstructionID, ptm.cTransactionID, ptm.pInstructionID, ptm.pTransactionID, insertTimestamp, pSourceTimestamp, pSourceSystem, 
+			  pEvent, pAckNak, pText, respReqd, vSla1Due, vSla2Due, cthsla.elapsedTime, cthsla.sla1End, cthsla.sla2End, cthsla.sla1Breach, cthsla.sla2Breach	
+		FROM pesTransIDmap ptm
+		LEFT JOIN (SELECT cth.instructionID, cth.transactionID, cth.pesInstructionID, cth.pesTransactionID,
+							  TIMESTAMPDIFF(SECOND, cth.sourceTimestamp, pSourceTimestamp) AS elapsedTime,
+							  cth.sla1Due AS sla1End, cth.sla2Due AS sla2End, 
+							  CASE WHEN (cth.sla1Due < pSourceTimestamp) THEN 'Y' ELSE 'N' END AS sla1Breach,
+							  CASE WHEN (cth.sla2Due < pSourceTimestamp) THEN 'Y' ELSE 'N' END AS sla2Breach
+					   FROM channelTransactionHistory cth, responseProcessing rp
+					   WHERE cth.sourceSystem = rp.previousSource 
+					   AND cth.event = rp.previousEvent 
+					   AND rp.SourceSystem = pSourceSystem 
+					   AND rp.event = pEvent) AS cthsla ON cthsla.instructionID = ptm.cInstructionID AND cthsla.transactionID = ptm.cTransactionID
+					  									AND cthsla.pesInstructionID <=> ptm.pInstructionID AND cthsla.pesTransactionID <=> ptm.pTransactionID
+		where ptm.pInstructionID = pInstructionID ;
+
 END ;
