@@ -11,7 +11,7 @@ create table responseProcessing (
 	closureName varchar(30),
 	sourceSystem varchar(40),
 	event varchar(10),
-	closureRequired varchar(1),
+	responseRequired varchar(1),
 	sla1Period int,
 	sla2Period int,
 	previousSource varchar(40),
