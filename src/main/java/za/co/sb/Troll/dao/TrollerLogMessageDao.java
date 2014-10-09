@@ -18,6 +18,7 @@ public class TrollerLogMessageDao
 	static final String SP_INTERCHANGE_INSERT = "{CALL InterchangeInsert (?, ?, ?, ?, ?, ?, ?)}";
 	static final String SP_INTERCHANGE_UPDATE = "{CALL InterchangeUpdate (?, ?, ?, ?, ?, ?)}";
 	static final String SP_INSTRUCTION_INSERT = "{CALL InstructionInsert (?, ?, ?, ?, ?, ?, ?)}";
+	static final String SP_INSTRUCTION_UPDATE = "{CALL InstructionUpdate (?, ?, ?, ?', ?, ?, ?)}";
 	static final String SP_TRANSACTION_UPSERT = "{CALL TransactionUpSert (?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 	
 	private Connection connection;
@@ -175,14 +176,18 @@ public class TrollerLogMessageDao
     	{
             connection = ConnectionFactory.getConnection();
             
-            CallableStatement callableStatement = connection.prepareCall(SP_INSTRUCTION_INSERT);
+            //call InstructionUpdate ('', 'pInstr01', '2014-01-01 00:00:24', 'PAYEX', 'SENT', '', '') ;
+            //call InstructionUpdate (?, ?, ?, ?', ?, ?, ?) ;
+			
+            
+            CallableStatement callableStatement = connection.prepareCall(SP_INSTRUCTION_UPDATE);
             callableStatement.setString(1, instructionEventDto.getInterchangeId());
             callableStatement.setString(2, instructionEventDto.getInstructionId());
-            callableStatement.setString(3, instructionEventDto.getRecInstructionId());
-            callableStatement.setTimestamp(4, new Timestamp(instructionEventDto.getSourceTimeStamp().getTime()));
-            callableStatement.setString(5, instructionEventDto.getSourceSystem());
-            callableStatement.setString(6, instructionEventDto.getEvent().toString());
-            callableStatement.setInt(7, instructionEventDto.getNumInstructions());
+            callableStatement.setTimestamp(3, new Timestamp(instructionEventDto.getSourceTimeStamp().getTime()));
+            callableStatement.setString(4, instructionEventDto.getSourceSystem());
+            callableStatement.setString(5, instructionEventDto.getEvent().toString());
+            callableStatement.setString(6, instructionEventDto.getAckNak() == AckNakEnum.UNKNOWN ? "" : instructionEventDto.getAckNak().toString());
+            callableStatement.setString(7, instructionEventDto.getText());
             
             callableStatement.execute();
         } 
