@@ -135,7 +135,7 @@ public class TransactionViewDao
             	filterCriteriaString += filterCriteriaList.get(index);
             }
             
-            LOG.info(String.format(SELECT_TRANSACTIONS_STATEMENT, filterCriteriaString));
+            LOG.debug(String.format(SELECT_TRANSACTIONS_STATEMENT, filterCriteriaString));
             
             PreparedStatement preparedStatement = connection.prepareStatement(String.format(SELECT_TRANSACTIONS_STATEMENT, filterCriteriaString));
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -207,7 +207,7 @@ public class TransactionViewDao
     	{
             connection = ConnectionFactory.getConnection();
             
-            LOG.info(String.format(SELECT_TRANSACTIONS_HISTORY_STATEMENT, instructionId, transactionId));
+            LOG.debug(String.format(SELECT_TRANSACTIONS_HISTORY_STATEMENT, instructionId, transactionId));
             
             PreparedStatement preparedStatement = connection.prepareStatement(String.format(SELECT_TRANSACTIONS_HISTORY_STATEMENT, instructionId, transactionId));
             ResultSet resultSet = preparedStatement.executeQuery();
