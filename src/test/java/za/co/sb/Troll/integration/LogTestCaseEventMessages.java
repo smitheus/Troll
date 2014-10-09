@@ -15,33 +15,29 @@ public class LogTestCaseEventMessages
 
 	public static void logAllTestCaseMessages() throws InterruptedException 
 	{
-		//logTestCase_AllSuccess();
-		/*logTestCase_MaxNakSectionA();
-		logTestCase_MaxNakSectionA();
-		logTestCase_T24RejectsSectionA();
-		logTestCase_T24RejectsSectionB();
-		logTestCase_PayexRejects();
-		logTestCase_MaxDoesNotRespond();
-		logTestCase_MaxSlowResponse();
-		logTestCase_MaxSlowResponseT24RejectsSectionA();
-		logTestCase_MaxSlowResponseT24DoesNotRespond();
-		logTestCase_MaxNakSectionB();*/
-		//logTestCase3Messages();
-		//logTestCase4Messages();
-		
-		
-		
-		
 		//logTestCase_AllSuccess_PART1();
         //logTestCase_AllSuccess_PART2();
 		//logTestCase_AllSuccess_PART3();
 		//logTestCase_AllSuccess_PART4();
 		//logTestCase_AllSuccess_PART5();
-		logTestCase_AllSuccess_PART6();
+		//logTestCase_AllSuccess_PART6();
 		//logTestCase_AllSuccess_PART7();
 		//logTestCase_AllSuccess_PART8();
 		//logTestCase_AllSuccess_PART9();
 		//logTestCase_AllSuccess_PART10();
+		
+		logTestCase_MaxNakSectionA();
+		//logTestCase_MaxNakSectionA();
+		//logTestCase_T24RejectsSectionA();
+		//logTestCase_T24RejectsSectionB();
+		//logTestCase_PayexRejects();
+		//logTestCase_MaxDoesNotRespond();
+		//logTestCase_MaxSlowResponse();
+		//logTestCase_MaxSlowResponseT24RejectsSectionA();
+		//logTestCase_MaxSlowResponseT24DoesNotRespond();
+		//logTestCase_MaxNakSectionB();
+		
+		
 		
 		
 		
@@ -158,167 +154,6 @@ public class LogTestCaseEventMessages
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	public static void logTestCase_MaxNakSectionA() 
 	{
 		// NBOL originates the request
@@ -338,13 +173,11 @@ public class LogTestCaseEventMessages
 		// PAYEX forwards the instruction as two separate section A operations
 		PAYEX_LOG.info("TROLL, INTER, pInter11, 1,,,");
 		PAYEX_LOG.info("TROLL, INSTR, pInter11, pInstr11, 1, nInstr11");
-		PAYEX_LOG
-				.info("TROLL, TRANS, pInstr01, pTrans11, nInstr11, nTrans11, Section A");
+		PAYEX_LOG.info("TROLL, TRANS, pInter11, pTrans11, nInstr11, nTrans11, Section A");
 		PAYEX_LOG.info("TROLL, SENT, pInter11");
 		PAYEX_LOG.info("TROLL, INTER, pInter12, 1,,,");
 		PAYEX_LOG.info("TROLL, INSTR, pInter12, pInstr12, 1, nInstr11");
-		PAYEX_LOG
-				.info("TROLL, TRANS, pInstr02, pTrans12, nInstr11, nTrans12, Section A");
+		PAYEX_LOG.info("TROLL, TRANS, pTrans12, pTrans12, nInstr11, nTrans12, Section A");
 		PAYEX_LOG.info("TROLL, SENT, pInter12");
 
 		// MAX ACKs the two interchanges
@@ -741,6 +574,11 @@ public class LogTestCaseEventMessages
 		// NBOL processes the final response
 		NBOL_LOG.info("TROLL, FINAL, nInter91");
 	}
+	
+	
+	
+	
+	
 
 	/**
 	 * 
