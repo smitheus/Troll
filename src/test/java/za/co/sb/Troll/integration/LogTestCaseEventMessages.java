@@ -15,35 +15,36 @@ public class LogTestCaseEventMessages
 
 	public static void logAllTestCaseMessages() throws InterruptedException 
 	{
-		logTestCase_AllSuccess_PART1();
+		/*logTestCase_AllSuccess_PART1();
 		Thread.sleep(22);
         logTestCase_AllSuccess_PART2();
         Thread.sleep(22);
-		logTestCase_AllSuccess_PART3();
-		Thread.sleep(22);
-		logTestCase_AllSuccess_PART4();
-		Thread.sleep(22);
-		logTestCase_AllSuccess_PART5();
-		Thread.sleep(22);
-		logTestCase_AllSuccess_PART6();
-		Thread.sleep(22);
-		logTestCase_AllSuccess_PART7();
-		Thread.sleep(22);
-		logTestCase_AllSuccess_PART8();
-		Thread.sleep(22);
-		logTestCase_AllSuccess_PART9();
-		Thread.sleep(22);
-		logTestCase_AllSuccess_PART10();
-/*		
-		logTestCase_MaxNakSectionA();
-		logTestCase_T24RejectsSectionA();
-		logTestCase_T24RejectsSectionB();
-		logTestCase_PayexRejects();
-		logTestCase_MaxDoesNotRespond();
-		logTestCase_MaxSlowResponse();
-		logTestCase_MaxSlowResponseT24RejectsSectionA();
-		logTestCase_MaxSlowResponseT24DoesNotRespond();
-		logTestCase_MaxNakSectionB();*/
+		logTestCase_AllSuccess_PART3();*/
+		
+		//Thread.sleep(22);
+		//logTestCase_AllSuccess_PART4();
+		//Thread.sleep(22);
+		//logTestCase_AllSuccess_PART5();
+		//Thread.sleep(22);
+		//logTestCase_AllSuccess_PART6();
+		//Thread.sleep(22);
+		//logTestCase_AllSuccess_PART7();
+		//Thread.sleep(22);
+		//logTestCase_AllSuccess_PART8();
+		//Thread.sleep(22);
+		//logTestCase_AllSuccess_PART9();
+		//Thread.sleep(22);
+		//logTestCase_AllSuccess_PART10();
+	
+		//logTestCase_MaxNakSectionA();
+		//logTestCase_T24RejectsSectionA();
+		//logTestCase_T24RejectsSectionB();
+		//logTestCase_PayexRejects();
+		//logTestCase_MaxDoesNotRespond();
+		//logTestCase_MaxSlowResponse();
+		//logTestCase_MaxSlowResponseT24RejectsSectionA();
+		//logTestCase_MaxSlowResponseT24DoesNotRespond();
+		logTestCase_MaxNakSectionB();
 	}
 	
 	public static void logTestCase_AllSuccess_PART1() 
@@ -69,22 +70,22 @@ public class LogTestCaseEventMessages
 	public static void logTestCase_AllSuccess_PART3() 
 	{
 		// PAYEX forwards the instruction as two separate FUNDING operations
-		PAYEX_LOG.info("TROLL, INSTR,  , pInstr01, 1, nInstr01");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr01, 1, nInstr01");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr01, pTrans01, nInstr01, nTrans01, FUNDING");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr01, pTrans01B, nInstr01, nTrans01, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, , pInstr01,,");
+		PAYEX_LOG.info("TROLL, SENT, pInstr01,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, , pInstr02, 1, nInstr01");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr02, 1, nInstr01");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr02, pTrans02, nInstr01, nTrans02, FUNDING");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr02, pTrans02B, nInstr01, nTrans02, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, , pInstr02,,");
+		PAYEX_LOG.info("TROLL, SENT, pInstr02,,");
 	}
 	
 	public static void logTestCase_AllSuccess_PART4() 
 	{
 		// MAX ACKs the two interchanges
-		PAYEX_LOG.info("TROLL, MAX, ,pInstr01, ACK,");
-		PAYEX_LOG.info("TROLL, MAX, ,pInstr02, ACK,");
+		PAYEX_LOG.info("TROLL, MAX, pInstr01, ACK,");
+		PAYEX_LOG.info("TROLL, MAX, pInstr02, ACK,");
 	}
 	
 	public static void logTestCase_AllSuccess_PART5() 
@@ -97,22 +98,22 @@ public class LogTestCaseEventMessages
 	public static void logTestCase_AllSuccess_PART6() 
 	{		
 		// PAYEX sends the FUNDED interchanges
-		PAYEX_LOG.info("TROLL, INSTR, , pInstr03, 1, nInstr01");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr03, 1, nInstr01");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr03, pTrans03, nInstr01, nTrans01, FUNDED");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr03, pTrans03B, nInstr01, nTrans01, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, , pInstr03,,");
+		PAYEX_LOG.info("TROLL, SENT, pInstr03,,");
 		
-		PAYEX_LOG.info("TROLL, INSTR, , pInstr04, 1, nInstr01");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr04, 1, nInstr01");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr04, pTrans04, nInstr01, nTrans02, FUNDED");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr04, pTrans04B, nInstr01, nTrans02, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, , pInstr04,,");
+		PAYEX_LOG.info("TROLL, SENT, pInstr04,,");
 	}
 	
 	public static void logTestCase_AllSuccess_PART7() 
 	{
 		// MAX ACKs the two interchanges
-		PAYEX_LOG.info("TROLL, MAX, ,pInstr03, ACK,");
-		PAYEX_LOG.info("TROLL, MAX, ,pInstr04, ACK,");
+		PAYEX_LOG.info("TROLL, MAX, pInstr03, ACK,");
+		PAYEX_LOG.info("TROLL, MAX, pInstr04, ACK,");
 	}
 	
 	public static void logTestCase_AllSuccess_PART8() 
@@ -151,16 +152,15 @@ public class LogTestCaseEventMessages
 		NBOL_LOG.info("TROLL, INTERIM, nInter11");
 
 		// PAYEX forwards the instruction as two separate FUNDING operations
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr11, pInstr11, 1, nInstr11");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr11, 1, nInstr11");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr11, pTrans11, nInstr11, nTrans11, FUNDING");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr11, pTrans11B, nInstr11, nTrans11, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr11");
+		PAYEX_LOG.info("TROLL, SENT, pInstr11,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr12, pInstr12, 1, nInstr11");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr12, 1, nInstr11");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr12, pTrans12, nInstr11, nTrans12, FUNDING");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr12, pTrans12B, nInstr11, nTrans12, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr12");
+		PAYEX_LOG.info("TROLL, SENT, pInstr12,,");
 		
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInstr11, ACK,");
@@ -171,10 +171,10 @@ public class LogTestCaseEventMessages
 		
 		// PAYEX sends the FUNDED interchanges
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr13, pInstr13, 1, nInstr11");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr13, 1, nInstr11");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr13, pTrans13, nInstr11, nTrans11, FUNDED");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr13, pTrans13B, nInstr11, nTrans11, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr13");
+		PAYEX_LOG.info("TROLL, SENT, pInstr13,,");
 		
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInstr13, ACK,");
@@ -205,14 +205,13 @@ public class LogTestCaseEventMessages
 		NBOL_LOG.info("TROLL, INTERIM, nInter21");
 
 		// PAYEX forwards the instruction as two separate FUNDING operations
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr21, pInstr21, 1, nInstr21");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr21, 1, nInstr21");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr21, pTrans21, nInstr21, nTrans21, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr21");
+		PAYEX_LOG.info("TROLL, SENT, pInstr21,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr22, pInstr22, 1, nInstr21");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr22, 1, nInstr21");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr22, pTrans22, nInstr21, nTrans22, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr22");
+		PAYEX_LOG.info("TROLL, SENT, pInstr22,,");
 
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInstr21, ACK,");
@@ -223,10 +222,9 @@ public class LogTestCaseEventMessages
 		PAYEX_LOG.info("TROLL, CORE, pInstr22, pTrans22, NAK, Insufficient funds");
 		
 		// PAYEX sends the FUNDED interchange
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr23, pInstr23, 1, nInstr21");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr23, 1, nInstr21");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr23, pTrans23, nInstr21, nTrans21, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr23");
+		PAYEX_LOG.info("TROLL, SENT, pInstr23,,");
 
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInstr23, ACK,");
@@ -257,14 +255,13 @@ public class LogTestCaseEventMessages
 		NBOL_LOG.info("TROLL, INTERIM, nInter31");
 
 		// PAYEX forwards the instruction as two separate operations
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr31, pInstr31, 1, nInstr31");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr31, 1, nInstr31");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr31, pTrans31, nInstr31, nTrans31, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr31");
+		PAYEX_LOG.info("TROLL, SENT, pInstr31,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr32, pInstr32, 1, nInstr31");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr32, 1, nInstr31");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr32, pTrans32, nInstr31, nTrans32, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr32");
+		PAYEX_LOG.info("TROLL, SENT, pInstr32,,");
 
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInstr31, ACK,");
@@ -276,13 +273,13 @@ public class LogTestCaseEventMessages
 		
 		// PAYEX sends the FUNDED interchanges
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr33, pInstr33, 1, nInstr31");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr33, 1, nInstr31");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr33, pTrans33, nInstr31, nTrans31, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr33");
+		PAYEX_LOG.info("TROLL, SENT, pInstr33,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr34, pInstr32, 1, nInstr31");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr34, 1, nInstr31");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr34, pTrans34, nInstr31, nTrans32, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr34");
+		PAYEX_LOG.info("TROLL, SENT, pInstr34,,");
 
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInstr33, ACK,");
@@ -294,9 +291,9 @@ public class LogTestCaseEventMessages
 		
 		// PAYEX sends a REVERSE
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr35, pInstr35, 1, nInstr31");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr35, 1, nInstr31");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr35, pTrans35, nInstr31, nTrans32, Reverse");
-		PAYEX_LOG.info("TROLL, SENT, pInstr35");
+		PAYEX_LOG.info("TROLL, SENT, pInstr35,,");
 
 		// MAX ACKs the reverse
 		PAYEX_LOG.info("TROLL, MAX, pInstr35, ACK,");
@@ -350,14 +347,13 @@ public class LogTestCaseEventMessages
 		NBOL_LOG.info("TROLL, INTERIM, nInter51");
 
 		// PAYEX forwards the instruction as two separate FUNDING operations
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr51, pInstr51, 1, nInstr51");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr51, 1, nInstr51");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr51, pTrans51, nInstr51, nTrans51, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr51");
+		PAYEX_LOG.info("TROLL, SENT, pInstr51,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr52, pInstr52, 1, nInstr51");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr52, 1, nInstr51");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr52, pTrans52, nInstr51, nTrans52, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr52");
+		PAYEX_LOG.info("TROLL, SENT, pInstr52,,");
 
 		// expecting the MAX ACKs
 	}
@@ -379,14 +375,13 @@ public class LogTestCaseEventMessages
 		NBOL_LOG.info("TROLL, INTERIM, nInter61");
 
 		// PAYEX forwards the instruction as two separate FUNDING operations
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr61, pInstr61, 1, nInstr61");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr61, 1, nInstr61");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr61, pTrans61, nInstr61, nTrans61, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr61");
+		PAYEX_LOG.info("TROLL, SENT, pInstr61,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr62, pInstr62, 1, nInstr61");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr62, 1, nInstr61");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr62, pTrans62, nInstr61, nTrans62, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr62");
+		PAYEX_LOG.info("TROLL, SENT, pInstr62,,");
 
 		// MAX ACKs the two interchanges after a delay
 		Thread.sleep(6000);
@@ -396,15 +391,15 @@ public class LogTestCaseEventMessages
 		// core banking responds to the FUNDING messages
 		PAYEX_LOG.info("TROLL, CORE, pInstr61, pTrans61, ACK, coreRef61");
 		PAYEX_LOG.info("TROLL, CORE, pInstr62, pTrans62, ACK, coreRef62");
+		
 		// PAYEX sends the FUNDED interchanges
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr63, pInstr63, 1, nInstr61");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr63, 1, nInstr61");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr63, pTrans63, nInstr61, nTrans61, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr63");
+		PAYEX_LOG.info("TROLL, SENT, pInstr63,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr64, pInstr62, 1, nInstr61");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr64, 1, nInstr61");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr64, pTrans64, nInstr61, nTrans62, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr64");
+		PAYEX_LOG.info("TROLL, SENT, pInstr64,,");
 
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInstr63, ACK,");
@@ -413,6 +408,7 @@ public class LogTestCaseEventMessages
 		// core banking responds to the FUNDED messages
 		PAYEX_LOG.info("TROLL, CORE, pInstr63, pTrans63, ACK, coreRef63");
 		PAYEX_LOG.info("TROLL, CORE, pInstr64, pTrans64, ACK, coreRef64");
+		
 		// PAYEX issues final status
 		PAYEX_LOG.info("TROLL, FINAL, nInter61");
 
@@ -437,14 +433,13 @@ public class LogTestCaseEventMessages
 		NBOL_LOG.info("TROLL, INTERIM, nInter71");
 
 		// PAYEX forwards the instruction as two separate FUNDING operations
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr71, pInstr71, 1, nInstr71");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr71, 1, nInstr71");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr71, pTrans71, nInstr71, nTrans71, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr71");
+		PAYEX_LOG.info("TROLL, SENT, pInstr71,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr72, pInstr72, 1, nInstr71");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr72, 1, nInstr71");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr72, pTrans72, nInstr71, nTrans72, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr72");
+		PAYEX_LOG.info("TROLL, SENT, pInstr72,,");
 
 		// MAX ACKs the two interchanges after a delay
 		Thread.sleep(7000);
@@ -454,16 +449,18 @@ public class LogTestCaseEventMessages
 		// core banking responds to the FUNDING messages
 		PAYEX_LOG.info("TROLL, CORE, pInstr71, pTrans71, ACK, coreRef71");
 		PAYEX_LOG.info("TROLL, CORE, pInstr72, pTrans72, NAK, Insufficient funds");
+		
 		// PAYEX sends the FUNDED interchange
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr73, pInstr73, 1, nInstr71");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr73, 1, nInstr71");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr73, pTrans73, nInstr71, nTrans71, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr73");
+		PAYEX_LOG.info("TROLL, SENT, pInstr73,,");
+		
 		// MAX ACKs the interchange
 		PAYEX_LOG.info("TROLL, MAX, pInstr73, ACK,");
 
 		// core banking responds to the FUNDED messages
 		PAYEX_LOG.info("TROLL, CORE, pInstr73, pTrans73, ACK, coreRef73");
+		
 		// PAYEX issues final status
 		PAYEX_LOG.info("TROLL, FINAL, nInter71");
 
@@ -488,14 +485,13 @@ public class LogTestCaseEventMessages
 		NBOL_LOG.info("TROLL, INTERIM, nInter81");
 
 		// PAYEX forwards the instruction as two separate FUNDING operations
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr81, pInstr81, 1, nInstr81");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr81, 1, nInstr81");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr81, pTrans81, nInstr81, nTrans81, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr81");
+		PAYEX_LOG.info("TROLL, SENT, pInstr81,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr82, pInstr82, 1, nInstr81");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr82, 1, nInstr81");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr82, pTrans82, nInstr81, nTrans82, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr82");
+		PAYEX_LOG.info("TROLL, SENT, pInstr82,,");
 
 		// MAX ACKs the two interchanges after a delay
 		Thread.sleep(8000);
@@ -522,14 +518,13 @@ public class LogTestCaseEventMessages
 		NBOL_LOG.info("TROLL, INTERIM, nInter91");
 
 		// PAYEX forwards the instruction as two separate FUNDING operations
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr91, pInstr91, 1, nInstr91");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr91, 1, nInstr91");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr91, pTrans91, nInstr91, nTrans91, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr91");
+		PAYEX_LOG.info("TROLL, SENT, pInstr91,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr92, pInstr92, 1, nInstr91");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr92, 1, nInstr91");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr92, pTrans92, nInstr91, nTrans92, FUNDING");
-		PAYEX_LOG.info("TROLL, SENT, pInstr92");
+		PAYEX_LOG.info("TROLL, SENT, pInstr92,,");
 
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInstr91, ACK,");
@@ -538,15 +533,15 @@ public class LogTestCaseEventMessages
 		// core banking responds to the FUNDING messages
 		PAYEX_LOG.info("TROLL, CORE, pInstr91, pTrans91, ACK, coreRef91");
 		PAYEX_LOG.info("TROLL, CORE, pInstr92, pTrans92, ACK, coreRef92");
+		
 		// PAYEX sends the FUNDED interchanges
-
-		PAYEX_LOG.info("TROLL, INSTR, pInstr93, pInstr93, 1, nInstr91");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr93, 1, nInstr91");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr93, pTrans93, nInstr91, nTrans91, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr93");
+		PAYEX_LOG.info("TROLL, SENT, pInstr93,,");
 
-		PAYEX_LOG.info("TROLL, INSTR, pInstr94, pInstr94, 1, nInstr91");
+		PAYEX_LOG.info("TROLL, INSTR,, pInstr94, 1, nInstr91");
 		PAYEX_LOG.info("TROLL, TRANS, pInstr94, pTrans94, nInstr91, nTrans92, FUNDED");
-		PAYEX_LOG.info("TROLL, SENT, pInstr94");
+		PAYEX_LOG.info("TROLL, SENT, pInstr94,,");
 
 		// MAX ACKs the two interchanges
 		PAYEX_LOG.info("TROLL, MAX, pInstr93, ACK,");
@@ -554,6 +549,7 @@ public class LogTestCaseEventMessages
 
 		// core banking responds to the FUNDED messages
 		PAYEX_LOG.info("TROLL, CORE, pInstr93, pTrans93, ACK, coreRef93");
+		
 		// PAYEX issues final status
 		PAYEX_LOG.info("TROLL, FINAL, nInter91");
 

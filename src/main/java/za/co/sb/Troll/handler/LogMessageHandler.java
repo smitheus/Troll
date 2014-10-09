@@ -69,14 +69,17 @@ public class LogMessageHandler
 	            case CORE :
 	            	trollerLogMessageDao.upsertTransactionEvent(handleTransactionEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
-
 	            case MAX :	
 	            case SENT :
 	            	if ("PAYEX".equals(sourceSystem))
 	            	{
 	            		trollerLogMessageDao.updateInstructionEvent(handleInstructionUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList));
-	            		break;
 	            	}
+	            	else // Assume nBol
+	            	{
+	            		trollerLogMessageDao.updateInterchangeEvent(handleInterchangeUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList));
+	            	}
+	            	break;
 	            case RECD :
 	            case INTERIM :	
 	            case FINAL :
@@ -381,22 +384,20 @@ public class LogMessageHandler
 		try
 		{
 			EventEnum event = EventEnum.getEvent(logMessagePropList.get(0));
-/*			if (event != EventEnum.SENT && !"PAYEX".equalsIgnoreCase(sourceSystem))
+			
+			if (event != EventEnum.SENT && event != EventEnum.MAX)
 			{
 				throw new Exception("Invalid transaction <EVENT>");
-			}*/
-			
-			//call InstructionUpdate ('', 'pInstr01', '2014-01-01 00:00:24', 'PAYEX', 'SENT', '', '') ;
-			//call InstructionUpdate ('', 'pInstr01', '2014-01-01 00:00:24', 'PAYEX', 'MAX', '', '') ;
+			}
 			
 			instructionEventDto.setSourceSystem(sourceSystem);
 			instructionEventDto.setEvent(event);
 			instructionEventDto.setSourceTimeStamp(sourceTimestamp);
 			
-			instructionEventDto.setInterchangeId(logMessagePropList.get(1));
-			instructionEventDto.setInstructionId(logMessagePropList.get(2));
-			instructionEventDto.setAckNak(AckNakEnum.getAckNak(logMessagePropList.get(3)));
-			instructionEventDto.setText(logMessagePropList.get(4));
+			instructionEventDto.setInterchangeId("");
+			instructionEventDto.setInstructionId(logMessagePropList.get(1));
+			instructionEventDto.setAckNak(AckNakEnum.getAckNak(logMessagePropList.get(2)));
+			instructionEventDto.setText(logMessagePropList.get(3));
 			
 		}
 		catch (Exception ex)
