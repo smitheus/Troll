@@ -23,6 +23,8 @@ public class HandleTestCaseEventMessages
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception 
 	{
+		BufferedReader br = null;
+		
 		try
 		{
 			// Load DB properties
@@ -30,7 +32,7 @@ public class HandleTestCaseEventMessages
 			LogTestCaseEventMessages.logAllTestCaseMessages();
 
 			// Build list of test case messages
-			BufferedReader br = new BufferedReader(new FileReader("logs/test/Troll.log"));
+			br = new BufferedReader(new FileReader("logs/test/Troll.log"));
 
 			String logLine;
 			while ((logLine = br.readLine()) != null) 
@@ -50,12 +52,17 @@ public class HandleTestCaseEventMessages
 				else
 					throw new Exception("unknown source") ;
 			}
-
-			br.close();
 		}
 		catch (Exception ex)
 		{
 			throw new Exception("Exception occurred during test setup", ex);
+		}
+		finally
+		{
+			if (br != null)
+			{
+				br.close();
+			}
 		}
 	}
 

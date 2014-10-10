@@ -4,8 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,11 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -28,6 +33,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import za.co.sb.Troll.dao.TransactionViewDao;
 import za.co.sb.Troll.dto.TransactionViewItemDto;
@@ -192,6 +199,16 @@ class TransactionViewTableModel extends AbstractTableModel
 		return false;
 	}
 	
+	public void setAllExportCheckboxes(boolean checkUncheck)
+	{
+		for (int index = 0; index < tableData.length; index ++)
+		{
+			tableData[index][1] = checkUncheck;
+		}
+			
+		fireTableDataChanged();
+	}
+	
 	public Map<Integer, TransactionViewItemDto> getSelectedTransactionViewItemDto() 
 	{
 		Map<Integer, TransactionViewItemDto> map = new LinkedHashMap<Integer, TransactionViewItemDto>();
@@ -270,7 +287,6 @@ class TransactionViewTable extends JTable
 	private static final Color COLOR_LIGHT_GREY = new Color(238, 238, 238);
 	//private static final Color COLOR_DARK_GREY = new Color(153, 153, 153);
 	
-	
 	private TransactionViewTableModel transactionViewTableModel;
 	
 	public TransactionViewTable(TransactionViewTableModel transactionViewTableModel)
@@ -315,6 +331,21 @@ class TransactionViewTable extends JTable
 	    
 	    getColumnModel().getColumn(10).setMinWidth(100);
 	    getColumnModel().getColumn(10).setMaxWidth(100);
+	    
+	    TableColumn tableColumn = getColumnModel().getColumn(1);  
+	    tableColumn.setCellEditor(getDefaultEditor(Boolean.class));  
+	    tableColumn.setCellRenderer(getDefaultRenderer(Boolean.class));  
+	    tableColumn.setHeaderRenderer(new CheckBoxHeader(new HeaderExportCheckboxItemListener()));  
+	}
+	
+	class HeaderExportCheckboxItemListener implements ItemListener 
+	{
+		@Override
+		public void itemStateChanged(ItemEvent e) 
+		{
+			boolean checked = e.getStateChange() == ItemEvent.SELECTED;
+			transactionViewTableModel.setAllExportCheckboxes(checked);
+		}
 	}
 	
 	public TransactionViewTableModel getTransactionViewTableModel()
@@ -430,6 +461,99 @@ class CenterTableCellRenderer extends DefaultTableCellRenderer
 	{
 		super();
 		setHorizontalAlignment(SwingConstants.CENTER);
+	}
+}
+
+@SuppressWarnings("serial")
+class CheckBoxHeader extends JCheckBox implements TableCellRenderer, MouseListener 
+{
+	protected CheckBoxHeader rendererComponent;
+	protected int column;
+	protected boolean mousePressed = false;
+
+	public CheckBoxHeader(ItemListener itemListener) 
+	{
+		rendererComponent = this;
+		rendererComponent.addItemListener(itemListener);
+		
+		setHorizontalAlignment(SwingConstants.CENTER);
+	}
+	
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object value,	boolean isSelected, boolean hasFocus, int row, int column) 
+	{
+		if (table != null) 
+		{
+			JTableHeader header = table.getTableHeader();
+			
+			if (header != null) 
+			{
+				rendererComponent.setForeground(header.getForeground());
+				rendererComponent.setBackground(header.getBackground());
+				rendererComponent.setFont(header.getFont());
+				header.addMouseListener(rendererComponent);
+			}
+		}
+		setColumn(column);
+		setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+		
+		return rendererComponent;
+	}
+
+	protected void setColumn(int column) 
+	{
+		this.column = column;
+	}
+
+	public int getColumn() 
+	{
+		return column;
+	}
+
+	protected void handleClickEvent(MouseEvent e) 
+	{
+		if (mousePressed) 
+		{
+			mousePressed = false;
+			JTableHeader header = (JTableHeader) (e.getSource());
+			JTable tableView = header.getTable();
+			TableColumnModel columnModel = tableView.getColumnModel();
+			int viewColumn = columnModel.getColumnIndexAtX(e.getX());
+			int column = tableView.convertColumnIndexToModel(viewColumn);
+
+			if (viewColumn == this.column && e.getClickCount() == 1	&& column != -1) 
+			{
+				doClick();
+			}
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) 
+	{
+		handleClickEvent(e);
+		((JTableHeader) e.getSource()).repaint();
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) 
+	{
+		mousePressed = true;
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) 
+	{
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) 
+	{
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) 
+	{
 	}
 }
 
