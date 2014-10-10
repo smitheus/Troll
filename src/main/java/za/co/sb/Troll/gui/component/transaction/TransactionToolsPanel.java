@@ -26,6 +26,10 @@ import com.google.common.base.Strings;
 @SuppressWarnings("serial")
 public class TransactionToolsPanel extends JPanel implements ActionListener 
 {
+	public static ComboBoxItem WHAT_DEFAULT = new ComboBoxItem("All" , "");
+	public static ComboBoxItem HOW_DEFAULT = new ComboBoxItem("All Failures" , TransactionViewDao.ALL_FAILURE_FILTER);
+	public static ComboBoxItem WHEN_DEFAULT = new ComboBoxItem("Last 5 Days", String.format(TransactionViewDao.DATE_FILTER, "5", "DAY"));
+	
 	private static String FILTER_ACTION_COMMAND = "FILTER";
 	private static String FIND_ACTION_COMMAND = "ENTER";
 	
@@ -105,6 +109,7 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 		
 		String actionCommand = e.getActionCommand();
 		List<String> filerCriteriaList = new ArrayList<String>();
+		String successFailureFilter = null;
 		
 		boolean filteringCancelled = false;
 		
@@ -121,7 +126,7 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 			
 			if (!Strings.isNullOrEmpty(selectedHowComboBoxItem.getSqlFilter()))
 			{
-				filerCriteriaList.add(selectedHowComboBoxItem.getSqlFilter());
+				successFailureFilter = selectedHowComboBoxItem.getSqlFilter();
 			}
 			
 			if (whenComboBox.isCustom()) 
@@ -138,8 +143,6 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 							TransactionViewDao.CUSTOM_DATE_FILTER,
 							TransactionViewDao.SQL_DATE_FORMAT.format(timePickerDialog.getSelectedFromDate()),
 							TransactionViewDao.SQL_DATE_FORMAT.format(timePickerDialog.getSelectedToDate()));
-					
-					System.out.println(sqlCustomDateFilter);
 					
 					filerCriteriaList.add(sqlCustomDateFilter);
 				}
@@ -167,7 +170,7 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 		{
 			try 
 			{
-				trollConsoleFrame.getTransactionViewPanel().reload(filerCriteriaList);
+				trollConsoleFrame.getTransactionViewPanel().reload(filerCriteriaList, successFailureFilter);
 			}
 			catch (Exception ex) 
 			{
@@ -203,6 +206,8 @@ class WhatComboBox extends JComboBox<ComboBoxItem>
 		{
 			addItem(new ComboBoxItem(coreBankingSystem.getCountry(), String.format(TransactionViewDao.COUNTRY_FILTER, coreBankingSystem.getCountry())));
 		}
+		
+		setSelectedItem(TransactionToolsPanel.WHAT_DEFAULT);
 	}
 }
 
@@ -215,9 +220,11 @@ class HowComboBox extends JComboBox<ComboBoxItem>
 		
 		addItem(new ComboBoxItem("All" , ""));
 		addItem(new ComboBoxItem("All Successes" , TransactionViewDao.ALL_SUCCESS_FILTER));
-		addItem(new ComboBoxItem("All Failures" , TransactionViewDao.ALL_FAILURE_FILTER));
+		addItem(TransactionToolsPanel.HOW_DEFAULT);
 		addItem(new ComboBoxItem("All System Failures" , TransactionViewDao.SYSTEM_FAILURE_FILTER));
 		addItem(new ComboBoxItem("All Business Failures" , TransactionViewDao.BUSINESS_FAILURE_FILTER));
+		
+		setSelectedItem(TransactionToolsPanel.HOW_DEFAULT);
 	}
 }
 
@@ -239,7 +246,11 @@ class WhenComboBox extends JComboBox<ComboBoxItem>
 		addItem(new ComboBoxItem("Last Hour", String.format(TransactionViewDao.DATE_FILTER, "1", "HOUR")));
 		addItem(new ComboBoxItem("Last 2 Hours", String.format(TransactionViewDao.DATE_FILTER, "2", "HOUR")));
 		addItem(new ComboBoxItem("Last 6 Hours", String.format(TransactionViewDao.DATE_FILTER, "6", "HOUR")));
+		addItem(new ComboBoxItem("Last Day", String.format(TransactionViewDao.DATE_FILTER, "1", "DAY")));
+		addItem(TransactionToolsPanel.WHEN_DEFAULT);
 		addItem(new ComboBoxItem("Custom..." , ""));
+		
+		setSelectedItem(TransactionToolsPanel.WHEN_DEFAULT);
 	}
 	
 	public boolean isCustom()

@@ -16,7 +16,6 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -24,7 +23,6 @@ import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -65,11 +63,11 @@ public class TransactionViewPanel extends JPanel implements TableModelListener
 		add(scrollPane, BorderLayout.CENTER);
 	}
 	
-	public void reload(List<String> filterCriteriaList)
+	public void reload(List<String> filterCriteriaList,  String successFailureFilter)
 	{
 		try 
 		{
-			transactionViewTableModel.setupTableData(filterCriteriaList);
+			transactionViewTableModel.setupTableData(filterCriteriaList, successFailureFilter);
 		} 
 		catch (SQLException e) 
 		{
@@ -131,11 +129,12 @@ class TransactionViewTableModel extends AbstractTableModel
 	{
 		super();
 
-		try {
-			List<String> sqlFilterCriteriaList = new ArrayList<String>();;
-			sqlFilterCriteriaList.add(String.format(TransactionViewDao.DATE_FILTER, "10", "SECOND"));
+		try 
+		{
+			List<String> sqlFilterCriteriaList = new ArrayList<String>();
+			sqlFilterCriteriaList.add(TransactionToolsPanel.WHEN_DEFAULT.getSqlFilter());
 			
-			setupTableData(sqlFilterCriteriaList);
+			setupTableData(sqlFilterCriteriaList, TransactionToolsPanel.HOW_DEFAULT.getSqlFilter());
 		} 
 		catch (SQLException e) 
 		{
@@ -144,11 +143,11 @@ class TransactionViewTableModel extends AbstractTableModel
 		}	
 	}
 	
-	public void setupTableData(List<String> filterCriteriaList) throws SQLException
+	public void setupTableData(List<String> filterCriteriaList, String successFailureFilter) throws SQLException
 	{
 		TransactionViewDao transactionViewDao = new TransactionViewDao();
 		
-		this.transactionViewItemDtoMap = transactionViewDao.selectTransactionViewItemDtos(filterCriteriaList);
+		this.transactionViewItemDtoMap = transactionViewDao.selectTransactionViewItemDtos(filterCriteriaList, successFailureFilter);
 		this.tableData = new Object[transactionViewItemDtoMap.values().size()][COLUMN_NAMES.length];
 		
 		int index = 0;
