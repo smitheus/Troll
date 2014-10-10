@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -132,8 +131,6 @@ public class TransactionHistoryViewDialog extends JDialog implements ActionListe
 class TransactionHistoryViewTableModel extends AbstractTableModel  
 {
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("dd day(s) HH:mm:ss");
-	
 	private static String[] COLUMN_NAMES = new String[] { "Instruction ID", "Transaction ID", "PES Instruction ID", "PES Transaction ID", "Insert Timestamp", "Timestamp", "Source System", "Event", "AckNak", "Text", "ResponseRequired", "SLA 1 Due", "SLA Due", "Elapsed Time", "SLA 1 End", "SLA 2 End", "SLA 1 Breached", "SLA 2 Breached" };
 	
 	private TransactionViewItemDto transactionViewItemDto;
@@ -184,7 +181,7 @@ class TransactionHistoryViewTableModel extends AbstractTableModel
 			tableData[index][10] = transactionHistoryViewItemDto.isResponseRequired();
 			tableData[index][11] = transactionHistoryViewItemDto.getSla1Due() == null ? "" : DATE_FORMAT.format(transactionHistoryViewItemDto.getSla1Due()); 
 			tableData[index][12] = transactionHistoryViewItemDto.getSla2Due() == null ? "" : DATE_FORMAT.format(transactionHistoryViewItemDto.getSla2Due()); 
-			tableData[index][13] = transactionHistoryViewItemDto.getElapsedTime() == null ? "" : TIME_FORMAT.format(new Date(transactionHistoryViewItemDto.getElapsedTime() * 1000)); 
+			tableData[index][13] = transactionHistoryViewItemDto.getElapsedTime() == null ? "" : FormatDuration.formatDuration(transactionHistoryViewItemDto.getElapsedTime() * 1000); 
 			tableData[index][14] = transactionHistoryViewItemDto.getSla1End() == null ? "" : DATE_FORMAT.format(transactionHistoryViewItemDto.getSla1End());
 			tableData[index][15] = transactionHistoryViewItemDto.getSla2End() == null ? "" : DATE_FORMAT.format(transactionHistoryViewItemDto.getSla2End());
 			tableData[index][16] = transactionHistoryViewItemDto.isSla1Breach();
@@ -376,7 +373,6 @@ class TransactionHistoryTable extends JTable
 			if ("Y".equalsIgnoreCase(transactionHistoryViewItemDto.isSla1Breach()))
 			{
 				jComponent.setBackground(COLOR_ORANGE);
-				jComponent.setForeground(Color.WHITE);
 			}
 			else if ("N".equalsIgnoreCase(transactionHistoryViewItemDto.isSla1Breach()))
 			{
@@ -398,5 +394,29 @@ class TransactionHistoryTable extends JTable
 		}
 		
 		return component;
+	}
+}
+
+class FormatDuration
+{
+	private static final long SENCONDS_IN_MILLISECONDS = 1000;
+	private static final long MINUTES_IN_MILLISECONDS = SENCONDS_IN_MILLISECONDS * 60;
+	private static final long HOURS_IN_MILLISECONDS = MINUTES_IN_MILLISECONDS * 60;
+	private static final long DAYS_IN_MILLISECONDS = HOURS_IN_MILLISECONDS * 24;
+	
+	public static String formatDuration(long duration)
+	{
+		long elapsedDays = duration / DAYS_IN_MILLISECONDS;
+		duration = duration % DAYS_IN_MILLISECONDS;
+	
+		long elapsedHours = duration / HOURS_IN_MILLISECONDS;
+		duration = duration % HOURS_IN_MILLISECONDS;
+	
+		long elapsedMinutes = duration / MINUTES_IN_MILLISECONDS;
+		duration = duration % MINUTES_IN_MILLISECONDS;
+		
+		long elapsedSeconds = duration / SENCONDS_IN_MILLISECONDS;
+	
+		return String.format("%02d:%02d:%02d:%02d", elapsedDays, elapsedHours, elapsedMinutes, elapsedSeconds);
 	}
 }

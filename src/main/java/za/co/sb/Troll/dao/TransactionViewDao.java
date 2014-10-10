@@ -247,7 +247,7 @@ public class TransactionViewDao
             	transactionHistoryViewItemDto.setSla2Due(resultSet.getTimestamp(14, calendar));
             	transactionHistoryViewItemDto.setSla1Overdue(resultSet.getString(15)); 
             	transactionHistoryViewItemDto.setSla2Overdue(resultSet.getString(16));
-            	transactionHistoryViewItemDto.setElapsedTime(resultSet.getLong(17));
+            	transactionHistoryViewItemDto.setElapsedTime(resultSet.getString(17));
             	transactionHistoryViewItemDto.setSla1End(resultSet.getTimestamp(18, calendar));
             	transactionHistoryViewItemDto.setSla2End(resultSet.getTimestamp(19, calendar));
             	transactionHistoryViewItemDto.setSla1Breach(resultSet.getString(20));

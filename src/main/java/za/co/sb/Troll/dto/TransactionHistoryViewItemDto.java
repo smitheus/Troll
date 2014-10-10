@@ -2,6 +2,8 @@ package za.co.sb.Troll.dto;
 
 import java.util.Date;
 
+import com.google.common.base.Strings;
+
 import za.co.sb.Troll.enums.AckNakEnum;
 import za.co.sb.Troll.enums.EventEnum;
 
@@ -181,6 +183,11 @@ public class TransactionHistoryViewItemDto extends Dto
 	public Long getElapsedTime() 
 	{
 		return elapsedTime;
+	}
+	
+	public void setElapsedTime(String elapsedTimeString) 
+	{
+		this.elapsedTime = Strings.isNullOrEmpty(elapsedTimeString) ? null : Long.valueOf(elapsedTimeString);
 	}
 
 	public void setElapsedTime(Long elapsedTime) 
