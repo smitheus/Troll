@@ -30,7 +30,7 @@ public class LogMessageHandler
 	
 	public static final DateFormat NBOL_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");                                                                          
 	public static final DateFormat PAYEX_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");
-	public static final DateFormat DEFAULT_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+	public static final DateFormat DEFAULT_LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");
 	
 	private TrollerLogMessageDao trollerLogMessageDao = new TrollerLogMessageDao();
 	private ProblemRecordDao problemRecordDao = new ProblemRecordDao();
@@ -69,7 +69,10 @@ public class LogMessageHandler
 	            case CORE :
 	            	trollerLogMessageDao.upsertTransactionEvent(handleTransactionEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
-	            case MAX :	
+	            case EV2:
+	            	trollerLogMessageDao.updateInstructionEvent(handleInstructionUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList));
+	            	break ;
+	            case MAX :
 	            case SENT :
 	            	if ("PAYEX".equals(sourceSystem))
 	            	{
@@ -158,9 +161,11 @@ public class LogMessageHandler
 	 */
 	public Date extractSourceTimestamp(String logMessage, String sourceSystem) throws HandleEventException
 	{
+		String sourceTimestamp =  logMessage.substring(0, logMessage.indexOf('[')).trim();
+		
 		try
 		{
-			String sourceTimestamp =  logMessage.substring(0, logMessage.indexOf('[')).trim();
+			// TODO read the timestamp from a config file so we don't have to hard code the sources
 			
 			if ("NBOL".equals(sourceSystem))
 			{
@@ -177,7 +182,7 @@ public class LogMessageHandler
 		}
 		catch (Exception ex)
 		{
-			String errorMessage = "Unable to extract <SOURCE TIMESTAMP> from event log message";
+			String errorMessage = "Unable to extract <SOURCE TIMESTAMP> from event log message [" + sourceSystem + "][" + sourceTimestamp + "]";
 			ProblemRecordDto problemRecordDto = new ProblemRecordDto(null, null, null, null, sourceSystem, errorMessage);
 			
 			throw new HandleEventException(errorMessage, problemRecordDto, ex);
@@ -385,7 +390,7 @@ public class LogMessageHandler
 		{
 			EventEnum event = EventEnum.getEvent(logMessagePropList.get(0));
 			
-			if (event != EventEnum.SENT && event != EventEnum.MAX)
+			if (event != EventEnum.SENT && event != EventEnum.MAX && event != EventEnum.EV2)
 			{
 				throw new Exception("Invalid transaction <EVENT>");
 			}
