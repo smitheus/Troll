@@ -43,6 +43,12 @@ public class HandleTestCaseEventMessages
 				{
 					TROLL_EVENT_MESSAGE_LIST.add("PAYEX, " + logLine);
 				}
+				else if (logLine.contains("MAX"))
+				{
+					TROLL_EVENT_MESSAGE_LIST.add("MAX, " + logLine);
+				}
+				else
+					throw new Exception("unknown source") ;
 			}
 
 			br.close();

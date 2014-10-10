@@ -22,6 +22,9 @@
 		<Logger name="PAYEX" level="info">
 			<AppenderRef ref="Troll-log" />
 		</Logger>
+		<Logger name="MAX" level="info">
+			<AppenderRef ref="Troll-log" />
+		</Logger>
 		<Root level="info">
 			<AppenderRef ref="Console" />
 			<AppenderRef ref="Test-log" />

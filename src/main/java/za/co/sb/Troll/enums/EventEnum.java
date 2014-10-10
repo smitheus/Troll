@@ -14,6 +14,8 @@ public enum EventEnum
 	RECD,
 	INTERIM,
 	MAX,
+	EV2, // the new MAX events
+	EV4,
 	FINAL,
 	CREATE,
 	UNKNOWN;
