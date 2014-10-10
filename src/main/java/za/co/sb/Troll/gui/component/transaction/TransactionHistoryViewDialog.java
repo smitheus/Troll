@@ -60,10 +60,10 @@ public class TransactionHistoryViewDialog extends JDialog implements ActionListe
 		
 		JPanel headerPanel = new JPanel();
 		getContentPane().add(headerPanel, BorderLayout.NORTH);
-		headerPanel.setLayout(new BorderLayout(0, 0));
+		headerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
 		JPanel titlePanel = new JPanel();
-		headerPanel.add(titlePanel, BorderLayout.NORTH);
+		headerPanel.add(titlePanel);
 		JLabel titleLabel = new JLabel("Transaction History for " + transactionViewItemDto.getTransactionId());
 		titleLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
 		titlePanel.add(titleLabel);
@@ -73,7 +73,7 @@ public class TransactionHistoryViewDialog extends JDialog implements ActionListe
 		flowLayout.setAlignment(FlowLayout.CENTER);
 		headerPanel.add(transactionDetailPanel);
 		
-		JLabel interchangeLabel = new JLabel("nBol Interchange Id :");
+		JLabel interchangeLabel = new JLabel("(nBol Interchange Id :");
 		transactionDetailPanel.add(interchangeLabel);
 		
 		JLabel interchangeValueLabel = new JLabel(transactionViewItemDto.getInterchangeId());
@@ -90,7 +90,7 @@ public class TransactionHistoryViewDialog extends JDialog implements ActionListe
 		JLabel countryLabel = new JLabel("| Country :");
 		transactionDetailPanel.add(countryLabel);
 		
-		JLabel countryValueLabel = new JLabel(transactionViewItemDto.getCountry());
+		JLabel countryValueLabel = new JLabel(transactionViewItemDto.getCountry() + ")");
 		countryValueLabel.setForeground(Color.BLUE);
 		transactionDetailPanel.add(countryValueLabel);
 		

@@ -222,6 +222,7 @@ class HowComboBox extends JComboBox<ComboBoxItem>
 		addItem(new ComboBoxItem("All Successes" , TransactionViewDao.ALL_SUCCESS_FILTER));
 		addItem(TransactionToolsPanel.HOW_DEFAULT);
 		addItem(new ComboBoxItem("All System Failures" , TransactionViewDao.SYSTEM_FAILURE_FILTER));
+		addItem(new ComboBoxItem("All SLA 2 Breaches" , TransactionViewDao.SLA2_FAILURE_FILTER));
 		addItem(new ComboBoxItem("All Business Failures" , TransactionViewDao.BUSINESS_FAILURE_FILTER));
 		
 		setSelectedItem(TransactionToolsPanel.HOW_DEFAULT);

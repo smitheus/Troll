@@ -165,7 +165,7 @@ class TransactionViewTableModel extends AbstractTableModel
 			tableData[index][7] = transactionViewItemDto.getCountry();
 			tableData[index][8] = transactionViewItemDto.getNakCnt() > 0 ? "Y" : "N";
 			tableData[index][9] = transactionViewItemDto.getSla1BreachCnt() > 0 ? "Y" : "N";
-			tableData[index][10] = transactionViewItemDto.getSla1BreachCnt() > 0 ? "Y" : "N";
+			tableData[index][10] = transactionViewItemDto.getSla2BreachCnt() > 0 ? "Y" : "N";
 			tableData[index][11] = transactionViewItemDto.getComments();
 			
 			index ++;

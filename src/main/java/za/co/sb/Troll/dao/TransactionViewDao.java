@@ -85,9 +85,8 @@ public class TransactionViewDao
 														  "             ft2.transactionId, " + 
 														  "             ft2.sourceTimestamp, " +
 														  "             ft2.country " +
-														  "    ORDER BY ft2.id " +
 														  ") AS transactionview " +
-														  "%s ";
+														  "%s ORDER BY transactionview.id ";
 	
 	private static String SELECT_TRANSACTIONS_HISTORY_STATEMENT = "SELECT id, " +
 															      "       instructionID, " +
@@ -125,6 +124,7 @@ public class TransactionViewDao
 	public static String ALL_SUCCESS_FILTER =  "(nakCnt = 0 AND sla1Cnt = 0 AND sla2Cnt = 0) ";
 	public static String ALL_FAILURE_FILTER =  "(nakCnt > 0 OR sla1Cnt > 0 OR sla2Cnt > 0) ";
 	public static String SYSTEM_FAILURE_FILTER =  "(sla1Cnt > 0 OR sla2Cnt) ";
+	public static String SLA2_FAILURE_FILTER =  "(sla2Cnt) ";
 	public static String BUSINESS_FAILURE_FILTER =  "(nakCnt > 0) ";
 	
 	public static String NBOL_TRANSACTION_ID_FILTER =  "ctran.transactionId = '%s' ";
