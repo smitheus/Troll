@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import za.co.sb.Troll.dao.CoreBankingSystemDao;
 import za.co.sb.Troll.dao.TransactionViewDao;
 import za.co.sb.Troll.dto.CoreBankingSystemDto;
+import za.co.sb.Troll.gui.component.ConsoleHeaderPanel;
 import za.co.sb.Troll.gui.component.TrollConsoleFrame;
 import za.co.sb.Troll.gui.component.datetime.DateTimePickerDialog;
 
@@ -113,7 +114,7 @@ public class TransactionToolsPanel extends JPanel implements ActionListener
 		
 		boolean filteringCancelled = false;
 		
-		if (actionCommand.equals(FILTER_ACTION_COMMAND)) 
+		if (actionCommand.equals(FILTER_ACTION_COMMAND) || actionCommand.equals(ConsoleHeaderPanel.EXPORT_ACTION_COMMAND)) 
 		{
 			ComboBoxItem selectedWhatComboBoxItem = (ComboBoxItem) whatComboBox.getSelectedItem();
 			ComboBoxItem selectedHowComboBoxItem = (ComboBoxItem) howComboBox.getSelectedItem();

@@ -16,7 +16,7 @@ import za.co.sb.Troll.gui.component.export.ExportDialog;
 @SuppressWarnings("serial")
 public class ConsoleHeaderPanel extends JPanel implements ActionListener
 {
-	private static final String EXPORT_ACTION_COMMAND = "EXPORT";
+	public static final String EXPORT_ACTION_COMMAND = "EXPORT";
 	
 	private TrollConsoleFrame trollConsoleFrame;
 	
@@ -78,6 +78,7 @@ public class ConsoleHeaderPanel extends JPanel implements ActionListener
         	try 
         	{
         		dialog.setVisible(true);
+        		trollConsoleFrame.getTransactionToolsPanel().actionPerformed(e);
         	}
 			catch (Exception ex) 
     		{
