@@ -186,7 +186,6 @@ class TransactionHistoryViewTableModel extends AbstractTableModel
 			tableData[index][15] = transactionHistoryViewItemDto.getSla2End() == null ? "" : DATE_FORMAT.format(transactionHistoryViewItemDto.getSla2End());
 			tableData[index][16] = transactionHistoryViewItemDto.isSla1Breach();
 			tableData[index][17] = transactionHistoryViewItemDto.isSla2Breach();
-			System.out.println(transactionHistoryViewItemDto.getElapsedTime());
 			
 			index ++;
 		}

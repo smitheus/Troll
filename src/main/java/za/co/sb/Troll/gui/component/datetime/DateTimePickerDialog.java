@@ -141,9 +141,6 @@ public class DateTimePickerDialog extends JDialog implements ActionListener
 			
 			selectedToDate = toDateCalendar.getTime();
 			
-			System.out.println(selectedFromDate);
-			System.out.println(selectedToDate);
-			
 			lastActionPerformed = OK_ACTION_COMMAND;
 		}
 		else if (actionCommand.equals(CANCEL_ACTION_COMMAND))
