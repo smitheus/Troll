@@ -14,6 +14,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.base.Strings;
+
 import za.co.sb.Troll.db.ConnectionFactory;
 import za.co.sb.Troll.db.DbUtil;
 import za.co.sb.Troll.dto.TransactionHistoryViewItemDto;
@@ -27,45 +29,64 @@ public class TransactionViewDao
 	
 	public static final SimpleDateFormat SQL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	private static String SELECT_TRANSACTIONS_STATEMENT = "SELECT ctran.id, " +
-														  "       cinte.interchangeId, " +
-														  "       cintr.instructionId, " +
-														  "       ctran.transactionId, " +
-														  "       ctran.insertTimestamp, " +
-														  "       ctran.sourceTimestamp, " +
-														  "       cbs.country, " +
-														  "       cbs.systemType, " +
-														  "       cbs.systemCode, " +
-														  "       ctran.underInvestigation, " +
-														  "       ctran.comments, " +
-														  "       ( " +
-														  "	          SELECT count(*) " + 
-														  "		      FROM channelTransactionHistory cth " + 
-														  "		      WHERE cth.ackNak = 'NAK' " +
-														  "		      AND ctran.instructionId = cth.instructionID " + 
-														  "		      AND ctran.transactionId = cth.transactionID " +
-														  "	      ) AS nakCnt, " +
-														  "       ( " +
-														  "		      SELECT count(*) " + 
-														  "		      FROM channelTransactionHistory cth " + 
-														  "		      WHERE cth.responseRequired = 'Y' " +
-														  "		      AND cth.sla1Due < CURRENT_TIMESTAMP " +
-														  "		      AND ctran.instructionId = cth.instructionID " + 
-														  "		      AND ctran.transactionId = cth.transactionID " +
-														  "	      ) AS sla1BreachCnt, " +
-														  "	      ( " +
-														  "		      SELECT count(*) " + 
-														  "		      FROM channelTransactionHistory cth " + 
-														  "		      WHERE cth.responseRequired = 'Y' " +
-														  "		      AND cth.sla2Due < CURRENT_TIMESTAMP " + 
-														  "		      AND ctran.instructionId = cth.instructionID " + 
-														  "		      AND ctran.transactionId = cth.transactionID " +
-														  "	      ) AS sla2BreachCnt " +
-														  "FROM channelTransaction ctran " +
-														  "LEFT JOIN channelInstruction cintr ON ctran.instructionId = cintr.instructionId " +
-														  "LEFT JOIN channelInterchange cinte ON cintr.interchangeId = cinte.interchangeId " +  
-														  "LEFT JOIN coreBankingSystems cbs ON cinte.country = cbs.country %s " +
-														  "ORDER BY ctran.id ";
+	private static String SELECT_TRANSACTIONS_STATEMENT = "SELECT transactionview.* " + 
+														  "FROM " +
+			                                              "(" +
+														  "    SELECT ft2.id, " + 
+														  "           ft2.interchangeId, " + 
+														  "           ft2.instructionId, " +  
+														  "           ft2.transactionId, " +  
+														  "           ft2.insertTimestamp, " +  
+														  "           ft2.sourceTimestamp, " +  
+														  "           ft2.country, " + 
+														  "           ft2.systemType, " +  
+														  "           ft2.systemCode, " + 
+														  "           ft2.underInvestigation, " +  
+													      "           ft2.comments, " + 
+														  "           SUM(nak) as nakCnt, " +  
+														  "           SUM(sla1) as sla1Cnt, " +  
+														  "           SUM(sla2) as sla2Cnt " + 
+														  "    FROM " + 
+														  "    ( " + 
+														  "        SELECT ft.underInvestigation, " + 
+														  "	              ft.comments, " + 
+														  "	              ft.interchangeId, " +  
+														  "	              cth.instructionId, " +  
+														  "	              cth.transactionId, " +  
+														  "	              ft.insertTimestamp, " +  
+														  "	              ft.sourceTimestamp, " +  
+														  "	              ft.id, " +  
+														  "	              ft.country, " + 
+														  "	              ft.systemType, " + 
+														  "	              ft.systemCode, " + 
+														  "	              CASE WHEN cth.ackNak = 'NAK' THEN 1 ELSE 0 END as nak, " + 
+														  "	              CASE WHEN (cth.responseRequired = 'Y' AND cth.sla1Due < CURRENT_TIMESTAMP) THEN 1 ELSE 0 END as sla1, " + 
+														  "	              CASE WHEN (cth.responseRequired = 'Y' AND cth.sla2Due < CURRENT_TIMESTAMP) THEN 1 ELSE 0 END as sla2 " + 
+														  "        FROM channelTransactionHistory cth,  " + 
+														  "        ( " + 
+														  "            SELECT ch.interchangeId,  " + 
+														  "                   ch.country, " +  
+														  "                   cbs.systemType, " + 
+														  "                   cbs.systemCode, " + 
+														  "                   ct.* " + 
+														  "            FROM channelInterchange ch, " + 
+														  "                 channelInstruction ci,  " + 
+														  "                 channelTransaction ct, " + 
+														  "                 coreBankingSystems cbs " + 
+														  "            WHERE ch.interchangeId = ci.interchangeId  " + 
+														  "            AND ci.instructionId = ct.instructionId " + 
+														  "            AND ch.country = cbs.country %s " + 
+														  "	       ) AS ft " + 
+														  "        WHERE cth.instructionId = ft.instructionID " +
+														  "        AND cth.transactionId = ft.transactionId " +
+														  "    ) AS ft2 " +
+														  "    GROUP BY ft2.interchangeId, " +
+														  "             ft2.instructionId, " +
+														  "             ft2.transactionId, " + 
+														  "             ft2.sourceTimestamp, " +
+														  "             ft2.country " +
+														  ") AS transactionview " +
+														  "%s ORDER BY transactionview.id ";
 	
 	private static String SELECT_TRANSACTIONS_HISTORY_STATEMENT = "SELECT id, " +
 															      "       instructionID, " +
@@ -81,6 +102,8 @@ public class TransactionViewDao
 															      "       responseRequired, " + 
 															      "       sla1Due, " +
 															      "       sla2Due, " +
+															      "       CASE WHEN (responseRequired = 'Y' AND sla1Due < CURRENT_TIMESTAMP) THEN 'Y' ELSE 'N' END as sla1Overdue, " + 
+																  "	      CASE WHEN (responseRequired = 'Y' AND sla2Due < CURRENT_TIMESTAMP) THEN 'Y' ELSE 'N' END as sla2Overdue, " +
 															      "       elapsedTime, " + 
 															      "       sla1End, " +
 															      "       sla2End, " +
@@ -95,13 +118,14 @@ public class TransactionViewDao
 	
 	public static String SYSTEM_TYPE_FILTER =  "cbs.systemType = '%s' ";
 	public static String COUNTRY_FILTER =  "cbs.country = '%s' ";
-	public static String DATE_FILTER =  "ctran.sourceTimestamp >= DATE_SUB(CURRENT_TIMESTAMP,INTERVAL %s %s)";
-	public static String CUSTOM_DATE_FILTER =  "ctran.sourceTimestamp BETWEEN '%s' AND '%s' ";
+	public static String DATE_FILTER =  "ct.sourceTimestamp >= DATE_SUB(CURRENT_TIMESTAMP,INTERVAL %s %s)";
+	public static String CUSTOM_DATE_FILTER =  "ct.sourceTimestamp BETWEEN '%s' AND '%s' ";
 	
-	public static String ALL_SUCCESS_FILTER =  "(nakCnt =  0 AND sla1BreachCnt = 0 AND sla2BreachCnt) ";
-	public static String ALL_FAILURE_FILTER =  "(nakCnt > 0 OR sla1BreachCnt > 0 OR sla2BreachCnt) ";
-	public static String SYSTEM_FAILURE_FILTER =  "(sla1BreachCnt > 0 OR sla2BreachCnt) ";
-	public static String BUSINESS_FAILURE_FILTER =  "nakCnt > 0 ";
+	public static String ALL_SUCCESS_FILTER =  "(nakCnt = 0 AND sla1Cnt = 0 AND sla2Cnt = 0) ";
+	public static String ALL_FAILURE_FILTER =  "(nakCnt > 0 OR sla1Cnt > 0 OR sla2Cnt > 0) ";
+	public static String SYSTEM_FAILURE_FILTER =  "(sla1Cnt > 0 OR sla2Cnt) ";
+	public static String SLA2_FAILURE_FILTER =  "(sla2Cnt) ";
+	public static String BUSINESS_FAILURE_FILTER =  "(nakCnt > 0) ";
 	
 	public static String NBOL_TRANSACTION_ID_FILTER =  "ctran.transactionId = '%s' ";
 	public static String NBOL_INSTRUCTION_ID_FILTER =  "cintr.instructionId = '%s' ";
@@ -111,7 +135,7 @@ public class TransactionViewDao
 	
 	private Connection connection;
 			
-	public Map<Integer, TransactionViewItemDto> selectTransactionViewItemDtos(List<String> filterCriteriaList) throws SQLException
+	public Map<Integer, TransactionViewItemDto> selectTransactionViewItemDtos(List<String> filterCriteriaList, String successFailureFilter) throws SQLException
     {
 		Map<Integer, TransactionViewItemDto> transactionViewItemDtoMap = new LinkedHashMap<Integer, TransactionViewItemDto>();
 		Calendar calendar = Calendar.getInstance();
@@ -123,21 +147,12 @@ public class TransactionViewDao
             String filterCriteriaString = "";
             for (int index = 0; index < filterCriteriaList.size(); index ++)
             {
-            	if (index == 0) 
-            	{
-            		filterCriteriaString += "WHERE ";
-            	}
-            	else 
-            	{
-            		filterCriteriaString += "AND ";
-            	}
-            	
-            	filterCriteriaString += filterCriteriaList.get(index);
+            	filterCriteriaString += "AND " + filterCriteriaList.get(index);
             }
             
-            LOG.debug(String.format(SELECT_TRANSACTIONS_STATEMENT, filterCriteriaString));
+            LOG.debug(String.format(SELECT_TRANSACTIONS_STATEMENT, filterCriteriaString, Strings.isNullOrEmpty(successFailureFilter) ? "" : "WHERE " + successFailureFilter));
             
-            PreparedStatement preparedStatement = connection.prepareStatement(String.format(SELECT_TRANSACTIONS_STATEMENT, filterCriteriaString));
+            PreparedStatement preparedStatement = connection.prepareStatement(String.format(SELECT_TRANSACTIONS_STATEMENT, filterCriteriaString, Strings.isNullOrEmpty(successFailureFilter) ? "" : "WHERE " + successFailureFilter));
             ResultSet resultSet = preparedStatement.executeQuery();
             
             while (resultSet.next())
@@ -158,7 +173,7 @@ public class TransactionViewDao
             	transactionViewItemDto.setNakCnt(resultSet.getInt(12));
             	transactionViewItemDto.setSla1BreachCnt(resultSet.getInt(13));
             	transactionViewItemDto.setSla2BreachCnt(resultSet.getInt(14));
-
+            	
             	transactionViewItemDtoMap.put(transactionViewItemDto.getId(), transactionViewItemDto);
             }
         } 
@@ -219,8 +234,8 @@ public class TransactionViewDao
             	transactionHistoryViewItemDto.setId(resultSet.getInt(1));
             	transactionHistoryViewItemDto.setInstructionId(resultSet.getString(2));
             	transactionHistoryViewItemDto.setTransactionId(resultSet.getString(3));
-            	transactionHistoryViewItemDto.setPesInstructionID(resultSet.getString(4)); 
-            	transactionHistoryViewItemDto.setPesTransactionID(resultSet.getString(5)); 
+            	transactionHistoryViewItemDto.setPesInstructionId(resultSet.getString(4)); 
+            	transactionHistoryViewItemDto.setPesTransactionId(resultSet.getString(5)); 
             	transactionHistoryViewItemDto.setInsertTimestamp(resultSet.getTimestamp(6, calendar));
             	transactionHistoryViewItemDto.setSourceTimestamp(resultSet.getTimestamp(7, calendar));
             	transactionHistoryViewItemDto.setSourceSystem(resultSet.getString(8));
@@ -230,11 +245,13 @@ public class TransactionViewDao
             	transactionHistoryViewItemDto.setResponseRequired(resultSet.getString(12));
             	transactionHistoryViewItemDto.setSla1Due(resultSet.getTimestamp(13, calendar)); 
             	transactionHistoryViewItemDto.setSla2Due(resultSet.getTimestamp(14, calendar));
-            	transactionHistoryViewItemDto.setElapsedTime(resultSet.getLong(15));
-            	transactionHistoryViewItemDto.setSla1End(resultSet.getTimestamp(16, calendar));
-            	transactionHistoryViewItemDto.setSla2End(resultSet.getTimestamp(17, calendar));
-            	transactionHistoryViewItemDto.setSla1Breach(resultSet.getString(18));
-            	transactionHistoryViewItemDto.setSla2Breach(resultSet.getString(19));
+            	transactionHistoryViewItemDto.setSla1Overdue(resultSet.getString(15)); 
+            	transactionHistoryViewItemDto.setSla2Overdue(resultSet.getString(16));
+            	transactionHistoryViewItemDto.setElapsedTime(resultSet.getString(17));
+            	transactionHistoryViewItemDto.setSla1End(resultSet.getTimestamp(18, calendar));
+            	transactionHistoryViewItemDto.setSla2End(resultSet.getTimestamp(19, calendar));
+            	transactionHistoryViewItemDto.setSla1Breach(resultSet.getString(20));
+            	transactionHistoryViewItemDto.setSla2Breach(resultSet.getString(21));
             	
             	transactionHistoryViewItemDtoList.add(transactionHistoryViewItemDto);
             }

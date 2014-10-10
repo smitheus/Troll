@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -61,10 +60,10 @@ public class TransactionHistoryViewDialog extends JDialog implements ActionListe
 		
 		JPanel headerPanel = new JPanel();
 		getContentPane().add(headerPanel, BorderLayout.NORTH);
-		headerPanel.setLayout(new BorderLayout(0, 0));
+		headerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
 		JPanel titlePanel = new JPanel();
-		headerPanel.add(titlePanel, BorderLayout.NORTH);
+		headerPanel.add(titlePanel);
 		JLabel titleLabel = new JLabel("Transaction History for " + transactionViewItemDto.getTransactionId());
 		titleLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
 		titlePanel.add(titleLabel);
@@ -74,7 +73,7 @@ public class TransactionHistoryViewDialog extends JDialog implements ActionListe
 		flowLayout.setAlignment(FlowLayout.CENTER);
 		headerPanel.add(transactionDetailPanel);
 		
-		JLabel interchangeLabel = new JLabel("nBol Interchange Id :");
+		JLabel interchangeLabel = new JLabel("(nBol Interchange Id :");
 		transactionDetailPanel.add(interchangeLabel);
 		
 		JLabel interchangeValueLabel = new JLabel(transactionViewItemDto.getInterchangeId());
@@ -91,7 +90,7 @@ public class TransactionHistoryViewDialog extends JDialog implements ActionListe
 		JLabel countryLabel = new JLabel("| Country :");
 		transactionDetailPanel.add(countryLabel);
 		
-		JLabel countryValueLabel = new JLabel(transactionViewItemDto.getCountry());
+		JLabel countryValueLabel = new JLabel(transactionViewItemDto.getCountry() + ")");
 		countryValueLabel.setForeground(Color.BLUE);
 		transactionDetailPanel.add(countryValueLabel);
 		
@@ -132,9 +131,7 @@ public class TransactionHistoryViewDialog extends JDialog implements ActionListe
 class TransactionHistoryViewTableModel extends AbstractTableModel  
 {
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("dd HH:mm:ss");
-	
-	private static String[] COLUMN_NAMES = new String[] { "Instruction ID", "Transaction ID", "PES Instruction ID", "PES Transaction ID", "Insert Timestamp", "Source Timestamp", "Source System", "Event", "AckNak", "Text", "ResponseRequired", "SLA 1 Due", "SLA Due", "Elapsed Time", "SLA 1 End", "SLA 2 End", "SLA 1 Breach", "SLA 2 Breach" };
+	private static String[] COLUMN_NAMES = new String[] { "Instruction ID", "Transaction ID", "PES Instruction ID", "PES Transaction ID", "Insert Timestamp", "Timestamp", "Source System", "Event", "AckNak", "Text", "ResponseRequired", "SLA 1 Due", "SLA Due", "Elapsed Time", "SLA 1 End", "SLA 2 End", "SLA 1 Breached", "SLA 2 Breached" };
 	
 	private TransactionViewItemDto transactionViewItemDto;
 	private List<TransactionHistoryViewItemDto> transactionHistoryViewItemDtoList = new ArrayList<TransactionHistoryViewItemDto>();
@@ -184,9 +181,9 @@ class TransactionHistoryViewTableModel extends AbstractTableModel
 			tableData[index][10] = transactionHistoryViewItemDto.isResponseRequired();
 			tableData[index][11] = transactionHistoryViewItemDto.getSla1Due() == null ? "" : DATE_FORMAT.format(transactionHistoryViewItemDto.getSla1Due()); 
 			tableData[index][12] = transactionHistoryViewItemDto.getSla2Due() == null ? "" : DATE_FORMAT.format(transactionHistoryViewItemDto.getSla2Due()); 
-			tableData[index][13] = transactionHistoryViewItemDto.getElapsedTime() == null ? "" : TIME_FORMAT.format(new Date(transactionHistoryViewItemDto.getElapsedTime() * 1000)); 
-			tableData[index][14] = transactionHistoryViewItemDto.getSla1End();
-			tableData[index][15] = transactionHistoryViewItemDto.getSla2End();
+			tableData[index][13] = transactionHistoryViewItemDto.getElapsedTime() == null ? "" : FormatDuration.formatDuration(transactionHistoryViewItemDto.getElapsedTime() * 1000); 
+			tableData[index][14] = transactionHistoryViewItemDto.getSla1End() == null ? "" : DATE_FORMAT.format(transactionHistoryViewItemDto.getSla1End());
+			tableData[index][15] = transactionHistoryViewItemDto.getSla2End() == null ? "" : DATE_FORMAT.format(transactionHistoryViewItemDto.getSla2End());
 			tableData[index][16] = transactionHistoryViewItemDto.isSla1Breach();
 			tableData[index][17] = transactionHistoryViewItemDto.isSla2Breach();
 			System.out.println(transactionHistoryViewItemDto.getElapsedTime());
@@ -295,6 +292,11 @@ class TransactionHistoryTable extends JTable
 		}
 		else
 		{
+			if (column == 16 || column == 17) 
+			{
+				return new CenterTableCellRenderer();
+			}
+			
 			return getDefaultRenderer(String.class);
 		}
     }
@@ -331,26 +333,90 @@ class TransactionHistoryTable extends JTable
 			jComponent.setBackground(Color.WHITE);
 		}
 		
-		if (transactionHistoryViewItemDto.getAckNak() == AckNakEnum.NAK) 
+		if (column == 8 || column == 9) 
 		{
-			jComponent.setBackground(COLOR_RED);
-		}
-		else
-		{
-			if ("Y".equalsIgnoreCase(transactionHistoryViewItemDto.isResponseRequired()))
+			if (transactionHistoryViewItemDto.getAckNak() == AckNakEnum.NAK)
 			{
-				
-				//transactionHistoryViewItemDto.getSourceTimestamp() > transactionHistoryViewItemDto.get
-				//if () 
-			//	{
-					
-					
-					
-			//	}
-				
+				jComponent.setBackground(COLOR_RED);
+				jComponent.setForeground(Color.WHITE);
+			}
+		}
+		
+		if (column == 11 && "Y".equalsIgnoreCase(transactionHistoryViewItemDto.isResponseRequired())) 
+		{
+			if ("Y".equalsIgnoreCase(transactionHistoryViewItemDto.isSla1Overdue()))
+			{
+				jComponent.setBackground(COLOR_ORANGE);
+			}
+		}
+		
+		if (column == 12 && "Y".equalsIgnoreCase(transactionHistoryViewItemDto.isResponseRequired())) 
+		{
+			if ("Y".equalsIgnoreCase(transactionHistoryViewItemDto.isSla2Overdue()))
+			{
+				jComponent.setBackground(COLOR_RED);
+				jComponent.setForeground(Color.WHITE);
+			}
+		}
+		
+		if (column == 12 && "Y".equalsIgnoreCase(transactionHistoryViewItemDto.isResponseRequired())) 
+		{
+			if ("Y".equalsIgnoreCase(transactionHistoryViewItemDto.isSla2Overdue()))
+			{
+				jComponent.setBackground(COLOR_RED);
+				jComponent.setForeground(Color.WHITE);
+			}
+		}
+		
+		if (column == 16) 
+		{
+			if ("Y".equalsIgnoreCase(transactionHistoryViewItemDto.isSla1Breach()))
+			{
+				jComponent.setBackground(COLOR_ORANGE);
+			}
+			else if ("N".equalsIgnoreCase(transactionHistoryViewItemDto.isSla1Breach()))
+			{
+				jComponent.setBackground(COLOR_GREEN);
+			}
+		}
+		
+		if (column == 17) 
+		{
+			if ("Y".equalsIgnoreCase(transactionHistoryViewItemDto.isSla2Breach()))
+			{
+				jComponent.setBackground(COLOR_RED);
+				jComponent.setForeground(Color.WHITE);
+			}
+			else if ("N".equalsIgnoreCase(transactionHistoryViewItemDto.isSla2Breach()))
+			{
+				jComponent.setBackground(COLOR_GREEN);
 			}
 		}
 		
 		return component;
+	}
+}
+
+class FormatDuration
+{
+	private static final long SENCONDS_IN_MILLISECONDS = 1000;
+	private static final long MINUTES_IN_MILLISECONDS = SENCONDS_IN_MILLISECONDS * 60;
+	private static final long HOURS_IN_MILLISECONDS = MINUTES_IN_MILLISECONDS * 60;
+	private static final long DAYS_IN_MILLISECONDS = HOURS_IN_MILLISECONDS * 24;
+	
+	public static String formatDuration(long duration)
+	{
+		long elapsedDays = duration / DAYS_IN_MILLISECONDS;
+		duration = duration % DAYS_IN_MILLISECONDS;
+	
+		long elapsedHours = duration / HOURS_IN_MILLISECONDS;
+		duration = duration % HOURS_IN_MILLISECONDS;
+	
+		long elapsedMinutes = duration / MINUTES_IN_MILLISECONDS;
+		duration = duration % MINUTES_IN_MILLISECONDS;
+		
+		long elapsedSeconds = duration / SENCONDS_IN_MILLISECONDS;
+	
+		return String.format("%02d:%02d:%02d:%02d", elapsedDays, elapsedHours, elapsedMinutes, elapsedSeconds);
 	}
 }

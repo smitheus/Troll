@@ -16,10 +16,10 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -65,11 +65,11 @@ public class TransactionViewPanel extends JPanel implements TableModelListener
 		add(scrollPane, BorderLayout.CENTER);
 	}
 	
-	public void reload(List<String> filterCriteriaList)
+	public void reload(List<String> filterCriteriaList,  String successFailureFilter)
 	{
 		try 
 		{
-			transactionViewTableModel.setupTableData(filterCriteriaList);
+			transactionViewTableModel.setupTableData(filterCriteriaList, successFailureFilter);
 		} 
 		catch (SQLException e) 
 		{
@@ -131,11 +131,12 @@ class TransactionViewTableModel extends AbstractTableModel
 	{
 		super();
 
-		try {
-			List<String> sqlFilterCriteriaList = new ArrayList<String>();;
-			sqlFilterCriteriaList.add(String.format(TransactionViewDao.DATE_FILTER, "10", "SECOND"));
+		try 
+		{
+			List<String> sqlFilterCriteriaList = new ArrayList<String>();
+			sqlFilterCriteriaList.add(TransactionToolsPanel.WHEN_DEFAULT.getSqlFilter());
 			
-			setupTableData(sqlFilterCriteriaList);
+			setupTableData(sqlFilterCriteriaList, TransactionToolsPanel.HOW_DEFAULT.getSqlFilter());
 		} 
 		catch (SQLException e) 
 		{
@@ -144,11 +145,11 @@ class TransactionViewTableModel extends AbstractTableModel
 		}	
 	}
 	
-	public void setupTableData(List<String> filterCriteriaList) throws SQLException
+	public void setupTableData(List<String> filterCriteriaList, String successFailureFilter) throws SQLException
 	{
 		TransactionViewDao transactionViewDao = new TransactionViewDao();
 		
-		this.transactionViewItemDtoMap = transactionViewDao.selectTransactionViewItemDtos(filterCriteriaList);
+		this.transactionViewItemDtoMap = transactionViewDao.selectTransactionViewItemDtos(filterCriteriaList, successFailureFilter);
 		this.tableData = new Object[transactionViewItemDtoMap.values().size()][COLUMN_NAMES.length];
 		
 		int index = 0;
@@ -164,7 +165,7 @@ class TransactionViewTableModel extends AbstractTableModel
 			tableData[index][7] = transactionViewItemDto.getCountry();
 			tableData[index][8] = transactionViewItemDto.getNakCnt() > 0 ? "Y" : "N";
 			tableData[index][9] = transactionViewItemDto.getSla1BreachCnt() > 0 ? "Y" : "N";
-			tableData[index][10] = transactionViewItemDto.getSla1BreachCnt() > 0 ? "Y" : "N";
+			tableData[index][10] = transactionViewItemDto.getSla2BreachCnt() > 0 ? "Y" : "N";
 			tableData[index][11] = transactionViewItemDto.getComments();
 			
 			index ++;
@@ -330,6 +331,11 @@ class TransactionViewTable extends JTable
 		}
 		else
 		{
+			if (column == 8 || column == 9 || column == 10) 
+			{
+				return new CenterTableCellRenderer();
+			}
+			
 			return getDefaultRenderer(String.class);
 		}
     }
@@ -385,7 +391,6 @@ class TransactionViewTable extends JTable
 			else
 			{
 				jComponent.setBackground(COLOR_GREEN);
-				jComponent.setForeground(Color.WHITE);
 			}
 		}
 		
@@ -394,12 +399,10 @@ class TransactionViewTable extends JTable
 			if (transactionViewItemDto.getSla1BreachCnt() > 0)
 			{
 				jComponent.setBackground(COLOR_ORANGE);
-				jComponent.setForeground(Color.WHITE);
 			}
 			else
 			{
 				jComponent.setBackground(COLOR_GREEN);
-				jComponent.setForeground(Color.WHITE);
 			}
 		}
 		
@@ -413,11 +416,20 @@ class TransactionViewTable extends JTable
 			else
 			{
 				jComponent.setBackground(COLOR_GREEN);
-				jComponent.setForeground(Color.WHITE);
 			}
 		}
 
 		return component;
+	}
+}
+
+@SuppressWarnings("serial")
+class CenterTableCellRenderer extends DefaultTableCellRenderer
+{
+	public CenterTableCellRenderer()
+	{
+		super();
+		setHorizontalAlignment(SwingConstants.CENTER);
 	}
 }
 
