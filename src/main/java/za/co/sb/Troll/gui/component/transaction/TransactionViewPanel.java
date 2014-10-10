@@ -19,10 +19,12 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -329,6 +331,11 @@ class TransactionViewTable extends JTable
 		}
 		else
 		{
+			if (column == 8 || column == 9 || column == 10) 
+			{
+				return new CenterTableCellRenderer();
+			}
+			
 			return getDefaultRenderer(String.class);
 		}
     }
@@ -384,7 +391,6 @@ class TransactionViewTable extends JTable
 			else
 			{
 				jComponent.setBackground(COLOR_GREEN);
-				jComponent.setForeground(Color.WHITE);
 			}
 		}
 		
@@ -393,12 +399,10 @@ class TransactionViewTable extends JTable
 			if (transactionViewItemDto.getSla1BreachCnt() > 0)
 			{
 				jComponent.setBackground(COLOR_ORANGE);
-				jComponent.setForeground(Color.WHITE);
 			}
 			else
 			{
 				jComponent.setBackground(COLOR_GREEN);
-				jComponent.setForeground(Color.WHITE);
 			}
 		}
 		
@@ -412,11 +416,20 @@ class TransactionViewTable extends JTable
 			else
 			{
 				jComponent.setBackground(COLOR_GREEN);
-				jComponent.setForeground(Color.WHITE);
 			}
 		}
 
 		return component;
+	}
+}
+
+@SuppressWarnings("serial")
+class CenterTableCellRenderer extends DefaultTableCellRenderer
+{
+	public CenterTableCellRenderer()
+	{
+		super();
+		setHorizontalAlignment(SwingConstants.CENTER);
 	}
 }
 

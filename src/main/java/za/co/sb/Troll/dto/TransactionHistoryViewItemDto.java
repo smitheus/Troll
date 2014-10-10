@@ -20,6 +20,8 @@ public class TransactionHistoryViewItemDto extends Dto
 	private String responseRequired;
 	private Date sla1Due; 
 	private Date sla2Due; 
+	private String sla1Overdue;
+	private String sla2Overdue;
 	private Long elapsedTime; 
 	private Date sla1End;
 	private Date sla2End;
@@ -40,10 +42,11 @@ public class TransactionHistoryViewItemDto extends Dto
 				+ sourceTimestamp + ", sourceSystem=" + sourceSystem
 				+ ", event=" + event + ", ackNak=" + ackNak + ", text=" + text
 				+ ", responseRequired=" + responseRequired + ", sla1Due="
-				+ sla1Due + ", sla2Due=" + sla2Due + ", elapsedTime="
-				+ elapsedTime + ", sla1End=" + sla1End + ", sla2End=" + sla2End
-				+ ", sla1Breach=" + sla1Breach + ", sla2Breach=" + sla2Breach
-				+ "]";
+				+ sla1Due + ", sla2Due=" + sla2Due + ", sla1Overdue="
+				+ sla1Overdue + ", sla2Overdue=" + sla2Overdue
+				+ ", elapsedTime=" + elapsedTime + ", sla1End=" + sla1End
+				+ ", sla2End=" + sla2End + ", sla1Breach=" + sla1Breach
+				+ ", sla2Breach=" + sla2Breach + "]";
 	}
 
 	public String getInstructionId() 
@@ -70,7 +73,7 @@ public class TransactionHistoryViewItemDto extends Dto
 		return pesInstructionId;
 	}
 
-	public void setPesInstructionID(String pesInstructionId) 
+	public void setPesInstructionId(String pesInstructionId) 
 	{
 		this.pesInstructionId = pesInstructionId;
 	}
@@ -80,7 +83,7 @@ public class TransactionHistoryViewItemDto extends Dto
 		return pesTransactionId;
 	}
 
-	public void setPesTransactionID(String pesTransactionId) 
+	public void setPesTransactionId(String pesTransactionId) 
 	{
 		this.pesTransactionId = pesTransactionId;
 	}
@@ -225,5 +228,23 @@ public class TransactionHistoryViewItemDto extends Dto
 		this.sla2Breach = sla2Breach;
 	}
 	
+	public String isSla1Overdue() 
+	{
+		return sla1Overdue;
+	}
+
+	public void setSla1Overdue(String sla1Overdue) 
+	{
+		this.sla1Overdue = sla1Overdue;
+	}
 	
+	public String isSla2Overdue() 
+	{
+		return sla2Overdue;
+	}
+
+	public void setSla2Overdue(String sla2Overdue) 
+	{
+		this.sla2Overdue = sla2Overdue;
+	}
 }

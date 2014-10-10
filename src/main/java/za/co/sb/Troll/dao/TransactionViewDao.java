@@ -103,6 +103,8 @@ public class TransactionViewDao
 															      "       responseRequired, " + 
 															      "       sla1Due, " +
 															      "       sla2Due, " +
+															      "       CASE WHEN (responseRequired = 'Y' AND sla1Due < CURRENT_TIMESTAMP) THEN 'Y' ELSE 'N' END as sla1Overdue, " + 
+																  "	      CASE WHEN (responseRequired = 'Y' AND sla2Due < CURRENT_TIMESTAMP) THEN 'Y' ELSE 'N' END as sla2Overdue, " +
 															      "       elapsedTime, " + 
 															      "       sla1End, " +
 															      "       sla2End, " +
@@ -171,7 +173,7 @@ public class TransactionViewDao
             	transactionViewItemDto.setNakCnt(resultSet.getInt(12));
             	transactionViewItemDto.setSla1BreachCnt(resultSet.getInt(13));
             	transactionViewItemDto.setSla2BreachCnt(resultSet.getInt(14));
-
+            	
             	transactionViewItemDtoMap.put(transactionViewItemDto.getId(), transactionViewItemDto);
             }
         } 
@@ -232,8 +234,8 @@ public class TransactionViewDao
             	transactionHistoryViewItemDto.setId(resultSet.getInt(1));
             	transactionHistoryViewItemDto.setInstructionId(resultSet.getString(2));
             	transactionHistoryViewItemDto.setTransactionId(resultSet.getString(3));
-            	transactionHistoryViewItemDto.setPesInstructionID(resultSet.getString(4)); 
-            	transactionHistoryViewItemDto.setPesTransactionID(resultSet.getString(5)); 
+            	transactionHistoryViewItemDto.setPesInstructionId(resultSet.getString(4)); 
+            	transactionHistoryViewItemDto.setPesTransactionId(resultSet.getString(5)); 
             	transactionHistoryViewItemDto.setInsertTimestamp(resultSet.getTimestamp(6, calendar));
             	transactionHistoryViewItemDto.setSourceTimestamp(resultSet.getTimestamp(7, calendar));
             	transactionHistoryViewItemDto.setSourceSystem(resultSet.getString(8));
@@ -243,11 +245,13 @@ public class TransactionViewDao
             	transactionHistoryViewItemDto.setResponseRequired(resultSet.getString(12));
             	transactionHistoryViewItemDto.setSla1Due(resultSet.getTimestamp(13, calendar)); 
             	transactionHistoryViewItemDto.setSla2Due(resultSet.getTimestamp(14, calendar));
-            	transactionHistoryViewItemDto.setElapsedTime(resultSet.getLong(15));
-            	transactionHistoryViewItemDto.setSla1End(resultSet.getTimestamp(16, calendar));
-            	transactionHistoryViewItemDto.setSla2End(resultSet.getTimestamp(17, calendar));
-            	transactionHistoryViewItemDto.setSla1Breach(resultSet.getString(18));
-            	transactionHistoryViewItemDto.setSla2Breach(resultSet.getString(19));
+            	transactionHistoryViewItemDto.setSla1Overdue(resultSet.getString(15)); 
+            	transactionHistoryViewItemDto.setSla2Overdue(resultSet.getString(16));
+            	transactionHistoryViewItemDto.setElapsedTime(resultSet.getLong(17));
+            	transactionHistoryViewItemDto.setSla1End(resultSet.getTimestamp(18, calendar));
+            	transactionHistoryViewItemDto.setSla2End(resultSet.getTimestamp(19, calendar));
+            	transactionHistoryViewItemDto.setSla1Breach(resultSet.getString(20));
+            	transactionHistoryViewItemDto.setSla2Breach(resultSet.getString(21));
             	
             	transactionHistoryViewItemDtoList.add(transactionHistoryViewItemDto);
             }
