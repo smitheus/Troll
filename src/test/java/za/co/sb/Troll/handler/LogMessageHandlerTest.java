@@ -289,11 +289,11 @@ public class LogMessageHandlerTest
 			// TEST EventEnum.MAX ACK
 			String sourceSystem = "SOURCESYSTEM";
 			Date sourceTimestamp = Calendar.getInstance().getTime();
-			List<String> logMessagePropList =  Lists.newArrayList("MAX", "pInter01", "ACK"); 
+			List<String> logMessagePropList =  Lists.newArrayList("EV2", "pInter01", "ACK"); 
 					
 			InterchangeEventDto interchangeEventDto = logMessageHandler.handleInterchangeUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList);
 			
-			assertEquals(EventEnum.MAX, interchangeEventDto.getEvent());
+			assertEquals(EventEnum.EV2, interchangeEventDto.getEvent());
 			assertEquals("pInter01", interchangeEventDto.getInterchangeId());
 			assertEquals("SOURCESYSTEM", interchangeEventDto.getSourceSystem());
 			assertEquals(sourceTimestamp, interchangeEventDto.getSourceTimeStamp());
@@ -318,11 +318,11 @@ public class LogMessageHandlerTest
 			// TEST EventEnum.MAX NAK
 			String sourceSystem = "SOURCESYSTEM";
 			Date sourceTimestamp = Calendar.getInstance().getTime();
-			List<String> logMessagePropList =  Lists.newArrayList("MAX", "pInter01", "NAK", "ERROR"); 
+			List<String> logMessagePropList =  Lists.newArrayList("EV2", "pInter01", "NAK", "ERROR"); 
 					
 			InterchangeEventDto interchangeEventDto = logMessageHandler.handleInterchangeUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList);
 			
-			assertEquals(EventEnum.MAX, interchangeEventDto.getEvent());
+			assertEquals(EventEnum.EV2, interchangeEventDto.getEvent());
 			assertEquals("pInter01", interchangeEventDto.getInterchangeId());
 			assertEquals("SOURCESYSTEM", interchangeEventDto.getSourceSystem());
 			assertEquals(sourceTimestamp, interchangeEventDto.getSourceTimeStamp());

@@ -70,9 +70,9 @@ public class LogMessageHandler
 	            	trollerLogMessageDao.upsertTransactionEvent(handleTransactionEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break;
 	            case EV2:
+	            case EV4:
 	            	trollerLogMessageDao.updateInstructionEvent(handleInstructionUpdateEvent(sourceSystem, sourceTimestamp, logMessagePropList));
 	            	break ;
-	            case MAX :
 	            case SENT :
 	            	if ("PAYEX".equals(sourceSystem))
 	            	{
@@ -293,7 +293,7 @@ public class LogMessageHandler
 		{
 			EventEnum event = EventEnum.getEvent(logMessagePropList.get(0));
 			if (event != EventEnum.SENT && event != EventEnum.RECD
-					&& event != EventEnum.INTERIM && event != EventEnum.MAX
+					&& event != EventEnum.INTERIM 
 					&& event != EventEnum.FINAL) 
 			{
 				throw new Exception("Invalid transaction <EVENT>");
@@ -390,7 +390,7 @@ public class LogMessageHandler
 		{
 			EventEnum event = EventEnum.getEvent(logMessagePropList.get(0));
 			
-			if (event != EventEnum.SENT && event != EventEnum.MAX && event != EventEnum.EV2)
+			if (event != EventEnum.SENT && event != EventEnum.EV2 && event != EventEnum.EV4)
 			{
 				throw new Exception("Invalid transaction <EVENT>");
 			}
