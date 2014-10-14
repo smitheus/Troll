@@ -28,8 +28,6 @@ public class TransactionViewItemDto extends Dto
 	{
 	}
 	
-	
-	
 	@Override
 	public String toString() {
 		return "TransactionViewItemDto [interchangeId=" + interchangeId
@@ -42,8 +40,6 @@ public class TransactionViewItemDto extends Dto
 				+ nakCnt + ", sla1BreachCnt=" + sla1BreachCnt
 				+ ", sla2BreachCnt=" + sla2BreachCnt + "]";
 	}
-
-
 
 	public List<String> getCsvExportValues() 
 	{

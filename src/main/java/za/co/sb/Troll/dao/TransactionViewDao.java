@@ -127,9 +127,9 @@ public class TransactionViewDao
 	public static String SLA2_FAILURE_FILTER =  "(sla2Cnt) ";
 	public static String BUSINESS_FAILURE_FILTER =  "(nakCnt > 0) ";
 	
-	public static String NBOL_TRANSACTION_ID_FILTER =  "ctran.transactionId = '%s' ";
-	public static String NBOL_INSTRUCTION_ID_FILTER =  "cintr.instructionId = '%s' ";
-	public static String NBOL_INTERCHANGE_ID_FILTER =  "cinte.interchangeId = '%s' ";
+	public static String NBOL_TRANSACTION_ID_FILTER =  "ct.transactionId = '%s' ";
+	public static String NBOL_INSTRUCTION_ID_FILTER =  "ci.instructionId = '%s' ";
+	public static String NBOL_INTERCHANGE_ID_FILTER =  "ch.interchangeId = '%s' ";
 	//public static String PAYEX_TRANSACTION_ID_FILTER =  "pesid.pTransactionId = '%s' ";
 	//public static String PAYEX_INSTRUCTION_ID_FILTER =  "pesid.pInstructionId = '%s' ";
 	

@@ -22,3 +22,17 @@ insert into responseProcessing values ('PAYEX', 'PAYEX', 'RECD', ' ', 0, 0, 'NBO
 insert into responseProcessing values ('PAYEX->MAX', 'PAYEX', 'SENT', 'Y', 100, 1000, '', '') ;
 insert into responseProcessing values ('MAX->T24', 'MAX', 'EV2', 'Y', 100, 1000, 'PAYEX', 'SENT') ;
 insert into responseProcessing values ('T24', 'PAYEX', 'CORE', ' ', 0, 0, 'MAX', 'EV2') ;
+
+truncate table trollerStatus ;
+insert into trollerStatus values ("nBOL", 1, 0, 'R', 'Down', '2000-01-01 00:00:00', 30) ;
+insert into trollerStatus values ("nBOL", 2, 0, 'R', 'Down', '2000-01-01 00:00:00', 30) ;
+insert into trollerStatus values ("nBOL", 3, 0, 'R', 'Down', '2000-01-01 00:00:00', 30) ;
+insert into trollerStatus values ("nBOL", 4, 0, 'R', 'Down', '2000-01-01 00:00:00', 30) ;
+insert into trollerStatus values ("PAYEX", 1, 0, 'R', 'Down', '2000-01-01 00:00:00', 30) ;
+insert into trollerStatus values ("PAYEX", 2, 0, 'R', 'Down', '2000-01-01 00:00:00', 30) ;
+insert into trollerStatus values ("MAX", 1, 0, 'R', 'Down', '2000-01-01 00:00:00', 30) ;
+insert into trollerStatus values ("MAX", 2, 0, 'R', 'Down', '2000-01-01 00:00:00', 30) ;
+ 
+truncate table trollServers ;
+insert into trollServers values (1, 'R', 'Down', '2000-01-01 00:00:00', 30) ;
+insert into trollServers values (2, 'R', 'Down', '2000-01-01 00:00:00', 30) ;

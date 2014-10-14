@@ -124,3 +124,21 @@ create table pesTransIDmap (
 	cTransactionID varchar(40),
 	pInstructionID  varchar(40),
 	pTransactionId varchar(40) ) ;
+	
+drop table trollerStatus ;
+create table trollerStatus (
+    sourceSystem varchar(10),
+    instNum int,
+    serverInstNum int,
+    shortStatus varchar(1),
+    longStatus varchar(40),
+    lastUpdated timestamp null,
+    slaSeconds int ) ;
+ 
+drop table trollServers ;
+create table trollServers (
+    instNum int,
+    shortStatus varchar(1),
+    longStatus varchar(40),
+    lastUpdated timestamp null,
+    slaSeconds int ) ; 	

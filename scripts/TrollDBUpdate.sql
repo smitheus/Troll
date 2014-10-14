@@ -213,3 +213,34 @@ BEGIN
 			and rp.event = pEvent
 			and ptm.pInstructionID = pInstructionID ;
 END ;
+
+drop procedure checkTrollStatus ;
+create procedure checkTrollStatus ()
+begin
+    # if a server has timed out, update its status and trollers connected to it
+    update trollServers ts, trollerStatus tr
+      set ts.shortStatus = 'R', ts.longStatus = 'Down', tr.shortStatus = 'R', tr.longStatus = 'Down', tr.serverInstNum = 0
+    where ts.shortStatus != 'R' and (DATE_ADD(ts.lastUpdated,INTERVAL ts.slaSeconds SECOND) < CURRENT_TIMESTAMP)
+    and ts.instNum = tr.serverInstNum ;
+ 
+    # check for toller timeout
+    update trollerStatus tr
+      set tr.shortStatus = 'R', tr.longStatus = 'Down'
+    where tr.shortStatus != 'R' and (DATE_ADD(tr.lastUpdated,INTERVAL tr.slaSeconds SECOND) < CURRENT_TIMESTAMP) ;
+end ;
+
+drop procedure updateTrollServer ;
+create procedure updateTrollServer (pInstNum int, pShortStatus varchar(1), pLongStatus varchar(40))
+begin
+    update trollServers ts
+    set ts.shortStatus = pShortStatus, ts.longStatus = pLongStatus, ts.lastUpdated = CURRENT_TIMESTAMP
+    where ts.instNum = pInstNum ;
+end ;
+ 
+drop procedure updateTroller ;
+create procedure updateTroller (pSourceSystem varchar(10), pInstNum int, pServerInst int, pShortStatus varchar(1), pLongStatus varchar(40))
+begin
+    update trollerStatus tr
+    set tr.serverInstNum = pServerInst, tr.shortStatus = pShortStatus, tr.longStatus = pLongStatus, tr.lastUpdated = CURRENT_TIMESTAMP
+    where tr. sourceSystem = pSourceSystem and tr.instNum = pInstNum ;
+end ;

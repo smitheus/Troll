@@ -176,10 +176,6 @@ public class TrollerLogMessageDao
     	{
             connection = ConnectionFactory.getConnection();
             
-            //call InstructionUpdate ('', 'pInstr01', '2014-01-01 00:00:24', 'PAYEX', 'SENT', '', '') ;
-            //call InstructionUpdate (?, ?, ?, ?', ?, ?, ?) ;
-			
-            
             CallableStatement callableStatement = connection.prepareCall(SP_INSTRUCTION_UPDATE);
             callableStatement.setString(1, instructionEventDto.getInterchangeId());
             callableStatement.setString(2, instructionEventDto.getInstructionId());
@@ -200,6 +196,7 @@ public class TrollerLogMessageDao
             DbUtil.close(connection);
         }
     }
+	
 	/**
 	 * Calls Stored Procedure called <b>TransactionUpSert</b> which will insert 
 	 * or update a TRANSACTION event in the database.

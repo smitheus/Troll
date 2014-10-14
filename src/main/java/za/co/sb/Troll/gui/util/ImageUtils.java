@@ -15,13 +15,15 @@ public class ImageUtils
 	public static final int ABORTED = 3;
 	public static final int INTERRUPTED = 4;
 
-	public static final String ONLINE_IMAGE = "online.png";
-	public static final String OFFLINE_IMAGE = "offline.png";
-
+	public static final String GREEN_BUTTON_24_IMAGE = "green_button_24.png";
+	public static final String RED_BUTTON_24_IMAGE = "red_button_24.png";
+	public static final String ORANGE_BUTTON_24_IMAGE = "orange_button_24.png";
+	
 	public static void loadImages() 
 	{
-		loadImage(ONLINE_IMAGE);
-		loadImage(OFFLINE_IMAGE);
+		loadImage(GREEN_BUTTON_24_IMAGE);
+		loadImage(RED_BUTTON_24_IMAGE);
+		loadImage(ORANGE_BUTTON_24_IMAGE);
 	}
 
 	public static void loadImage(String fileName) 
